@@ -35,7 +35,7 @@ out/
 .DS_Store
 
 ### 환경변수 ###
-.env
+.env.*
 
 ### NetBeans ###
 /nbproject/private/
