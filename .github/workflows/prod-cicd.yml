@@ -54,8 +54,11 @@ jobs:
       - name: 1. Checkout source
         uses: actions/checkout@v4
 
-      - name: 2. Create .env.prod
-        run: echo "${{ secrets.PROD_ENV }}" > .env.prod
+      - name: 2. Create .env.dev
+        run: |
+          echo "${{ secrets.PROD_ENV }}" > .env.prod
+          ls -al
+      
 
       - name: 3. Send files to EC2
         uses: appleboy/scp-action@master
