@@ -1,13 +1,11 @@
-# 1. JDK 이미지를 베이스로 설정
+# 1. JDK 기반 이미지
 FROM eclipse-temurin:17-jdk
 
-# 2. 작업 디렉토리 설정
+# 2. 작업 디렉토리
 WORKDIR /app
 
-# 3. jar 파일 복사
-ARG JAR_FILE=build/libs/CreJipsa-0.0.1-SNAPSHOT.jar
-
-COPY ${JAR_FILE} app.jar
+# 3. jar 파일 자동 탐색 (어떤 이름이든 상관없게)
+COPY build/libs/*.jar app.jar
 
 # 4. 실행
 ENTRYPOINT ["java", "-jar", "app.jar"]
