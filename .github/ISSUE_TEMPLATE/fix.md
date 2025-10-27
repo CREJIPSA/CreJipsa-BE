@@ -1,3 +1,11 @@
+---
+name: "✨ Fix"
+about: " 버그 수정"
+title: "[Feat] "
+labels: enhancement
+assignees: seokjun01
+---
+
 ## 수정 내용
 <br>
 

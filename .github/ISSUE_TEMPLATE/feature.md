@@ -1,3 +1,11 @@
+---
+name: "✨ Feature or Task"
+about: "새로운 기능 개발, 버그 수정, 또는 개선 사항 이슈 작성"
+title: "[Feat] "
+labels: enhancement
+assignees: seokjun01
+---
+
 ## 개발 내용
 <br>
 
