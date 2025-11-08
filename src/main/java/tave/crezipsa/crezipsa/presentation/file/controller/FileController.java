@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.application.file.usecase.FileUseCase;
 import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
-import tave.crezipsa.crezipsa.presentation.file.response.DownloadUrlResponse;
-import tave.crezipsa.crezipsa.presentation.file.response.UploadUrlResponse;
+import tave.crezipsa.crezipsa.application.file.dto.response.DownloadUrlResponse;
+import tave.crezipsa.crezipsa.application.file.dto.response.UploadUrlResponse;
 
 @RestController
 @RequiredArgsConstructor

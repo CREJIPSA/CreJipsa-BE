@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.domain.file.port.FileStoragePort;
-import tave.crezipsa.crezipsa.presentation.file.response.DownloadUrlResponse;
-import tave.crezipsa.crezipsa.presentation.file.response.UploadUrlResponse;
+import tave.crezipsa.crezipsa.application.file.dto.response.DownloadUrlResponse;
+import tave.crezipsa.crezipsa.application.file.dto.response.UploadUrlResponse;
 
 @Service
 @RequiredArgsConstructor
