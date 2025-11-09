@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.application.file.usecase.FileUseCase;
 import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
-import tave.crezipsa.crezipsa.application.file.dto.response.DownloadUrlResponse;
 import tave.crezipsa.crezipsa.application.file.dto.response.UploadUrlResponse;
 
 @RestController
@@ -26,13 +25,6 @@ public class FileController {
 		@RequestParam String contentType
 	) {
 		return GlobalResponseDto.success(fileUseCase.generateUploadUrl(fileName, contentType));
-	}
-
-	@GetMapping("/download-url")
-	public GlobalResponseDto<DownloadUrlResponse> createDownloadUrl(
-		@RequestParam String fileName
-	) {
-		return GlobalResponseDto.success(fileUseCase.generateDownloadUrl(fileName));
 	}
 
 	@DeleteMapping
