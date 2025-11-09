@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.domain.file.port.FileStoragePort;
-import tave.crezipsa.crezipsa.application.file.dto.response.DownloadUrlResponse;
 import tave.crezipsa.crezipsa.application.file.dto.response.UploadUrlResponse;
 
 @Service
@@ -16,15 +15,9 @@ public class FileUseCase {
 
 	public UploadUrlResponse generateUploadUrl(String fileName, String contentType) {
 		String uploadUrl = fileStoragePort.generateUploadUrl(fileName, contentType);
-		return new UploadUrlResponse(fileName, uploadUrl);
+		String fileUrl = fileStoragePort.generateDownloadUrl(fileName);
+		return new UploadUrlResponse(fileName, uploadUrl, fileUrl);
 	}
-
-
-	public DownloadUrlResponse generateDownloadUrl(String fileName) {
-		String downloadUrl = fileStoragePort.generateDownloadUrl(fileName);
-		return new DownloadUrlResponse(downloadUrl);
-	}
-
 
 	public void deleteFile(String fileName) {
 		fileStoragePort.deleteFile(fileName);
