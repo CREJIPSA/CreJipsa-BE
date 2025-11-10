@@ -29,7 +29,7 @@ public class Community extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long CommunityId;
+	private Long communityId;
 
 	private String title;
 
