@@ -12,7 +12,7 @@ import tave.crezipsa.crezipsa.domain.community.repository.CommunityRepository;
 
 @Repository
 @RequiredArgsConstructor
-public class CommunityJpaRepositoryImpl implements CommunityRepository {
+public class CommunityRepositoryImpl implements CommunityRepository {
 
 	private final CommunityJpaRepository communityJpaRepository;
 
