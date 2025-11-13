@@ -4,12 +4,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 import tave.crezipsa.crezipsa.domain.community.domain.Like;
+import tave.crezipsa.crezipsa.domain.community.domain.LikeId;
 
 public interface LikeRepository {
 
 	Like save(Like like);
-	Optional<Like> findById(Long likedId);
+	Optional<Like> findById(LikeId likedId);
 	void delete(Like like);
-	boolean existsById(Long likedId);
+	boolean existsById(LikeId likedId);
 
 }
