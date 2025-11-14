@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
+import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 import tave.crezipsa.crezipsa.domain.community.repository.CommunityRepository;
 
 
@@ -34,6 +35,16 @@ public class CommunityRepositoryImpl implements CommunityRepository {
 	@Override
 	public void delete(Community community) {
 		communityJpaRepository.delete(community);
+	}
+
+	@Override
+	public List<Community> findByWriterId(Long writerId) {
+		return communityJpaRepository.findByWriterId(writerId);
+	}
+
+	@Override
+	public List<Community> findByField(CommunityField field) {
+		return communityJpaRepository.findByField(field);
 	}
 
 }

@@ -2,9 +2,9 @@ package tave.crezipsa.crezipsa.domain.community.repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
+import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 
 public interface CommunityRepository {
 
@@ -13,4 +13,6 @@ public interface CommunityRepository {
 	List<Community> findAll();
 	void delete(Community community);
 
+	List<Community> findByWriterId(Long writerId);
+	List<Community> findByField(CommunityField field);
 }
