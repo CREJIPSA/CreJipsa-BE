@@ -2,6 +2,7 @@ package tave.crezipsa.crezipsa.application.community.dto.request;
 
 import java.util.List;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.NotBlank;
@@ -19,7 +20,7 @@ public class CommunityCreateRequest {
 
 	private List<String> imageUrls;
 
-	@NotBlank(message = "글 타입을 지정해주세요")
+	@NotNull(message = "글 타입을 지정해주세요")
 	private CommunityField field;
 
 }
