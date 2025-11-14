@@ -12,6 +12,7 @@ import tave.crezipsa.crezipsa.application.community.dto.request.CommunityCreateR
 import tave.crezipsa.crezipsa.application.community.dto.request.CommunityUpdateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunityResponse;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
+import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 import tave.crezipsa.crezipsa.domain.community.repository.CommunityRepository;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
@@ -74,6 +75,22 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 			throw new CommonException(ErrorCode.UNAUTHORIZED_COMMUNITY);
 		}
 		communityRepository.delete(community);
+	}
+
+	@Override
+	public List<CommunityResponse> getMyCommunities(Long userId) {
+		return communityRepository.findByWriterId(userId)
+			.stream()
+			.map(CommunityResponse::from)
+			.toList();
+	}
+
+	@Override
+	public List<CommunityResponse> getCommunitiesByField(CommunityField field) {
+		return communityRepository.findByField(field)
+			.stream()
+			.map(CommunityResponse::from)
+			.toList();
 	}
 
 }
