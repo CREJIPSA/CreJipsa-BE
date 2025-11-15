@@ -44,7 +44,7 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 		Community community = communityRepository.findById(communityId)
 			.orElseThrow(() -> new CommonException(ErrorCode.COMMUNITY_NOT_FOUND));
 
-		if (!community.getWriterId().equals(userId)) {
+		if (!Objects.equals(community.getWriterId(), userId)) {
 			throw new CommonException(ErrorCode.UNAUTHORIZED_COMMUNITY);
 		}
 		community.update(communityUpdateRequest.getTitle(), communityUpdateRequest.getContent(), communityUpdateRequest.getImageUrls());
