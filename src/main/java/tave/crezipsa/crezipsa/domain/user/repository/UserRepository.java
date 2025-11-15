@@ -8,5 +8,5 @@ public interface UserRepository {
     User save(User user);
 
     //리턴 값이 null일 수도
-    Optional findByEmail(String email);
+    Optional<User> findByEmail(String email);
 }

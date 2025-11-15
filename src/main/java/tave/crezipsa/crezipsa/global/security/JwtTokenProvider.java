@@ -11,7 +11,7 @@ public class JwtTokenProvider {
 
     private final String SECRET_KEY = "secret-key-crezipsa";
     private final long ACCESS_TOKEN_EXPIRATION = 1000L*60*60*4; //유효 4시간
-
+    private final long REFRESH_TOKEN_EXPIRATION = 1000L*60*60*10;
     //토큰 생성
     public String generateAccessToken(Long userId, String email) {
         return Jwts.builder()
@@ -19,7 +19,16 @@ public class JwtTokenProvider {
                 .claim("email",email)
                 .setIssuedAt(new Date())        //발급 시간
                 .setExpiration(new Date(System.currentTimeMillis()+ACCESS_TOKEN_EXPIRATION))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY) //서명
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY) //서명 키 바꾸기 **
+                .compact();
+    }
+
+    public String generateRefreshToken(Long userId) {
+        return Jwts.builder()
+                .setSubject(userId.toString())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION))
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
 

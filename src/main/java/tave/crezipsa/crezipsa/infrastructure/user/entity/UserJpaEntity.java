@@ -25,10 +25,10 @@ public class UserJpaEntity {
     @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(length = 50)
+    @Column(nullable = false, length = 50)
     private String nickName;
 
-    @Column(nullable = false, unique = true, length = 100)
+    @Column(unique = true, length = 100)
     private String email;
 
     @Column(nullable = false, length = 255)
@@ -40,7 +40,7 @@ public class UserJpaEntity {
     @Column(length = 255)
     private String profileImageUrl;
 
-    @Column(nullable = false)
+    @Column
     private Boolean role = false;
 
     private LocalDate birth;

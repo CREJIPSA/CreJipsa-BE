@@ -7,6 +7,7 @@ import tave.crezipsa.crezipsa.infrastructure.user.entity.UserJpaEntity;
 
 import java.util.Optional;
 
+@Repository
 public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
 
 

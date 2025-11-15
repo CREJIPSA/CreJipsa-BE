@@ -1,6 +1,7 @@
 package tave.crezipsa.crezipsa.domain.user.entity;
 import tave.crezipsa.crezipsa.domain.user.enums.Gender;
 import lombok.*;
+import tave.crezipsa.crezipsa.infrastructure.auth.KakaoUserInfo;
 
 import java.time.LocalDate;
 
@@ -20,4 +21,13 @@ public class User {
         private String activeYotube;
         private String activeTikTok;
         private String activeInsta;
+
+    public static User createFromKakao(KakaoUserInfo kakaoUserInfo) {
+            return User.builder()
+                    .email(kakaoUserInfo.getEmail())
+                    .name(kakaoUserInfo.getNickname()) // 카카오는 보통 닉네임만 제공
+                    .profileImageUrl(kakaoUserInfo.getProfileImage())
+                    .build();
+    }
 }
+
