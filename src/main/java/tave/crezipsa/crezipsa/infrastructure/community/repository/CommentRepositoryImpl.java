@@ -35,4 +35,9 @@ public class CommentRepositoryImpl implements CommentRepository {
 		commentJpaRepository.delete(comment);
 	}
 
+	@Override
+	public List<Comment> findByUserId(Long userId) {
+		return commentJpaRepository.findByUserId(userId);
+	}
+
 }
