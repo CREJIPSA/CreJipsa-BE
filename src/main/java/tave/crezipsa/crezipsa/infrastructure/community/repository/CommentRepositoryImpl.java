@@ -40,4 +40,9 @@ public class CommentRepositoryImpl implements CommentRepository {
 		return commentJpaRepository.findByUserId(userId);
 	}
 
+	@Override
+	public List<Comment> findByParentId(Long parentId) {
+		return commentJpaRepository.findByParentId(parentId);
+	}
+
 }
