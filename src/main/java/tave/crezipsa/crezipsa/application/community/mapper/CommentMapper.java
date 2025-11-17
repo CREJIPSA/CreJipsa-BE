@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommentResponse;
 import tave.crezipsa.crezipsa.domain.community.domain.Comment;
+import tave.crezipsa.crezipsa.domain.user.entity.User;
+import tave.crezipsa.crezipsa.domain.user.repository.UserRepository;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 
@@ -18,7 +20,7 @@ public class CommentMapper {
 
 	public CommentResponse toCommentResponse(Comment comment) {
 
-		User writer = userRepository.findById(comment.getContent())
+		User writer = userRepository.findById(comment.getUserId())
 			.orElseThrow(() -> new CommonException(ErrorCode.USER_NOT_FOUND));
 
 		List<CommentResponse> replies = comment.getReplies().stream()
@@ -31,6 +33,7 @@ public class CommentMapper {
 			comment.getParentId(),
 			writer.getUserId(),
 			writer.getNickName(),
+			writer.getProfileImageUrl(),
 			comment.isDeleted(),
 			comment.getContent(),
 			comment.getCreatedAt(),
