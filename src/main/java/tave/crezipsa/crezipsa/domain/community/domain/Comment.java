@@ -41,13 +41,15 @@ public class Comment extends BaseEntity {
 
 	private Long parentId; //부모댓글 (없으면 null)
 
+	private boolean deleted = false;
+
 	@Builder.Default
 	@OneToMany(
 		cascade = CascadeType.ALL,
 		orphanRemoval = true,
 		fetch = FetchType.LAZY
 	)
-	@JoinColumn(name = "parentId", referencedColumnName = "commentId")
+	@JoinColumn(name = "parent_Id", referencedColumnName = "comment_Id")
 	private List<Comment> replies = new ArrayList<>();
 
 	public static Comment create(Long communityId, Long userId, String content, Long parentId) {
