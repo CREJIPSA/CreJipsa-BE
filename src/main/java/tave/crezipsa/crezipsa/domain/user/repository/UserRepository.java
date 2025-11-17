@@ -9,4 +9,5 @@ public interface UserRepository {
 
     //리턴 값이 null일 수도
     Optional<User> findByEmail(String email);
+    Optional<User> findById(Long userId);
 }
