@@ -49,7 +49,7 @@ public class Comment extends BaseEntity {
 		orphanRemoval = true,
 		fetch = FetchType.LAZY
 	)
-	@JoinColumn(name = "parent_Id", referencedColumnName = "comment_Id")
+	@JoinColumn(name = "parent_id", referencedColumnName = "comment_id")
 	private List<Comment> replies = new ArrayList<>();
 
 	public static Comment create(Long communityId, Long userId, String content, Long parentId) {
@@ -70,6 +70,12 @@ public class Comment extends BaseEntity {
 			throw new CommonException(ErrorCode.INVALID_COMMENT_CONTENT);
 	}
 		this.content = content;
+	}
+
+	//루트 댓글 기준
+	public void softDelete() {
+		this.deleted = true;
+		this.content = "삭제된 메시지입니다";
 	}
 
 	public void deleteCascade() { //대댓글이 달린 댓글 삭제
