@@ -48,8 +48,8 @@ public class UserJpaEntity {
     @Column(length = 255)
     private String activeYoutube;
 
-    @Column(length = 255)
-    private String activeTikTok;
+    @Column(name= "active_toktok",length = 255)
+    private String activeTiktok;
 
     @Column(length = 255)
     private String activeInsta;

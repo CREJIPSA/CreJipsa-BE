@@ -20,7 +20,7 @@ public class UserMapper {
                 .role(e.getRole())
                 .dateOfBirth(e.getBirth())
                 .activeYotube(e.getActiveInsta())
-                .activeTikTok(e.getActiveTikTok())
+                .activeTiktok(e.getActiveTiktok())
                 .activeInsta(e.getActiveInsta())
                 .build();
     }
@@ -38,7 +38,7 @@ public class UserMapper {
                 .role(d.isRole())
                 .birth(d.getDateOfBirth())
                 .activeYoutube(d.getActiveYotube())
-                .activeTikTok(d.getActiveTikTok())
+                .activeTiktok(d.getActiveTiktok())
                 .activeInsta(d.getActiveInsta())
                 .build();
     }
