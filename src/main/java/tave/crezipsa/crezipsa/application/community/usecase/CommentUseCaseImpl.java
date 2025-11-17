@@ -13,6 +13,8 @@ import tave.crezipsa.crezipsa.domain.community.domain.Comment;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
 import tave.crezipsa.crezipsa.domain.community.repository.CommentRepository;
 import tave.crezipsa.crezipsa.domain.community.repository.CommunityRepository;
+import tave.crezipsa.crezipsa.domain.user.entity.User;
+import tave.crezipsa.crezipsa.domain.user.repository.UserRepository;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 
@@ -34,7 +36,6 @@ public class CommentUseCaseImpl implements  CommentUsecase{
 		Long parentId = request.parentId();
 
 		if (parentId != null) {
-
 			Comment parent = commentRepository.findById(parentId)
 				.orElseThrow(() -> new CommonException(ErrorCode.COMMENT_NOT_FOUND));
 
@@ -57,7 +58,7 @@ public class CommentUseCaseImpl implements  CommentUsecase{
 			.orElseThrow(() -> new CommonException(ErrorCode.COMMENT_NOT_FOUND));
 
 		if (!comment.getUserId().equals(userId)) {
-			throw new CommonException(ErrorCode.NO_COMMENT_AUTH);
+			throw new CommonException(ErrorCode.UNAUTHORIZED_COMMENT);
 		}
 
 		comment.update(request.content());
@@ -71,7 +72,7 @@ public class CommentUseCaseImpl implements  CommentUsecase{
 			.orElseThrow(() -> new CommonException(ErrorCode.COMMENT_NOT_FOUND));
 
 		if (!comment.getUserId().equals(userId)) {
-			throw new CommonException(ErrorCode.NO_COMMENT_AUTH);
+			throw new CommonException(ErrorCode.UNAUTHORIZED_COMMENT);
 		}
 
 		if (comment.getParentId() == null) {
