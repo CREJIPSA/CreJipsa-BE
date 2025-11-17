@@ -36,6 +36,7 @@ public class CommentUseCaseImpl implements  CommentUsecase{
 		Long parentId = request.parentId();
 
 		if (parentId != null) {
+
 			Comment parent = commentRepository.findById(parentId)
 				.orElseThrow(() -> new CommonException(ErrorCode.COMMENT_NOT_FOUND));
 

@@ -49,7 +49,6 @@ public class Comment extends BaseEntity {
 		orphanRemoval = true,
 		fetch = FetchType.LAZY
 	)
-	@JoinColumn(name = "parent_id", referencedColumnName = "comment_id")
 	private List<Comment> replies = new ArrayList<>();
 
 	public static Comment create(Long communityId, Long userId, String content, Long parentId) {
