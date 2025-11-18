@@ -8,7 +8,7 @@ import tave.crezipsa.crezipsa.domain.community.domain.Comment;
 
 public interface CommentJpaRepository extends JpaRepository<Comment, Long> {
 
-	List<Comment> findByCommentId(Long CommunityId);
+	List<Comment> findByCommunityId(Long CommunityId);
 	List<Comment> findByUserId(Long userId);
 	List<Comment> findByParentId(Long parentId);
 

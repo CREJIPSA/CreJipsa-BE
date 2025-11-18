@@ -27,7 +27,7 @@ public class CommentRepositoryImpl implements CommentRepository {
 
 	@Override
 	public List<Comment> findByCommunityId(Long communityId) {
-		return commentJpaRepository.findByCommentId(communityId);
+		return commentJpaRepository.findByCommunityId(communityId);
 	}
 
 	@Override
