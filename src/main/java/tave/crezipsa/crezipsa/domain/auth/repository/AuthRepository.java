@@ -6,9 +6,7 @@ import java.util.Optional;
 
 public interface AuthRepository {
 
-    Optional<Auth> findByUserId(Long userId);
-
     Auth save(Auth auth);
-
+    Optional<Auth> findByUserId(Long userId);
     boolean existsByUserId(Long userId);
 }

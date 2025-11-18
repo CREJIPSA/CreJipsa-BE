@@ -1,7 +1,8 @@
 package tave.crezipsa.crezipsa.domain.user.enums;
 
-public enum MainPlatform {
+public enum Platform {
     youtube,
-    instagram,
-    tiktok
+    instagrm,
+    tiktok,
+    none
 }

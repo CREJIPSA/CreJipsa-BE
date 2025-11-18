@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tave.crezipsa.crezipsa.domain.user.enums.Gender;
+import tave.crezipsa.crezipsa.domain.user.enums.Platform;
 
 import java.time.LocalDate;
 
@@ -48,9 +49,13 @@ public class UserJpaEntity {
     @Column(length = 255)
     private String activeYoutube;
 
-    @Column(name= "active_toktok",length = 255)
+    @Column(length = 255)
     private String activeTiktok;
 
     @Column(length = 255)
     private String activeInsta;
+
+    @Enumerated(EnumType.STRING)
+    private Platform mainPlatform;
+
 }

@@ -19,7 +19,7 @@ public class UserMapper {
                 .profileImageUrl(e.getProfileImageUrl())
                 .role(e.getRole())
                 .dateOfBirth(e.getBirth())
-                .activeYotube(e.getActiveInsta())
+                .activeYotube(e.getActiveYoutube())
                 .activeTiktok(e.getActiveTiktok())
                 .activeInsta(e.getActiveInsta())
                 .build();

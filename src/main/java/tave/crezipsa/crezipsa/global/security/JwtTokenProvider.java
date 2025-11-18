@@ -1,16 +1,24 @@
 package tave.crezipsa.crezipsa.global.security;
 
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.*;
 
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.util.Date;
 
 // 토큰 발급, 토큰 유효성 검사 -> jwtfilter
 @Component
 public class JwtTokenProvider {
 
-    private String secretKey = "${jwt.secret;
+    private final Key secretKey;
+
+    public JwtTokenProvider(@Value("${jwt.secret}") String secret) {
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
     private final long ACCESS_TOKEN_EXPIRATION = 1000L*60*60*4; //유효 4시간
     private final long REFRESH_TOKEN_EXPIRATION = 1000L*60*60*10;
     //토큰 생성
@@ -20,7 +28,7 @@ public class JwtTokenProvider {
                 .claim("email",email)
                 .setIssuedAt(new Date())        //발급 시간
                 .setExpiration(new Date(System.currentTimeMillis()+ACCESS_TOKEN_EXPIRATION))
-                .signWith(SignatureAlgorithm.HS256, secretKey ) //서명 키 바꾸기 **
+                .signWith(secretKey, SignatureAlgorithm.HS256) //서명 키 바꾸기 **
                 .compact();
     }
 

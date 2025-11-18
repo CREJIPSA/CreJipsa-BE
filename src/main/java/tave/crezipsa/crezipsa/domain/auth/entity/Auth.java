@@ -22,4 +22,8 @@ public class Auth {
     private String refreshToken;
     private String providerUserId;
 
+    public void updateTokens(String accessToken, String refreshToken) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+    }
 }

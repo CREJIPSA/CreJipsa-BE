@@ -14,7 +14,6 @@ public class KakaoUserInfo {
 
     private Long id;
 
-    // 카카오에서 들어올 때만 쓰고, 프론트로 응답 보낼 땐 숨기기
     @JsonProperty(value = "kakao_account", access = JsonProperty.Access.WRITE_ONLY)
     private KakaoAccount kakaoAccount;
 
@@ -36,13 +35,11 @@ public class KakaoUserInfo {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class KakaoProfile {
 
-        private String nickname; // kakao_account.profile.nickname
-
+        private String nickname;
         @JsonProperty("profile_image_url")
-        private String profileImageUrl; // kakao_account.profile.profile_image_url
+        private String profileImageUrl;
     }
 
-    // 👉 여기서 이메일 반환 (응답 JSON에도 "email" 로 나감)
     @JsonProperty("email")
     public String getEmail() {
         return kakaoAccount != null ? kakaoAccount.getEmail() : null;

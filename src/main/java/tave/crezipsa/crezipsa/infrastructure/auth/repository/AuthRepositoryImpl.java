@@ -17,7 +17,6 @@ public class AuthRepositoryImpl implements AuthRepository {
     public Auth save(Auth auth) {
         return authJpaRepository.save(auth);
     }
-
     @Override
     public Optional<Auth> findByUserId(Long userId){
         return authJpaRepository.findByUserId(userId);

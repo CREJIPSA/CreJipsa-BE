@@ -1,7 +1,7 @@
 package tave.crezipsa.crezipsa.domain.user.entity;
 import tave.crezipsa.crezipsa.domain.user.enums.Gender;
 import lombok.*;
-import tave.crezipsa.crezipsa.domain.user.enums.MainPlatform;
+import tave.crezipsa.crezipsa.domain.user.enums.Platform;
 import tave.crezipsa.crezipsa.infrastructure.auth.KakaoUserInfo;
 
 import java.time.LocalDate;
@@ -22,7 +22,7 @@ public class User {
         private String activeYotube;
         private String activeTiktok;
         private String activeInsta;
-        private MainPlatform mainPlatform;
+        private Platform platform;
     public static User createFromKakao(KakaoUserInfo kakaoUserInfo) {
             return User.builder()
                     .email(kakaoUserInfo.getEmail())
