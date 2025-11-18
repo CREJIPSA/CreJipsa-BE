@@ -25,7 +25,8 @@ public class CommentMapper {
 		User writer = userRepository.findById(comment.getUserId())
 			.orElseThrow(() -> new CommonException(ErrorCode.USER_NOT_FOUND));
 
-		List<Comment> replyEntities = commentRepository.findByParentId(comment.getParentId());
+		Long targetParentId = comment.getCommentId();
+		List<Comment> replyEntities = commentRepository.findByParentId(targetParentId);
 
 		List<CommentResponse> replies = replyEntities.stream()
 			.map(this::toCommentResponse)
