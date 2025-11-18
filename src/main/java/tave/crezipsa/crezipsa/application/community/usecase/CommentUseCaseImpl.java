@@ -3,6 +3,7 @@ package tave.crezipsa.crezipsa.application.community.usecase;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommentCreateRequest;
@@ -20,6 +21,7 @@ import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CommentUseCaseImpl implements  CommentUsecase{
 
 	private final CommentRepository commentRepository;

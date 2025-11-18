@@ -11,7 +11,7 @@ import tave.crezipsa.crezipsa.global.security.JwtTokenProvider;
 import tave.crezipsa.crezipsa.infrastructure.auth.KakaoUserInfo;
 import tave.crezipsa.crezipsa.infrastructure.auth.client.KakaoOAuthClient;
 
-@Service
+//@Service
 @RequiredArgsConstructor
 public class KakaoLoginService {
 

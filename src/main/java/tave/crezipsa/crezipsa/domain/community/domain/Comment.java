@@ -42,7 +42,7 @@ public class Comment extends BaseEntity {
 	private Long parentId; //부모댓글 (없으면 null)
 
 	private boolean deleted = false;
-
+/*
 	@Builder.Default
 	@OneToMany(
 		cascade = CascadeType.ALL,
@@ -50,7 +50,7 @@ public class Comment extends BaseEntity {
 		fetch = FetchType.LAZY
 	)
 	private List<Comment> replies = new ArrayList<>();
-
+*/
 	public static Comment create(Long communityId, Long userId, String content, Long parentId) {
 		if (content == null || content.isEmpty()) {
 			throw new CommonException(ErrorCode.INVALID_COMMENT_CONTENT);
@@ -77,7 +77,7 @@ public class Comment extends BaseEntity {
 		this.content = "삭제된 메시지입니다";
 	}
 
-	public void deleteCascade() { //대댓글이 달린 댓글 삭제
+	/*public void deleteCascade() { //대댓글이 달린 댓글 삭제
 		replies.clear(); //
-	}
+	}*/
 }

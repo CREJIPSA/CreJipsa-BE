@@ -13,7 +13,7 @@ import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 import tave.crezipsa.crezipsa.infrastructure.auth.KakaoUserInfo;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 public class KakaoOAuthClient {
 
