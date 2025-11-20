@@ -42,6 +42,7 @@ public class CommentUseCaseImpl implements  CommentUsecase {
 		if (parentId != null) {
 			Comment parent = findCommentOrThrow(parentId);
 			validateParentComment(parent);
+			validateSameCommunity(parent, communityId);
 		}
 
 		Comment saved = commentRepository.save(Comment.create(communityId, userId, request.content(), parentId));
@@ -179,6 +180,12 @@ public class CommentUseCaseImpl implements  CommentUsecase {
 		if (parent.getParentId() != null) {
 			throw new CommonException(ErrorCode.INVALID_COMMENT_DEPTH);
 		}
-
 	}
+
+	private void validateSameCommunity(Comment parent, Long communityId) {
+		if (!parent.getCommunityId().equals(communityId)) {
+			throw new CommonException(ErrorCode.INVALID_PARENT_COMMUNITY);
+		}
+	}
+
 }
