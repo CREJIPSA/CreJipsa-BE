@@ -22,11 +22,17 @@ public class S3FileStorage implements FileStoragePort {
 	private final S3Client s3Client;
 	private final S3Presigner s3Presigner;
 
-	@Value("${infra.s3.bucket}")
+	@Value("${infra.s3.bucket:dummy-bucket}")
+	private String bucket;
+
+	@Value("${infra.s3.region:ap-northeast-2}")
+	private String region;
+
+	/*@Value("${infra.s3.bucket}")
 	private String bucket;
 
 	@Value("${infra.s3.region}")
-	private String region;
+	private String region;*/
 
 	@Override
 	public String generateUploadUrl(String fileName, String contentType) {
