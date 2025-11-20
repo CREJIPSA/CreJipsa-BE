@@ -20,10 +20,10 @@ public class OAuthController {
     private final KakaoLoginService kakaoLoginService;
 
     @GetMapping("/kakao")
-    public ResponseEntity<GlobalResponseDto> kakaoLogin(@RequestParam String code) {
+    public GlobalResponseDto<LoginResponse> kakaoLogin(@RequestParam String code) {
         LoginResponse response = kakaoLoginService.login(code);
 
-        return ResponseEntity.ok(GlobalResponseDto.success(response));
+        return GlobalResponseDto.success(response);
     }
 
 }
