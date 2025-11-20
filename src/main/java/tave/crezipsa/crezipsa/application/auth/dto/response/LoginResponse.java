@@ -10,17 +10,15 @@ import tave.crezipsa.crezipsa.infrastructure.auth.KakaoUserInfo;
 public class LoginResponse {
 
     private boolean isNewUser;
-    private String nickname;
-    private String email;
     private String accessToken;
     private String refreshToken;
     private KakaoUserInfo kakaoUserInfo;
 
     public static LoginResponse needsSignup(KakaoUserInfo info) {
-        return new LoginResponse(true, null,null, null, null, info);
+        return new LoginResponse(true, null,null, info);
     }
 
-    public static LoginResponse success(User user, String accessToken, String refreshToken) {
-        return new LoginResponse(false, user.getNickName(), user.getEmail(),accessToken, refreshToken, null);
+    public static LoginResponse success(String accessToken, String refreshToken, KakaoUserInfo kakaoUserInfo) {
+        return new LoginResponse(false,accessToken, refreshToken, kakaoUserInfo);
     }
 }

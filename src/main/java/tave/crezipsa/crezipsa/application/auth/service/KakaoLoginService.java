@@ -45,6 +45,6 @@ public class KakaoLoginService {
         auth.updateTokens(accessToken, refreshToken);
 
         authRepository.save(auth);
-        return LoginResponse.success(user, jwt, refreshToken);
+        return LoginResponse.success(jwt, refreshToken, kakaoUserInfo);
     }
 }
