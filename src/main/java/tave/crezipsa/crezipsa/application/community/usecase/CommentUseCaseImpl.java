@@ -26,7 +26,7 @@ import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class CommentUseCaseImpl implements  CommentUsecase{
+public class CommentUseCaseImpl implements  CommentUsecase {
 
 	private final CommentRepository commentRepository;
 	private final CommunityRepository communityRepository;
@@ -36,52 +36,39 @@ public class CommentUseCaseImpl implements  CommentUsecase{
 	@Override
 	public CommentResponse createComment(Long communityId, Long userId, CommentCreateRequest request) {
 
-		Community community = communityRepository.findById(communityId)
-			.orElseThrow(() -> new CommonException(ErrorCode.COMMUNITY_NOT_FOUND));
-
+		findCommunityOrThrow(communityId);
 		Long parentId = request.parentId();
 
 		if (parentId != null) {
-
-			Comment parent = commentRepository.findById(parentId)
-				.orElseThrow(() -> new CommonException(ErrorCode.COMMENT_NOT_FOUND));
-
-			if (parent.getParentId() != null) {
-				throw new CommonException(ErrorCode.INVALID_COMMENT_DEPTH);
-			}
+			Comment parent = findCommentOrThrow(parentId);
+			validateParentComment(parent);
 		}
 
-		Comment comment = Comment.create(communityId, userId, request.content(), parentId);
-		Comment saved = commentRepository.save(comment);
-		User writer = userRepository.findById(userId)
-			.orElseThrow(() -> new CommonException(ErrorCode.USER_NOT_FOUND));
+		Comment saved = commentRepository.save(Comment.create(communityId, userId, request.content(), parentId));
+		User writer = findUserOrThrow(userId);
 
-		return commentMapper.toCommentResponse(saved,writer,List.of());
-
+		return commentMapper.toCommentResponse(saved, writer, List.of());
 	}
 
 	@Override
 	public CommentResponse updateComment(Long commentId, Long userId, CommentUpdateRequest request) {
 
-		Comment comment = commentRepository.findById(commentId)
-			.orElseThrow(() -> new CommonException(ErrorCode.COMMENT_NOT_FOUND));
+		Comment comment = findCommentOrThrow(commentId);
 
 		if (!comment.getUserId().equals(userId)) {
 			throw new CommonException(ErrorCode.UNAUTHORIZED_COMMENT);
 		}
 
 		comment.update(request.content());
-		User writer = userRepository.findById(userId)
-			.orElseThrow(() -> new CommonException(ErrorCode.USER_NOT_FOUND));
+		User writer = findUserOrThrow(userId);
 
-		return commentMapper.toCommentResponse(comment,writer,List.of());
+		return commentMapper.toCommentResponse(comment, writer, List.of());
 	}
 
 	@Override
 	public void deleteComment(Long commentId, Long userId) {
 
-		Comment comment = commentRepository.findById(commentId)
-			.orElseThrow(() -> new CommonException(ErrorCode.COMMENT_NOT_FOUND));
+		Comment comment = findCommentOrThrow(commentId);
 
 		if (!comment.getUserId().equals(userId)) {
 			throw new CommonException(ErrorCode.UNAUTHORIZED_COMMENT);
@@ -96,11 +83,9 @@ public class CommentUseCaseImpl implements  CommentUsecase{
 
 	@Override
 	public List<CommentResponse> getComments(Long communityId) {
-		communityRepository.findById(communityId)
-			.orElseThrow(() -> new CommonException(ErrorCode.COMMUNITY_NOT_FOUND));
+		findCommunityOrThrow(communityId);
 
 		List<Comment> allComments = commentRepository.findByCommunityId(communityId);
-
 		if (allComments.isEmpty()) {
 			return List.of();
 		}
@@ -136,19 +121,15 @@ public class CommentUseCaseImpl implements  CommentUsecase{
 
 		return myComments.stream()
 			.map(comment -> {
-				Community community = communityRepository.findById(comment.getCommunityId())
-					.orElseThrow(() -> new CommonException(ErrorCode.COMMUNITY_NOT_FOUND));
-
-				User user = userRepository.findById(comment.getUserId())
-					.orElseThrow(() -> new CommonException(ErrorCode.USER_NOT_FOUND));
+				User writer = findUserOrThrow(comment.getUserId());
 
 				return new CommentResponse(
 					comment.getCommentId(),
 					comment.getCommunityId(),
 					comment.getParentId(),
 					comment.getUserId(),
-					user.getNickName(),
-					user.getProfileImageUrl(),
+					writer.getNickName(),
+					writer.getProfileImageUrl(),
 					comment.isDeleted(),
 					comment.getContent(),
 					comment.getCreatedAt(),
@@ -158,7 +139,8 @@ public class CommentUseCaseImpl implements  CommentUsecase{
 			.toList();
 	}
 
-	private CommentResponse toResponseTree(Comment comment, Map<Long, List<Comment>> childrenByParentId, Map<Long, User> writerMap) {
+	private CommentResponse toResponseTree(Comment comment, Map<Long, List<Comment>> childrenByParentId,
+		Map<Long, User> writerMap) {
 		User writer = writerMap.get(comment.getUserId());
 		if (writer == null) {
 			throw new CommonException(ErrorCode.USER_NOT_FOUND);
@@ -177,4 +159,26 @@ public class CommentUseCaseImpl implements  CommentUsecase{
 		return commentMapper.toCommentResponse(comment, writer, replyResponses);
 	}
 
+	// 검증 로직의 반복이 잦아 헬퍼 메소드로 분리
+	private User findUserOrThrow(Long userId) {
+		return userRepository.findById(userId)
+			.orElseThrow(() -> new CommonException(ErrorCode.USER_NOT_FOUND));
+	}
+
+	private Comment findCommentOrThrow(Long commentId) {
+		return commentRepository.findById(commentId)
+			.orElseThrow(() -> new CommonException(ErrorCode.COMMENT_NOT_FOUND));
+	}
+
+	private Community findCommunityOrThrow(Long communityId) {
+		return communityRepository.findById(communityId)
+			.orElseThrow(() -> new CommonException(ErrorCode.COMMUNITY_NOT_FOUND));
+	}
+
+	private void validateParentComment(Comment parent) {
+		if (parent.getParentId() != null) {
+			throw new CommonException(ErrorCode.INVALID_COMMENT_DEPTH);
+		}
+
+	}
 }
