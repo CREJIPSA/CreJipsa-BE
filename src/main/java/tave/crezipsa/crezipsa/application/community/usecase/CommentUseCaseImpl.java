@@ -53,8 +53,10 @@ public class CommentUseCaseImpl implements  CommentUsecase{
 
 		Comment comment = Comment.create(communityId, userId, request.content(), parentId);
 		Comment saved = commentRepository.save(comment);
+		User writer = userRepository.findById(userId)
+			.orElseThrow(() -> new CommonException(ErrorCode.USER_NOT_FOUND));
 
-		return commentMapper.toCommentResponse(saved);
+		return commentMapper.toCommentResponse(saved,writer,List.of());
 
 	}
 
@@ -69,7 +71,10 @@ public class CommentUseCaseImpl implements  CommentUsecase{
 		}
 
 		comment.update(request.content());
-		return commentMapper.toCommentResponse(comment);
+		User writer = userRepository.findById(userId)
+			.orElseThrow(() -> new CommonException(ErrorCode.USER_NOT_FOUND));
+
+		return commentMapper.toCommentResponse(comment,writer,List.of());
 	}
 
 	@Override
