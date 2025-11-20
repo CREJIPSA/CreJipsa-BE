@@ -23,10 +23,11 @@ public class User {
         private String activeTiktok;
         private String activeInsta;
         private Platform platform;
+
     public static User createFromKakao(KakaoUserInfo kakaoUserInfo) {
             return User.builder()
                     .email(kakaoUserInfo.getEmail())
-                    .name(kakaoUserInfo.getNickname()) // 카카오는 보통 닉네임만 제공
+                    .nickName(kakaoUserInfo.getNickname())
                     .profileImageUrl(kakaoUserInfo.getProfileImage())
                     .build();
     }

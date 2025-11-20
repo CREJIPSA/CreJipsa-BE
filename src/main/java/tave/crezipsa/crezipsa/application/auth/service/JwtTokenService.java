@@ -26,10 +26,10 @@ public class JwtTokenService {
                 .refreshToken(refreshToken)
                 .build());
 
-        return TokenResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .email(user.getEmail())
-                .build();
+        return new TokenResponse(
+                accessToken,
+                refreshToken,
+                user.getEmail()
+        );
     }
 }

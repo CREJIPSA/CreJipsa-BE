@@ -9,6 +9,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
+import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 import tave.crezipsa.crezipsa.infrastructure.auth.KakaoUserInfo;
 
 @Component
@@ -60,7 +62,7 @@ public class KakaoOAuthClient {
                 .block();
 
         if (userInfo == null) {
-            throw new IllegalStateException("카카오 사용자 정보를 가져오지 못했습니다.");
+            throw new CommonException(ErrorCode.KAKAO_USERINFO_FAILED);
         }
 
         return userInfo;

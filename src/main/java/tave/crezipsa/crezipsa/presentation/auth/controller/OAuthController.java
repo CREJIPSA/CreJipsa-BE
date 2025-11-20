@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tave.crezipsa.crezipsa.application.auth.dto.response.LoginResponse;
 import tave.crezipsa.crezipsa.application.auth.dto.response.TokenResponse;
 import tave.crezipsa.crezipsa.application.auth.service.KakaoLoginService;
+import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,8 +20,10 @@ public class OAuthController {
     private final KakaoLoginService kakaoLoginService;
 
     @GetMapping("/kakao")
-    public ResponseEntity<LoginResponse> kakaoLogin(@RequestParam String code) {
-        return ResponseEntity.ok(kakaoLoginService.login(code));
+    public ResponseEntity<GlobalResponseDto> kakaoLogin(@RequestParam String code) {
+        LoginResponse response = kakaoLoginService.login(code);
+
+        return ResponseEntity.ok(GlobalResponseDto.success(response));
     }
 
 }
