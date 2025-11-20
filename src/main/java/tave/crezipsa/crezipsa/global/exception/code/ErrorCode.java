@@ -14,6 +14,7 @@ public enum ErrorCode implements BaseErrorCode {
 	INVALID_FIELD_TYPE(400, "C40001", "유효하지 않은 게시글 유형입니다."),
 	INVALID_COMMENT_CONTENT(400, "C4003", "댓글 내용은 비어 있을 수 없습니다."),
 	INVALID_COMMENT_DEPTH(400, "C4004", "대댓글엔 대댓글을 달 수 없습니다."),
+	INVALID_PARENT_COMMUNITY(400, "C4005", "대댓글은 동일한 게시글 내에서만 달 수 있습니다"),
 	COMMENT_NOT_FOUND(404, "C40402", "해당 댓글을 찾을 수 없습니다."),
 	ALREADY_LIKED(400, "C40002", "이미 좋아요를 누른 게시글입니다."),
 	UNAUTHORIZED_COMMUNITY(404, "C40403", "게시글 권한이 없습니다"),
