@@ -27,12 +27,22 @@ public class CommentRepositoryImpl implements CommentRepository {
 
 	@Override
 	public List<Comment> findByCommunityId(Long communityId) {
-		return commentJpaRepository.findByCommentId(communityId);
+		return commentJpaRepository.findByCommunityId(communityId);
 	}
 
 	@Override
 	public void delete(Comment comment) {
 		commentJpaRepository.delete(comment);
+	}
+
+	@Override
+	public List<Comment> findByUserId(Long userId) {
+		return commentJpaRepository.findByUserId(userId);
+	}
+
+	@Override
+	public List<Comment> findByParentId(Long parentId) {
+		return commentJpaRepository.findByParentId(parentId);
 	}
 
 }

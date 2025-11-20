@@ -11,6 +11,8 @@ public interface CommentRepository {
 	Comment save(Comment comment);
 	Optional<Comment> findById(Long id);
 	List<Comment> findByCommunityId(Long communityId);
+	List<Comment> findByUserId(Long userId);
+	List<Comment> findByParentId(Long parentId);
 	void delete(Comment comment);
 
 }
