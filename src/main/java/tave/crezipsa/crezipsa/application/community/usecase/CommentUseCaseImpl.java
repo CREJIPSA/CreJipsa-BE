@@ -1,6 +1,10 @@
 package tave.crezipsa.crezipsa.application.community.usecase;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -92,9 +96,30 @@ public class CommentUseCaseImpl implements  CommentUsecase{
 
 		List<Comment> allComments = commentRepository.findByCommunityId(communityId);
 
-		return allComments.stream()
-			.filter(comment -> comment.getParentId() == null)
-			.map(commentMapper::toCommentResponse)
+		if (allComments.isEmpty()) {
+			return List.of();
+		}
+
+		Set<Long> writerIds = allComments.stream()
+			.map(Comment::getUserId)
+			.collect(Collectors.toSet());
+
+		List<User> writers = userRepository.findAllById(writerIds);
+
+		Map<Long, User> writerMap = writers.stream()
+			.collect(Collectors.toMap(User::getUserId, u -> u));
+
+		Map<Long, List<Comment>> childrenByParentId = allComments.stream()
+			.filter(c -> c.getParentId() != null)
+			.collect(Collectors.groupingBy(Comment::getParentId));
+
+		List<Comment> rootComments = allComments.stream()
+			.filter(c -> c.getParentId() == null)
+			.sorted(Comparator.comparing(Comment::getCreatedAt))
+			.toList();
+
+		return rootComments.stream()
+			.map(root -> toResponseTree(root, childrenByParentId, writerMap))
 			.toList();
 
 	}
@@ -126,6 +151,25 @@ public class CommentUseCaseImpl implements  CommentUsecase{
 				);
 			})
 			.toList();
+	}
+
+	private CommentResponse toResponseTree(Comment comment, Map<Long, List<Comment>> childrenByParentId, Map<Long, User> writerMap) {
+		User writer = writerMap.get(comment.getUserId());
+		if (writer == null) {
+			throw new CommonException(ErrorCode.USER_NOT_FOUND);
+		}
+
+		// 나를 부모로 가진 자식 댓글들
+		List<Comment> children = childrenByParentId.getOrDefault(comment.getCommentId(), List.of());
+
+		// 자식들도 재귀적으로 CommentResponse로 변환
+		List<CommentResponse> replyResponses = children.stream()
+			.sorted(Comparator.comparing(Comment::getCreatedAt)) // 대댓글도 정렬(선택)
+			.map(child -> toResponseTree(child, childrenByParentId, writerMap))
+			.toList();
+
+		// Mapper는 변환만
+		return commentMapper.toCommentResponse(comment, writer, replyResponses);
 	}
 
 }
