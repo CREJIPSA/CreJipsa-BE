@@ -20,17 +20,7 @@ public class CommentMapper {
 	private final UserRepository userRepository;
 	private final CommentRepository commentRepository;
 
-	public CommentResponse toCommentResponse(Comment comment) {
-
-		User writer = userRepository.findById(comment.getUserId())
-			.orElseThrow(() -> new CommonException(ErrorCode.USER_NOT_FOUND));
-
-		Long targetParentId = comment.getCommentId();
-		List<Comment> replyEntities = commentRepository.findByParentId(targetParentId);
-
-		List<CommentResponse> replies = replyEntities.stream()
-			.map(this::toCommentResponse)
-			.toList();
+	public CommentResponse toCommentResponse(Comment comment,User writer, List<CommentResponse> replies) {
 
 		return new CommentResponse(
 			comment.getCommentId(),
