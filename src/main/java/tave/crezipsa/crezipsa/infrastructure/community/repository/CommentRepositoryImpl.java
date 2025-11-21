@@ -45,4 +45,8 @@ public class CommentRepositoryImpl implements CommentRepository {
 		return commentJpaRepository.findByParentId(parentId);
 	}
 
+	@Override
+	public long countByCommunityId(Long communityId) {
+		return commentJpaRepository.countByCommunityId(communityId);
+	}
 }
