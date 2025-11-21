@@ -2,6 +2,8 @@ package tave.crezipsa.crezipsa.infrastructure.community.repository;
 
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
@@ -48,5 +50,10 @@ public class LikeRepositoryImpl implements LikeRepository {
 	@Override
 	public long countByCommunityId(Long communityId) {
 		return likeJpaRepository.countByCommunityId(communityId);
+	}
+
+	@Override
+	public Page<Like> findAllByUserId(Long userId, Pageable pageable) {
+		return likeJpaRepository.findAllByUserId(userId, pageable);
 	}
 }
