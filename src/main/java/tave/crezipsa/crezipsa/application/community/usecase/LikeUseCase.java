@@ -9,7 +9,7 @@ public interface LikeUseCase {
 
 	void like(Long userId, Long communityId);
 	void unlike(Long userId, Long communityId);
-	Long getLikeCount(Long community);
+	Long getLikeCount(Long communityId);
 	Slice<MyLikedCommunityResponse> getMyLikedCommunities(Long userId, Pageable pageable);
 
 }
