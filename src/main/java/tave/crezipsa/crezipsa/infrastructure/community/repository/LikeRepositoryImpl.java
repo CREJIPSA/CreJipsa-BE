@@ -34,4 +34,19 @@ public class LikeRepositoryImpl implements LikeRepository {
 	public boolean existsById(LikeId likeId) {
 		return likeJpaRepository.existsById(likeId);
 	}
+
+	@Override
+	public boolean existsByUserIdAndCommunityId(Long userId, Long communityId) {
+		return likeJpaRepository.existsByUserIdAndCommunityId(userId, communityId);
+	}
+
+	@Override
+	public void deleteByUserIdAndCommunityId(Long userId, Long communityId) {
+		likeJpaRepository.deleteByUserIdAndCommunityId(userId, communityId);
+	}
+
+	@Override
+	public long countByCommunityId(Long communityId) {
+		return likeJpaRepository.countByCommunityId(communityId);
+	}
 }

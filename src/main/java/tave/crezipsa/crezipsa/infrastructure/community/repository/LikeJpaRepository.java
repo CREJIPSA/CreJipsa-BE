@@ -7,4 +7,7 @@ import tave.crezipsa.crezipsa.domain.community.domain.LikeId;
 
 public interface LikeJpaRepository extends JpaRepository<Like, LikeId> {
 	boolean existsById(LikeId likeId);
+	boolean existsByUserIdAndCommunityId(Long userId, Long communityId);
+	void deleteByUserIdAndCommunityId(Long userId, Long communityId);
+	long countByCommunityId(Long communityId);
 }
