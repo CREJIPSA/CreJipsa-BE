@@ -48,7 +48,7 @@ public class LikeUseCaseImpl  implements LikeUseCase {
 	}
 
 	@Override
-	public Long getLikeCount(Long communityId) {
+	public long getLikeCount(Long communityId) {
 		return likeRepository.countByCommunityId(communityId);
 	}
 
