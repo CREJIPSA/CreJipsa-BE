@@ -14,5 +14,6 @@ public interface CommentRepository {
 	List<Comment> findByUserId(Long userId);
 	List<Comment> findByParentId(Long parentId);
 	void delete(Comment comment);
-
+	long countByCommunityId(Long communityId);
 }
+
