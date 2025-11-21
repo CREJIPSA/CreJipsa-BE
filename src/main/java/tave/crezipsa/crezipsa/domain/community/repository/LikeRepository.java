@@ -3,6 +3,9 @@ package tave.crezipsa.crezipsa.domain.community.repository;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import tave.crezipsa.crezipsa.domain.community.domain.Like;
 import tave.crezipsa.crezipsa.domain.community.domain.LikeId;
 
@@ -15,4 +18,6 @@ public interface LikeRepository {
 	boolean existsByUserIdAndCommunityId(Long userId, Long communityId);
 	void deleteByUserIdAndCommunityId(Long userId, Long communityId);
 	long countByCommunityId(Long communityId);
+	Page<Like> findAllByUserId(Long userId, Pageable pageable);
+
 }
