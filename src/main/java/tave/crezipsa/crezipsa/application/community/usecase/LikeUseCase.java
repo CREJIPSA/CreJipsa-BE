@@ -1,6 +1,9 @@
 package tave.crezipsa.crezipsa.application.community.usecase;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+
+import tave.crezipsa.crezipsa.application.community.dto.response.MyLikedCommunityResponse;
 
 public interface LikeUseCase {
 
