@@ -1,25 +1,34 @@
 package tave.crezipsa.crezipsa.application.community.dto.response;
 
-import java.time.LocalDateTime;
-
+import static tave.crezipsa.crezipsa.application.community.usecase.LikeUseCaseImpl.*;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
+import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 
 public record MyLikedCommunityResponse(
 	Long communityId,
+	CommunityField field,
 	String title,
 	String contentPreview,
 	long likeCount,
-	boolean liked,
-	LocalDateTime createdAt
+	long commentCount,
+	String relativeTime  // "40분 전", "3시간 전", "1일 전"
 ) {
-	public static MyLikedCommunityResponse of(Community community, long likeCount) {
+
+	public static MyLikedCommunityResponse of(
+		Community community,
+		long likeCount,
+		long commentCount
+	) {
 		return new MyLikedCommunityResponse(
 			community.getCommunityId(),
+			community.getField(),
 			community.getTitle(),
-			community.getContent().substring(0, Math.min(50, community.getContent().length())),
+			preview(community.getContent()),
 			likeCount,
-			true,
-			community.getCreatedAt()
+			commentCount,
+			convertToRelativeTime(community.getCreatedAt())
 		);
 	}
+
+
 }
