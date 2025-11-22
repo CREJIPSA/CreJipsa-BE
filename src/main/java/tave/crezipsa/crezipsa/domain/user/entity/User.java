@@ -5,6 +5,7 @@ import tave.crezipsa.crezipsa.domain.user.enums.Platform;
 import tave.crezipsa.crezipsa.infrastructure.auth.KakaoUserInfo;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Getter
 @AllArgsConstructor
@@ -18,11 +19,11 @@ public class User {
         private Gender gender;
         private String profileImageUrl;
         private boolean role;
-        private LocalDate dateOfBirth;
+        private LocalDate birth;
         private String activeYotube;
         private String activeTiktok;
         private String activeInsta;
-        private Platform platform;
+        private Platform mainPlatform;
 
     public static User createFromKakao(KakaoUserInfo kakaoUserInfo) {
             return User.builder()
