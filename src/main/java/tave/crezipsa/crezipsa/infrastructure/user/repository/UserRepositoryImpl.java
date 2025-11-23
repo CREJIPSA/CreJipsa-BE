@@ -43,4 +43,10 @@ public class UserRepositoryImpl implements UserRepository {
             .map(UserMapper::toUserDomain)
             .toList();
     }
+
+    @Override
+    public Optional<User> findByNickName(String nickName) {
+        return userJpaRepository.findByNickName(nickName)
+                .map(UserMapper::toUserDomain);
+    }
 }
