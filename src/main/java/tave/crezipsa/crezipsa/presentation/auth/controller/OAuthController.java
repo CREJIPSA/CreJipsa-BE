@@ -12,9 +12,9 @@ import tave.crezipsa.crezipsa.application.auth.dto.response.TokenResponse;
 import tave.crezipsa.crezipsa.application.auth.service.KakaoLoginService;
 import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
 
-//@RestController
+@RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class OAuthController {
 
     private final KakaoLoginService kakaoLoginService;
