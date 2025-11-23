@@ -12,7 +12,6 @@ import java.util.Date;
 @Builder
 public class User {
         private Long userId;
-        private String name;
         private String nickName;
         private String email;
         private String password;

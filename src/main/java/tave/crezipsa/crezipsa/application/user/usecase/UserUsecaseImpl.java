@@ -28,7 +28,6 @@ public class UserUsecaseImpl implements UserUsecase {
         }
 
         User user = User.builder()
-                .name(request.name())
                 .nickName(request.nickName())
                 .email(request.email())
                 .password(request.password())
@@ -43,6 +42,6 @@ public class UserUsecaseImpl implements UserUsecase {
 
         User newUser = userRepository.save(user);
 
-        return new UserSignUpResponse(newUser.getName(), newUser.getNickName(), newUser.getEmail());
+        return new UserSignUpResponse(newUser.getNickName(), newUser.getEmail());
     }
 }

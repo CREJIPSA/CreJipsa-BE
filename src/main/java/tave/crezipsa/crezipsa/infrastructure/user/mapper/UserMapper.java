@@ -11,7 +11,6 @@ public class UserMapper {
 
         return User.builder()
                 .userId(e.getUserId())
-                .name(e.getName())
                 .nickName(e.getNickName())
                 .email(e.getEmail())
                 .password(e.getPassword())
@@ -29,7 +28,6 @@ public class UserMapper {
 
         return UserJpaEntity.builder()
                 .userId(d.getUserId())
-                .name(d.getName())
                 .nickName(d.getNickName())
                 .email(d.getEmail())
                 .password(d.getPassword())
