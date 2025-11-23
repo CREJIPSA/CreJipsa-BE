@@ -31,20 +31,32 @@ public class LikeUseCaseImpl  implements LikeUseCase {
 	public void like(Long userId, Long communityId) {
 		LikeId likeId = new LikeId(userId, communityId);
 
+		Community community = communityRepository.findById(communityId)
+			.orElseThrow(() -> new CommonException(ErrorCode.COMMUNITY_NOT_FOUND));
+
 		if (likeRepository.existsById(likeId)) {
 			throw new CommonException(ErrorCode.ALREADY_LIKED);
 		}
+
+		likeRepository.save(new Like(userId, communityId));
+		community.increaseLikeCount();
+
 	}
 
 	@Override
 	public void unlike(Long userId, Long communityId) {
 		LikeId likeId = new LikeId(userId, communityId);
 
+		Community community = communityRepository.findById(communityId)
+			.orElseThrow(() -> new CommonException(ErrorCode.COMMUNITY_NOT_FOUND));
+
 		if (!likeRepository.existsById(likeId)) {
 			throw new CommonException(ErrorCode.NOT_LIKED);
 		}
 
 		likeRepository.delete(Like.of(userId, communityId));
+		community.decreaseLikeCount();
+
 	}
 
 	@Override
