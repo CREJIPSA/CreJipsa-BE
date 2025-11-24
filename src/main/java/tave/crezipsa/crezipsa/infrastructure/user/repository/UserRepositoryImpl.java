@@ -49,4 +49,14 @@ public class UserRepositoryImpl implements UserRepository {
         return userJpaRepository.findByNickName(nickName)
                 .map(UserMapper::toUserDomain);
     }
+
+    @Override
+    public Boolean existsByEmail(String email) {
+        return userJpaRepository.existsByEmail(email);
+    }
+
+    @Override
+    public Boolean existsByNickName(String NickName) {
+        return userJpaRepository.existsByNickName(NickName);
+    }
 }

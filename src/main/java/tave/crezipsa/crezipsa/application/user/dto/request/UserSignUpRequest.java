@@ -28,6 +28,6 @@ public record UserSignUpRequest(
         String activeYoutube,
         String activeTiktok,
         String activeInsta,
-        Platform mainPlatfrom
+        Platform mainPlatform
 ) {
 }

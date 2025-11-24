@@ -1,4 +1,6 @@
 package tave.crezipsa.crezipsa.domain.user.entity;
+import org.apache.coyote.Request;
+import tave.crezipsa.crezipsa.domain.user.command.CreateUserCommand;
 import tave.crezipsa.crezipsa.domain.user.enums.Gender;
 import lombok.*;
 import tave.crezipsa.crezipsa.domain.user.enums.Platform;
@@ -31,5 +33,19 @@ public class User {
                     .profileImageUrl(kakaoUserInfo.getProfileImage())
                     .build();
     }
+    public static User createFromUser(CreateUserCommand cmd) {
+        return  User.builder()
+                .nickName(cmd.nickName())
+                .email(cmd.email())
+                .password(cmd.password())
+                .gender(cmd.gender())
+                .role(true)
+                .birth(cmd.birth())
+                .activeYotube(cmd.activeYoutube())
+                .activeInsta(cmd.activeInsta())
+                .activeTiktok(cmd.activeTiktok())
+                .mainPlatform(cmd.mainPlatform())
+                .build();
+        }
 }
 

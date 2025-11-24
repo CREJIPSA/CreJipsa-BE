@@ -15,4 +15,6 @@ public interface UserRepository {
     Optional<User> findByNickName(String NickName);
     List<User> findAllById(Collection<Long> userIds);
 
+    Boolean existsByEmail(String email);
+    Boolean existsByNickName(String NickName);
 }
