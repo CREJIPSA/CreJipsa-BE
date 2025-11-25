@@ -48,12 +48,12 @@ public class LikeRepositoryImpl implements LikeRepository {
 	}
 
 	@Override
-	public long countByCommunityId(Long communityId) {
-		return likeJpaRepository.countByCommunityId(communityId);
+	public long countByCommunityIdAndIsLikedTrue(Long communityId) {
+		return likeJpaRepository.countByCommunityIdAndIsLikedTrue(communityId);
 	}
 
 	@Override
-	public Page<Like> findAllByUserId(Long userId, Pageable pageable) {
-		return likeJpaRepository.findAllByUserId(userId, pageable);
+	public Page<Like> findAllByUserIdAndIsLikedTrue(Long userId, Pageable pageable) {
+		return likeJpaRepository.findAllByUserIdAndIsLikedTrue(userId, pageable);
 	}
 }

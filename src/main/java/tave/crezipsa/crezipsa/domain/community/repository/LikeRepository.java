@@ -17,7 +17,8 @@ public interface LikeRepository {
 	boolean existsById(LikeId likedId);
 	boolean existsByUserIdAndCommunityId(Long userId, Long communityId);
 	void deleteByUserIdAndCommunityId(Long userId, Long communityId);
-	long countByCommunityId(Long communityId);
-	Page<Like> findAllByUserId(Long userId, Pageable pageable);
+	long countByCommunityIdAndIsLikedTrue(Long communityId);
+	Page<Like> findAllByUserIdAndIsLikedTrue(Long userId, Pageable pageable);
+
 
 }

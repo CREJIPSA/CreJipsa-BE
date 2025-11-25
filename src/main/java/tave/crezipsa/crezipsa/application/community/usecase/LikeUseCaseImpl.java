@@ -58,28 +58,30 @@ public class LikeUseCaseImpl  implements LikeUseCase {
 		Community community = communityRepository.findById(communityId)
 			.orElseThrow(() -> new CommonException(ErrorCode.COMMUNITY_NOT_FOUND));
 
-		if (!likeRepository.existsById(likeId)) {
+		Like like = likeRepository.findById(likeId)
+			.orElseThrow(() -> new CommonException(ErrorCode.NOT_LIKED));
+
+		if (!like.isLiked()) {
 			throw new CommonException(ErrorCode.NOT_LIKED);
 		}
-
-		likeRepository.delete(Like.of(userId, communityId));
+		like.unlike();
 		community.decreaseLikeCount();
 
 	}
 
 	@Override
 	public long getLikeCount(Long communityId) {
-		return likeRepository.countByCommunityId(communityId);
+		return likeRepository.countByCommunityIdAndIsLikedTrue(communityId);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public Slice<MyLikedCommunityResponse> getMyLikedCommunities(Long userId, Pageable pageable) {
-		return likeRepository.findAllByUserId(userId, pageable)
+		return likeRepository.findAllByUserIdAndIsLikedTrue(userId, pageable)
 			.map(like -> {
 				Community community = communityRepository.findById(like.getCommunityId())
 					.orElseThrow(() -> new CommonException(ErrorCode.COMMUNITY_NOT_FOUND));
-				long likeCount = likeRepository.countByCommunityId(like.getCommunityId());
+				long likeCount = likeRepository.countByCommunityIdAndIsLikedTrue(like.getCommunityId());
 				long commentCount = commentRepository.countByCommunityId(community.getCommunityId());
 
 				return MyLikedCommunityResponse.of(community, likeCount, commentCount);
