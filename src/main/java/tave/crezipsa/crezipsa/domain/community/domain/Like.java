@@ -27,11 +27,25 @@ public class Like extends BaseEntity {
 	@Id
 	private Long communityId;
 
+	@Builder.Default
+	private boolean isLiked = false;
+
 	public static Like of(Long userId, Long communityId) {
-		return Like.builder()
+
+		Like like = Like.builder()
 			.userId(userId)
 			.communityId(communityId)
 			.build();
+		like.like();
+
+		return like;
 	}
 
+	public void like() {
+		this.isLiked = true;
+	}
+
+	public void unlike() {
+		this.isLiked = false;
+	}
 }
