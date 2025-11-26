@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommunityCreateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommunityUpdateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunityResponse;
+import tave.crezipsa.crezipsa.application.community.dto.response.MyCommunityResponse;
 import tave.crezipsa.crezipsa.application.community.usecase.CommunityUseCase;
 import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
@@ -75,10 +76,10 @@ public class CommunityController {
 
 	//내가 쓴 글 조회
 	@GetMapping("/users/{userId}")
-	public GlobalResponseDto<List<CommunityResponse>> getCommunitiesByUserId(
+	public GlobalResponseDto<List<MyCommunityResponse>> getCommunitiesByUserId(
 		@PathVariable Long userId) {
 
-		List<CommunityResponse> responses = communityUseCase.getMyCommunities(userId);
+		List<MyCommunityResponse> responses = communityUseCase.getMyCommunities(userId);
 		return GlobalResponseDto.success(responses);
 	}
 

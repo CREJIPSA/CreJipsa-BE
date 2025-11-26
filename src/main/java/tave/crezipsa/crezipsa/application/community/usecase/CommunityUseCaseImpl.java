@@ -11,9 +11,12 @@ import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommunityCreateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommunityUpdateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunityResponse;
+import tave.crezipsa.crezipsa.application.community.dto.response.MyCommunityResponse;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
 import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
+import tave.crezipsa.crezipsa.domain.community.repository.CommentRepository;
 import tave.crezipsa.crezipsa.domain.community.repository.CommunityRepository;
+import tave.crezipsa.crezipsa.domain.community.repository.LikeRepository;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 
@@ -24,6 +27,8 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 
 
 	private final CommunityRepository communityRepository;
+	private final LikeRepository likeRepository;
+	private final CommentRepository commentRepository;
 
 	@Override
 	public CommunityResponse createCommunity(Long userId, CommunityCreateRequest communityCreateRequest) {
@@ -78,10 +83,14 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 	}
 
 	@Override
-	public List<CommunityResponse> getMyCommunities(Long userId) {
+	public List<MyCommunityResponse> getMyCommunities(Long userId) {
 		return communityRepository.findByWriterId(userId)
 			.stream()
-			.map(CommunityResponse::from)
+			.map(c -> {
+				long likeCount = likeRepository.countByCommunityIdAndIsLikedTrue(c.getCommunityId());
+				long commentCount = commentRepository.countByCommunityId(c.getCommunityId());
+				return MyCommunityResponse.of(c, likeCount, commentCount);
+			})
 			.toList();
 	}
 

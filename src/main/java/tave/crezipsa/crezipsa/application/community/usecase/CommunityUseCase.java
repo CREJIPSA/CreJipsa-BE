@@ -5,6 +5,7 @@ import java.util.List;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommunityCreateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommunityUpdateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunityResponse;
+import tave.crezipsa.crezipsa.application.community.dto.response.MyCommunityResponse;
 import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 
 public interface CommunityUseCase {
@@ -13,7 +14,7 @@ public interface CommunityUseCase {
 	CommunityResponse updateCommunity(Long userId,Long communityId, CommunityUpdateRequest communityUpdateRequest);
 	CommunityResponse getCommunity(Long communityId);
 	List<CommunityResponse> getAllCommunities();
-	List<CommunityResponse> getMyCommunities(Long userId);
+	List<MyCommunityResponse> getMyCommunities(Long userId);
 	List<CommunityResponse> getCommunitiesByField(CommunityField field);
 	void deleteCommunity(Long userId,Long communityId);
 
