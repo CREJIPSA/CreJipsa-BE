@@ -11,7 +11,8 @@ public record MyLikedCommunityResponse(
 	String contentPreview,
 	long likeCount,
 	long commentCount,
-	String relativeTime  // "40분 전", "3시간 전", "1일 전"
+	String relativeTime,  // "40분 전", "3시간 전", "1일 전"
+	String thumbnailUrl
 ) {
 
 	public static MyLikedCommunityResponse of(
@@ -19,6 +20,10 @@ public record MyLikedCommunityResponse(
 		long likeCount,
 		long commentCount
 	) {
+		String thumbnail = (community.getImageUrls() != null && !community.getImageUrls().isEmpty())
+			? community.getImageUrls().get(0)
+			: null;
+
 		return new MyLikedCommunityResponse(
 			community.getCommunityId(),
 			community.getField(),
@@ -26,7 +31,8 @@ public record MyLikedCommunityResponse(
 			preview(community.getContent()),
 			likeCount,
 			commentCount,
-			convertToRelativeTime(community.getCreatedAt())
+			convertToRelativeTime(community.getCreatedAt()),
+			thumbnail
 		);
 	}
 
