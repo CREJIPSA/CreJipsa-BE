@@ -24,7 +24,7 @@ import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
 public class LikeController {
 
 	private final LikeUseCase likeUseCase;
-/*
+
 	@PostMapping("/{communityId}")
 	public GlobalResponseDto<Void> like(@AuthenticationPrincipal User user, @PathVariable Long communityId) {
 		likeUseCase.like(user.getUserId(), communityId);
@@ -50,7 +50,8 @@ public class LikeController {
 		var slice = likeUseCase.getMyLikedCommunities(user.getUserId(), pageable);
 		return GlobalResponseDto.success(slice.getContent());
 	}
-*/
+
+	/*
     @PostMapping("/{communityId}")
 	public GlobalResponseDto<Void> like(@RequestParam Long userId, @PathVariable Long communityId) {
 		likeUseCase.like(userId, communityId);
@@ -76,5 +77,7 @@ public class LikeController {
 		var slice = likeUseCase.getMyLikedCommunities(userId, pageable);
 		return GlobalResponseDto.success(slice.getContent());
 	}
+
+	 */
 
 }

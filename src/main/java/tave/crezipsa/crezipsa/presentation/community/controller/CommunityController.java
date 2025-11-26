@@ -2,6 +2,7 @@ package tave.crezipsa.crezipsa.presentation.community.controller;
 
 import java.util.List;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,7 @@ import tave.crezipsa.crezipsa.application.community.dto.response.CommunityRespon
 import tave.crezipsa.crezipsa.application.community.dto.response.MyCommunityResponse;
 import tave.crezipsa.crezipsa.application.community.usecase.CommunityUseCase;
 import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
+import tave.crezipsa.crezipsa.domain.user.entity.User;
 import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
 
 @RestController
@@ -34,10 +36,10 @@ public class CommunityController {
 	//글 생성
 	@PostMapping("/create")
 	public GlobalResponseDto<CommunityResponse> createCommunity(
-		@RequestParam Long userId,
-		@Valid @RequestBody CommunityCreateRequest request) {
-
-		CommunityResponse response = communityUseCase.createCommunity(userId, request);
+		@AuthenticationPrincipal User user,
+		@Valid @RequestBody CommunityCreateRequest request)
+	{
+		CommunityResponse response = communityUseCase.createCommunity(user.getUserId(), request);
 		return GlobalResponseDto.success(response);
 	}
 
@@ -45,10 +47,10 @@ public class CommunityController {
 	@PatchMapping("/{communityId}")
 	public GlobalResponseDto<CommunityResponse> updateCommunity(
 		@PathVariable Long communityId,
-		@RequestParam Long userId,
+		@AuthenticationPrincipal User user,
 		@Valid @RequestBody CommunityUpdateRequest request
 	) {
-		CommunityResponse response = communityUseCase.updateCommunity(communityId, userId, request);
+		CommunityResponse response = communityUseCase.updateCommunity(communityId, user.getUserId(), request);
 		return GlobalResponseDto.success(response);
 	}
 
@@ -77,16 +79,16 @@ public class CommunityController {
 	//내가 쓴 글 조회
 	@GetMapping("/users/{userId}")
 	public GlobalResponseDto<List<MyCommunityResponse>> getCommunitiesByUserId(
-		@PathVariable Long userId) {
+		@AuthenticationPrincipal User user) {
 
-		List<MyCommunityResponse> responses = communityUseCase.getMyCommunities(userId);
+		List<MyCommunityResponse> responses = communityUseCase.getMyCommunities(user.getUserId());
 		return GlobalResponseDto.success(responses);
 	}
 
 	//글 삭제
 	@DeleteMapping("/{communityId}")
-	public GlobalResponseDto<Void> deleteCommunity( @RequestParam Long userId,@PathVariable Long communityId) {
-		communityUseCase.deleteCommunity(userId, communityId);
+	public GlobalResponseDto<Void> deleteCommunity( @AuthenticationPrincipal User user,@PathVariable Long communityId) {
+		communityUseCase.deleteCommunity(user.getUserId(), communityId);
 		return GlobalResponseDto.success();
 	}
 
