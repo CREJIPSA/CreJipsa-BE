@@ -18,6 +18,7 @@ import tave.crezipsa.crezipsa.application.community.dto.request.CommentCreateReq
 import tave.crezipsa.crezipsa.application.community.dto.request.CommentUpdateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommentResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunityResponse;
+import tave.crezipsa.crezipsa.application.community.dto.response.MyCommentResponse;
 import tave.crezipsa.crezipsa.application.community.usecase.CommentUsecase;
 import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
 
@@ -69,8 +70,8 @@ public class CommentController {
 
 	// 5) 내가 쓴 댓글 조회(내 댓글함)
 	@GetMapping("/my")
-	public GlobalResponseDto<List<CommentResponse>> getMyComments(@RequestParam Long userId) {
-		List<CommentResponse> responses = commentUsecase.getMyComments(userId);
+	public GlobalResponseDto<List<MyCommentResponse>> getMyComments(@RequestParam Long userId) {
+		List<MyCommentResponse> responses = commentUsecase.getMyComments(userId);
 		return GlobalResponseDto.success(responses);
 	}
 
