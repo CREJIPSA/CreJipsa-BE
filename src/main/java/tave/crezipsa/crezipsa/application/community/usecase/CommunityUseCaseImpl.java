@@ -10,7 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommunityCreateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommunityUpdateRequest;
+import tave.crezipsa.crezipsa.application.community.dto.response.CommentResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunityDetailResponse;
+import tave.crezipsa.crezipsa.application.community.dto.response.CommunityResponse;
+import tave.crezipsa.crezipsa.application.community.dto.response.CommunitySummaryResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.MyCommunityResponse;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
 import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
@@ -29,9 +32,10 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 	private final CommunityRepository communityRepository;
 	private final LikeRepository likeRepository;
 	private final CommentRepository commentRepository;
+	private final CommentUsecase commentUsecase;
 
 	@Override
-	public CommunityDetailResponse createCommunity(Long userId, CommunityCreateRequest communityCreateRequest) {
+	public CommunityResponse createCommunity(Long userId, CommunityCreateRequest communityCreateRequest) {
 		Community community = Community.builder()
 			.title(communityCreateRequest.getTitle())
 			.content(communityCreateRequest.getContent())
@@ -41,11 +45,11 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 			.likeCount(0L)
 			.build();
 
-		return CommunityDetailResponse.from(communityRepository.save(community));
+		return CommunityResponse.of(communityRepository.save(community));
 	}
 
 	@Override
-	public CommunityDetailResponse updateCommunity(Long userId,Long communityId, CommunityUpdateRequest communityUpdateRequest) {
+	public CommunityResponse updateCommunity(Long userId,Long communityId, CommunityUpdateRequest communityUpdateRequest) {
 		Community community = communityRepository.findById(communityId)
 			.orElseThrow(() -> new CommonException(ErrorCode.COMMUNITY_NOT_FOUND));
 
@@ -53,7 +57,7 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 			throw new CommonException(ErrorCode.UNAUTHORIZED_COMMUNITY);
 		}
 		community.update(communityUpdateRequest.getTitle(), communityUpdateRequest.getContent(), communityUpdateRequest.getImageUrls());
-		return CommunityDetailResponse.from(community);
+		return CommunityResponse.of(community);
 	}
 
 	@Override
@@ -61,14 +65,22 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 		Community community = communityRepository.findById(communityId)
 			.orElseThrow(() -> new CommonException(ErrorCode.COMMUNITY_NOT_FOUND));
 
-		return CommunityDetailResponse.from(community);
+		long commentCount = commentRepository.countByCommunityId(communityId);
+		List<CommentResponse> comments = commentUsecase.getComments(communityId);
+
+
+		return CommunityDetailResponse.from(community, commentCount, comments);
 	}
 
 	@Override
-	public List<CommunityDetailResponse> getAllCommunities() {
+	public List<CommunitySummaryResponse> getAllCommunities() {
 		return communityRepository.findAll().stream()
-			.map(CommunityDetailResponse::from)
-			.collect(Collectors.toList());
+			.map(c -> {
+				long likeCount = likeRepository.countByCommunityIdAndIsLikedTrue(c.getCommunityId());
+				long commentCount = commentRepository.countByCommunityId(c.getCommunityId());
+				return CommunitySummaryResponse.of(c, likeCount, commentCount);
+			})
+			.toList();
 	}
 
 	@Override
@@ -95,10 +107,14 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 	}
 
 	@Override
-	public List<CommunityDetailResponse> getCommunitiesByField(CommunityField field) {
+	public List<CommunitySummaryResponse> getCommunitiesByField(CommunityField field) {
 		return communityRepository.findByField(field)
 			.stream()
-			.map(CommunityDetailResponse::from)
+			.map(c -> {
+				long likeCount = likeRepository.countByCommunityIdAndIsLikedTrue(c.getCommunityId());
+				long commentCount = commentRepository.countByCommunityId(c.getCommunityId());
+				return CommunitySummaryResponse.of(c, likeCount, commentCount);
+			})
 			.toList();
 	}
 
