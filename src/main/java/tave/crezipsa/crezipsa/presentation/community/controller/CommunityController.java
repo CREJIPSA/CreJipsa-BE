@@ -18,7 +18,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommunityCreateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommunityUpdateRequest;
-import tave.crezipsa.crezipsa.application.community.dto.response.CommunityResponse;
+import tave.crezipsa.crezipsa.application.community.dto.response.CommunityDetailResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.MyCommunityResponse;
 import tave.crezipsa.crezipsa.application.community.usecase.CommunityUseCase;
 import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
@@ -35,44 +35,44 @@ public class CommunityController {
 
 	//글 생성
 	@PostMapping("/create")
-	public GlobalResponseDto<CommunityResponse> createCommunity(
+	public GlobalResponseDto<CommunityDetailResponse> createCommunity(
 		@AuthenticationPrincipal User user,
 		@Valid @RequestBody CommunityCreateRequest request)
 	{
-		CommunityResponse response = communityUseCase.createCommunity(user.getUserId(), request);
+		CommunityDetailResponse response = communityUseCase.createCommunity(user.getUserId(), request);
 		return GlobalResponseDto.success(response);
 	}
 
 	// 글 수정
 	@PatchMapping("/{communityId}")
-	public GlobalResponseDto<CommunityResponse> updateCommunity(
+	public GlobalResponseDto<CommunityDetailResponse> updateCommunity(
 		@PathVariable Long communityId,
 		@AuthenticationPrincipal User user,
 		@Valid @RequestBody CommunityUpdateRequest request
 	) {
-		CommunityResponse response = communityUseCase.updateCommunity(communityId, user.getUserId(), request);
+		CommunityDetailResponse response = communityUseCase.updateCommunity(communityId, user.getUserId(), request);
 		return GlobalResponseDto.success(response);
 	}
 
 	//상세 글 조회
 	@GetMapping("/{communityId}")
-	public GlobalResponseDto<CommunityResponse> getCommunity(@PathVariable Long communityId) {
+	public GlobalResponseDto<CommunityDetailResponse> getCommunity(@PathVariable Long communityId) {
 		return GlobalResponseDto.success(communityUseCase.getCommunity(communityId));
 	}
 
 	//전체 글 조회
 	@GetMapping
-	public GlobalResponseDto<List<CommunityResponse>> getAllCommunities() {
-		List<CommunityResponse> communityResponses = communityUseCase.getAllCommunities();
+	public GlobalResponseDto<List<CommunityDetailResponse>> getAllCommunities() {
+		List<CommunityDetailResponse> communityResponses = communityUseCase.getAllCommunities();
 		return GlobalResponseDto.success(communityResponses);
 	}
 
 	//카테고리별 글 조회
 	@GetMapping("/filter")
-	public GlobalResponseDto<List<CommunityResponse>> getCommunitiesByField(
+	public GlobalResponseDto<List<CommunityDetailResponse>> getCommunitiesByField(
 		@RequestParam CommunityField field) {
 
-		List<CommunityResponse> responses = communityUseCase.getCommunitiesByField(field);
+		List<CommunityDetailResponse> responses = communityUseCase.getCommunitiesByField(field);
 		return GlobalResponseDto.success(responses);
 	}
 
