@@ -1,5 +1,7 @@
 package tave.crezipsa.crezipsa.application.community.dto.response;
 
+import static tave.crezipsa.crezipsa.application.community.usecase.LikeUseCaseImpl.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,26 +14,18 @@ public record CommunityDetailResponse(
 	String content,
 	CommunityField field,
 	List<String> imageUrls,
-
-	// 작성자 정보
 	Long writerId,
-	String writerNickname,
-	String writerProfileImage,
-
-	// 상태 정보
-	boolean isLikedByMe,
-	boolean isMine,
-
 	long likeCount,
 	long commentCount,
-
 	String relativeTime,
-
-	// 댓글 목록 전체
 	List<CommentResponse> comments
 ) {
 
-	public static CommunityDetailResponse from(Community community ,long commentCount) {
+	public static CommunityDetailResponse from(
+		Community community,
+		long commentCount,
+		List<CommentResponse> comments
+	) {
 		return new CommunityDetailResponse(
 			community.getCommunityId(),
 			community.getTitle(),
@@ -41,7 +35,8 @@ public record CommunityDetailResponse(
 			community.getWriterId(),
 			community.getLikeCount(),
 			commentCount,
-			community.getCreatedAt()
+			convertToRelativeTime(community.getCreatedAt()),
+			comments
 		);
 	}
 }
