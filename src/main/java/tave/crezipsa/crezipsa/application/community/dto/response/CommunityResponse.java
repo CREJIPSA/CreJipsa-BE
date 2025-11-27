@@ -1,6 +1,21 @@
 package tave.crezipsa.crezipsa.application.community.dto.response;
 
-public record CommunityResponse() {
-	// 글 생성이나 ,수정시 반환되는 DTO 전용
+import tave.crezipsa.crezipsa.domain.community.domain.Community;
+import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
+
+public record CommunityResponse(
+	Long communityId,
+	CommunityField field,
+	String title,
+	String content) {
+
+	public static CommunityResponse of(Community community) {
+		return new CommunityResponse(
+			community.getCommunityId(),
+			community.getField(),
+			community.getTitle(),
+			community.getContent()
+		);
+	}
 
 }
