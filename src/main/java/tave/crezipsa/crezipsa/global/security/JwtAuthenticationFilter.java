@@ -13,6 +13,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
+import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -57,10 +59,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     //Bearer 인증 방식
     private String resolveToken (HttpServletRequest request){
             String bearer = request.getHeader("Authorization");
-            if (bearer != null && bearer.startsWith("Bearer ")) {
-                return bearer.substring(7);
-            }
-            return null;
+
+            if(bearer == null){ throw  new CommonException(ErrorCode.MISSING_AUTH_HEADER); }
+            if (!bearer.startsWith("Bearer ")) { throw  new CommonException(ErrorCode.INVALID_TOKEN); }
+
+            return bearer.substring(7);
         }
         
 }
