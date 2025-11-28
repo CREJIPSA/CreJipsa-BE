@@ -33,28 +33,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = resolveToken(request);
 
         if (token != null) {
-            String userId = jwtTokenProvider.getUserIdFromToken(token);
+            jwtTokenProvider.validateAccessToken(token);
+            Long userId = jwtTokenProvider.getUserIdFromToken(token);
 
             // DB에서 User 엔티티 조회
-            User user = userRepository.findById(Long.valueOf(userId))
+            User user = userRepository.findById(userId)
                 .orElse(null);
 
             if (user != null) {
                 UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
-                        user,      // ★ Principal로 User 넣기
-                        null,
-                        Collections.emptyList()
+                        user,                         //인증된 User 넣기
+                        null,                        //비밀번호 null
+                        Collections.emptyList()     //권한
                     );
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
-
         filterChain.doFilter(request, response);
     }
 
-
+    //Bearer 인증 방식
     private String resolveToken (HttpServletRequest request){
             String bearer = request.getHeader("Authorization");
             if (bearer != null && bearer.startsWith("Bearer ")) {

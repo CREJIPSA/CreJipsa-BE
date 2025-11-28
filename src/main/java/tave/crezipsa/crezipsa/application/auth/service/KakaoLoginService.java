@@ -36,6 +36,8 @@ public class KakaoLoginService {
         if(user.isRole()) {
             throw new CommonException(ErrorCode.USER_INVALID_ROLE);
         }
+
+        // 이메일도 존재하고//새로운 유저가 아닐때 바로 토큰 발급
         String jwt = jwtTokenProvider.generateAccessToken(user.getUserId(), user.getEmail());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUserId());
 

@@ -30,7 +30,7 @@ public class SecurityConfig {
                 // 인증/인가 설정
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()// 로그인 관련 API는 인증 없이 접근 가능
-                        .requestMatchers("/api/user/signUp").permitAll()
+                        //.requestMatchers("/api/user/signUp").permitAll()
                         .requestMatchers("/api/likes/**").permitAll()
                         .anyRequest().authenticated()             // 그 외는 인증 필요
                 )
