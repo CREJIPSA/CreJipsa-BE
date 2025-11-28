@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommentCreateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommentUpdateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommentResponse;
+import tave.crezipsa.crezipsa.application.community.dto.response.MyCommentResponse;
 import tave.crezipsa.crezipsa.application.community.mapper.CommentMapper;
 import tave.crezipsa.crezipsa.domain.community.domain.Comment;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
@@ -116,26 +117,16 @@ public class CommentUseCaseImpl implements  CommentUsecase {
 	}
 
 	@Override
-	public List<CommentResponse> getMyComments(Long userId) {
+	public List<MyCommentResponse> getMyComments(Long userId) {
 
 		List<Comment> myComments = commentRepository.findByUserId(userId);
 
 		return myComments.stream()
 			.map(comment -> {
-				User writer = findUserOrThrow(comment.getUserId());
+				Community community = communityRepository.findById(comment.getCommunityId())
+					.orElseThrow(() -> new CommonException(ErrorCode.COMMUNITY_NOT_FOUND));
 
-				return new CommentResponse(
-					comment.getCommentId(),
-					comment.getCommunityId(),
-					comment.getParentId(),
-					comment.getUserId(),
-					writer.getNickName(),
-					writer.getProfileImageUrl(),
-					comment.isDeleted(),
-					comment.getContent(),
-					comment.getCreatedAt(),
-					List.of()
-				);
+				return MyCommentResponse.of(community);
 			})
 			.toList();
 	}

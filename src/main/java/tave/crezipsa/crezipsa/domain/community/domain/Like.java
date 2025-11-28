@@ -3,6 +3,7 @@ package tave.crezipsa.crezipsa.domain.community.domain;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +18,7 @@ import tave.crezipsa.crezipsa.global.common.entity.BaseEntity;
 @AllArgsConstructor
 @Builder
 @IdClass(LikeId.class) // 복합키 정의 클래스 지정
+@Table(name = "community_like")
 public class Like extends BaseEntity {
 
 	@Id
@@ -25,11 +27,25 @@ public class Like extends BaseEntity {
 	@Id
 	private Long communityId;
 
+	@Builder.Default
+	private boolean isLiked = false;
+
 	public static Like of(Long userId, Long communityId) {
-		return Like.builder()
+
+		Like like = Like.builder()
 			.userId(userId)
 			.communityId(communityId)
 			.build();
+		like.like();
+
+		return like;
 	}
 
+	public void like() {
+		this.isLiked = true;
+	}
+
+	public void unlike() {
+		this.isLiked = false;
+	}
 }

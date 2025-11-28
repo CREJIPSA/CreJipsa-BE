@@ -2,6 +2,7 @@ package tave.crezipsa.crezipsa.presentation.community.controller;
 
 import java.util.List;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,8 +18,9 @@ import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommentCreateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommentUpdateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommentResponse;
-import tave.crezipsa.crezipsa.application.community.dto.response.CommunityResponse;
+import tave.crezipsa.crezipsa.application.community.dto.response.MyCommentResponse;
 import tave.crezipsa.crezipsa.application.community.usecase.CommentUsecase;
+import tave.crezipsa.crezipsa.domain.user.entity.User;
 import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
 
 @RestController
@@ -31,32 +33,32 @@ public class CommentController {
 	//댓글 달기
 	@PostMapping("/{communityId}")
 	public GlobalResponseDto<CommentResponse> createComment(
+		@AuthenticationPrincipal User user,
 		@PathVariable Long communityId,
-		@RequestParam Long userId,           // 임시로 userId 받기 + 나중에 UserContext에서 가져오기
 		@Valid @RequestBody CommentCreateRequest request
 	) {
-		CommentResponse response = commentUsecase.createComment(communityId, userId, request);
+		CommentResponse response = commentUsecase.createComment(communityId, user.getUserId(), request);
 		return GlobalResponseDto.success(response);
 	}
 
 	// 2) 댓글 수정
 	@PatchMapping("/{commentId}")
 	public GlobalResponseDto<CommentResponse> updateComment(
+		@AuthenticationPrincipal User user,
 		@PathVariable Long commentId,
-		@RequestParam Long userId,
 		@Valid @RequestBody CommentUpdateRequest request
 	) {
-		CommentResponse response = commentUsecase.updateComment(commentId, userId, request);
+		CommentResponse response = commentUsecase.updateComment(commentId, user.getUserId(), request);
 		return GlobalResponseDto.success(response);
 	}
 
 	// 3) 댓글 삭제
 	@DeleteMapping("/{commentId}")
 	public GlobalResponseDto<Void> deleteComment(
-		@PathVariable Long commentId,
-		@RequestParam Long userId
+		@AuthenticationPrincipal User user,
+		@PathVariable Long commentId
 	) {
-		commentUsecase.deleteComment(commentId, userId);
+		commentUsecase.deleteComment(commentId, user.getUserId());
 		return GlobalResponseDto.success();
 	}
 
@@ -69,8 +71,8 @@ public class CommentController {
 
 	// 5) 내가 쓴 댓글 조회(내 댓글함)
 	@GetMapping("/my")
-	public GlobalResponseDto<List<CommentResponse>> getMyComments(@RequestParam Long userId) {
-		List<CommentResponse> responses = commentUsecase.getMyComments(userId);
+	public GlobalResponseDto<List<MyCommentResponse>> getMyComments(@AuthenticationPrincipal User user) {
+		List<MyCommentResponse> responses = commentUsecase.getMyComments(user.getUserId());
 		return GlobalResponseDto.success(responses);
 	}
 

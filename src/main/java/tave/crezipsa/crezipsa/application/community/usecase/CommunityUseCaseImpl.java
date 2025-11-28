@@ -10,10 +10,16 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommunityCreateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommunityUpdateRequest;
+import tave.crezipsa.crezipsa.application.community.dto.response.CommentResponse;
+import tave.crezipsa.crezipsa.application.community.dto.response.CommunityDetailResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunityResponse;
+import tave.crezipsa.crezipsa.application.community.dto.response.CommunitySummaryResponse;
+import tave.crezipsa.crezipsa.application.community.dto.response.MyCommunityResponse;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
 import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
+import tave.crezipsa.crezipsa.domain.community.repository.CommentRepository;
 import tave.crezipsa.crezipsa.domain.community.repository.CommunityRepository;
+import tave.crezipsa.crezipsa.domain.community.repository.LikeRepository;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 
@@ -24,6 +30,9 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 
 
 	private final CommunityRepository communityRepository;
+	private final LikeRepository likeRepository;
+	private final CommentRepository commentRepository;
+	private final CommentUsecase commentUsecase;
 
 	@Override
 	public CommunityResponse createCommunity(Long userId, CommunityCreateRequest communityCreateRequest) {
@@ -36,11 +45,11 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 			.likeCount(0L)
 			.build();
 
-		return CommunityResponse.from(communityRepository.save(community));
+		return CommunityResponse.of(communityRepository.save(community));
 	}
 
 	@Override
-	public CommunityResponse updateCommunity(Long userId,Long communityId, CommunityUpdateRequest communityUpdateRequest) {
+	public CommunityResponse updateCommunity(Long communityId,Long userId, CommunityUpdateRequest communityUpdateRequest) {
 		Community community = communityRepository.findById(communityId)
 			.orElseThrow(() -> new CommonException(ErrorCode.COMMUNITY_NOT_FOUND));
 
@@ -48,22 +57,30 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 			throw new CommonException(ErrorCode.UNAUTHORIZED_COMMUNITY);
 		}
 		community.update(communityUpdateRequest.getTitle(), communityUpdateRequest.getContent(), communityUpdateRequest.getImageUrls());
-		return CommunityResponse.from(community);
+		return CommunityResponse.of(community);
 	}
 
 	@Override
-	public CommunityResponse getCommunity(Long communityId) {
+	public CommunityDetailResponse getCommunity(Long communityId) {
 		Community community = communityRepository.findById(communityId)
 			.orElseThrow(() -> new CommonException(ErrorCode.COMMUNITY_NOT_FOUND));
 
-		return CommunityResponse.from(community);
+		long commentCount = commentRepository.countByCommunityId(communityId);
+		List<CommentResponse> comments = commentUsecase.getComments(communityId);
+
+
+		return CommunityDetailResponse.from(community, commentCount, comments);
 	}
 
 	@Override
-	public List<CommunityResponse> getAllCommunities() {
+	public List<CommunitySummaryResponse> getAllCommunities() {
 		return communityRepository.findAll().stream()
-			.map(CommunityResponse::from)
-			.collect(Collectors.toList());
+			.map(c -> {
+				long likeCount = likeRepository.countByCommunityIdAndIsLikedTrue(c.getCommunityId());
+				long commentCount = commentRepository.countByCommunityId(c.getCommunityId());
+				return CommunitySummaryResponse.of(c, likeCount, commentCount);
+			})
+			.toList();
 	}
 
 	@Override
@@ -78,18 +95,26 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 	}
 
 	@Override
-	public List<CommunityResponse> getMyCommunities(Long userId) {
+	public List<MyCommunityResponse> getMyCommunities(Long userId) {
 		return communityRepository.findByWriterId(userId)
 			.stream()
-			.map(CommunityResponse::from)
+			.map(c -> {
+				long likeCount = likeRepository.countByCommunityIdAndIsLikedTrue(c.getCommunityId());
+				long commentCount = commentRepository.countByCommunityId(c.getCommunityId());
+				return MyCommunityResponse.of(c, likeCount, commentCount);
+			})
 			.toList();
 	}
 
 	@Override
-	public List<CommunityResponse> getCommunitiesByField(CommunityField field) {
+	public List<CommunitySummaryResponse> getCommunitiesByField(CommunityField field) {
 		return communityRepository.findByField(field)
 			.stream()
-			.map(CommunityResponse::from)
+			.map(c -> {
+				long likeCount = likeRepository.countByCommunityIdAndIsLikedTrue(c.getCommunityId());
+				long commentCount = commentRepository.countByCommunityId(c.getCommunityId());
+				return CommunitySummaryResponse.of(c, likeCount, commentCount);
+			})
 			.toList();
 	}
 
