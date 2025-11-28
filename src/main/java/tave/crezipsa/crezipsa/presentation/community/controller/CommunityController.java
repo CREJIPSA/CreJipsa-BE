@@ -79,7 +79,7 @@ public class CommunityController {
 	}
 
 	//내가 쓴 글 조회
-	@GetMapping("/users/{userId}")
+	@GetMapping("/my")
 	public GlobalResponseDto<List<MyCommunityResponse>> getCommunitiesByUserId(
 		@AuthenticationPrincipal User user) {
 
