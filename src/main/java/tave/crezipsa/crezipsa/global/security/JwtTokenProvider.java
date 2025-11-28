@@ -64,7 +64,7 @@ public class JwtTokenProvider {
     public String getUserIdFromToken(String token) {
         return Jwts.parser()
                 .setSigningKey(secretKey)
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token) // 수정
                 .getBody()
                 .getSubject();
     }
