@@ -31,7 +31,6 @@ public class UserUsecaseImpl implements UserUsecase {
         CreateUserCommand command = new CreateUserCommand(
                 request.nickName(),
                 request.email(),
-                request.password(),                // 미리 인코딩했다 치고
                 request.gender(),
                 false,
                 request.birth(),

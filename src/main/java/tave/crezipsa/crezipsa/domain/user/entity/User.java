@@ -16,7 +16,6 @@ public class User {
         private Long userId;
         private String nickName;
         private String email;
-        private String password;
         private Gender gender;
         private String profileImageUrl;
         private boolean role;
@@ -37,7 +36,6 @@ public class User {
         return  User.builder()
                 .nickName(cmd.nickName())
                 .email(cmd.email())
-                .password(cmd.password())
                 .gender(cmd.gender())
                 .role(true)
                 .birth(cmd.birth())

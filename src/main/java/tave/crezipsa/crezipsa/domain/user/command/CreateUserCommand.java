@@ -8,7 +8,6 @@ import java.time.LocalDate;
 public record CreateUserCommand(
     String nickName,
     String email,
-    String password,
     Gender gender,
     boolean role,
     LocalDate birth,
