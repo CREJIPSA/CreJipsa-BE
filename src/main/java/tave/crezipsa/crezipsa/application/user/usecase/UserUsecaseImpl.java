@@ -33,7 +33,7 @@ public class UserUsecaseImpl implements UserUsecase {
                 request.email(),
                 request.password(),                // 미리 인코딩했다 치고
                 request.gender(),
-                true,                           // 기본 role이 USER라면
+                false,
                 request.birth(),
                 request.activeYoutube(),
                 request.activeInsta(),

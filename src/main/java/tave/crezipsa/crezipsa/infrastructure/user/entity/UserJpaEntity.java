@@ -39,7 +39,7 @@ public class UserJpaEntity {
     private String profileImageUrl;
 
     @Column
-    private Boolean role = false;
+    private Boolean role = true;
 
     private LocalDate birth;
 
