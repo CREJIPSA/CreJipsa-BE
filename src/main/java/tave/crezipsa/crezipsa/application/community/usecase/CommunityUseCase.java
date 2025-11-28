@@ -4,17 +4,20 @@ import java.util.List;
 
 import tave.crezipsa.crezipsa.application.community.dto.request.CommunityCreateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommunityUpdateRequest;
+import tave.crezipsa.crezipsa.application.community.dto.response.CommunityDetailResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunityResponse;
+import tave.crezipsa.crezipsa.application.community.dto.response.CommunitySummaryResponse;
+import tave.crezipsa.crezipsa.application.community.dto.response.MyCommunityResponse;
 import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 
 public interface CommunityUseCase {
 
 	CommunityResponse createCommunity(Long userId, CommunityCreateRequest communityCreateRequest);
 	CommunityResponse updateCommunity(Long userId,Long communityId, CommunityUpdateRequest communityUpdateRequest);
-	CommunityResponse getCommunity(Long communityId);
-	List<CommunityResponse> getAllCommunities();
-	List<CommunityResponse> getMyCommunities(Long userId);
-	List<CommunityResponse> getCommunitiesByField(CommunityField field);
+	CommunityDetailResponse getCommunity(Long communityId);
+	List<CommunitySummaryResponse> getAllCommunities();
+	List<MyCommunityResponse> getMyCommunities(Long userId);
+	List<CommunitySummaryResponse> getCommunitiesByField(CommunityField field);
 	void deleteCommunity(Long userId,Long communityId);
 
 

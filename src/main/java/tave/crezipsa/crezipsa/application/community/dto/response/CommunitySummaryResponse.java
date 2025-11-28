@@ -1,21 +1,21 @@
 package tave.crezipsa.crezipsa.application.community.dto.response;
 
-import static tave.crezipsa.crezipsa.application.community.usecase.LikeUseCaseImpl.*;
+import tave.crezipsa.crezipsa.application.community.usecase.LikeUseCaseImpl;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
 import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 
-public record MyLikedCommunityResponse(
+public record CommunitySummaryResponse(
 	Long communityId,
 	CommunityField field,
 	String title,
 	String contentPreview,
 	long likeCount,
 	long commentCount,
-	String relativeTime,  // "40분 전", "3시간 전", "1일 전"
+	String relativeTime,
 	String thumbnailUrl
 ) {
 
-	public static MyLikedCommunityResponse of(
+	public static CommunitySummaryResponse of(
 		Community community,
 		long likeCount,
 		long commentCount
@@ -24,17 +24,15 @@ public record MyLikedCommunityResponse(
 			? community.getImageUrls().get(0)
 			: null;
 
-		return new MyLikedCommunityResponse(
+		return new CommunitySummaryResponse(
 			community.getCommunityId(),
 			community.getField(),
 			community.getTitle(),
-			preview(community.getContent()),
+			LikeUseCaseImpl.preview(community.getContent()),
 			likeCount,
 			commentCount,
-			convertToRelativeTime(community.getCreatedAt()),
+			LikeUseCaseImpl.convertToRelativeTime(community.getCreatedAt()),
 			thumbnail
 		);
 	}
-
-
 }
