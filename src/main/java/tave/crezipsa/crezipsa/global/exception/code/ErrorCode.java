@@ -5,6 +5,8 @@ public enum ErrorCode implements BaseErrorCode {
 	USER_NOT_FOUND(404, "U40401", "사용자를 찾을 수 없습니다."),
 	USER_ALREADY_EXISTS_EMAIL(404, "U40402", "이미 가입된 이메일입니다."),
 	USER_ALREADY_EXISTS_NICKNAME(404, "U40403", "이미 존재하는 닉네임입니다. "),
+	USER_INVALID_ROLE(404, "40404","권한이 없는 사용자입니다."),
+
 	// 인증 관련
 	MISSING_AUTH_HEADER(401, "A40101", "Authorization 헤더가 누락되었습니다."),
 	INVALID_TOKEN(401, "A40102", "토큰이 유효하지 않습니다."),

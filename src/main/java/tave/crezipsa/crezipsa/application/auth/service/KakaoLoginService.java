@@ -7,6 +7,8 @@ import tave.crezipsa.crezipsa.domain.auth.entity.Auth;
 import tave.crezipsa.crezipsa.domain.auth.repository.AuthRepository;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
 import tave.crezipsa.crezipsa.domain.user.repository.UserRepository;
+import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
+import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 import tave.crezipsa.crezipsa.global.security.JwtTokenProvider;
 import tave.crezipsa.crezipsa.infrastructure.auth.KakaoUserInfo;
 import tave.crezipsa.crezipsa.infrastructure.auth.client.KakaoOAuthClient;
@@ -31,7 +33,9 @@ public class KakaoLoginService {
         if (user == null) {
             return LoginResponse.needsSignup(kakaoUserInfo);
         }
-
+        if(user.isRole()) {
+            throw new CommonException(ErrorCode.USER_INVALID_ROLE);
+        }
         String jwt = jwtTokenProvider.generateAccessToken(user.getUserId(), user.getEmail());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUserId());
 
@@ -43,8 +47,8 @@ public class KakaoLoginService {
                 );
 
         auth.updateTokens(accessToken, refreshToken);
-
         authRepository.save(auth);
+
         return LoginResponse.success(jwt, refreshToken, kakaoUserInfo);
     }
 }
