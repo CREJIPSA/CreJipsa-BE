@@ -5,7 +5,7 @@ import tave.crezipsa.crezipsa.domain.user.enums.Platform;
 
 import java.time.LocalDate;
 
-public record CreateUserCommand(
+public record UserSignUpCommand(
     String nickName,
     String email,
     Gender gender,
@@ -15,4 +15,6 @@ public record CreateUserCommand(
     String activeInsta,
     String activeTiktok,
     Platform mainPlatform
-) {}
+) {
+
+}

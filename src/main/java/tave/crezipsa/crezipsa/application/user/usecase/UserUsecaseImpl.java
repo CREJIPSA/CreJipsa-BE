@@ -4,10 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tave.crezipsa.crezipsa.application.user.dto.request.UserSignUpRequest;
+import tave.crezipsa.crezipsa.application.user.dto.request.UserUpdateRequest;
 import tave.crezipsa.crezipsa.application.user.dto.response.UserSignUpResponse;
-import tave.crezipsa.crezipsa.domain.user.command.CreateUserCommand;
+import tave.crezipsa.crezipsa.domain.user.command.UserSignUpCommand;
+import tave.crezipsa.crezipsa.domain.user.command.UserUpdateCommand;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
 import tave.crezipsa.crezipsa.domain.user.repository.UserRepository;
+import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 
@@ -28,7 +31,7 @@ public class UserUsecaseImpl implements UserUsecase {
             throw new CommonException(ErrorCode.USER_ALREADY_EXISTS_NICKNAME);
         }
 
-        CreateUserCommand command = new CreateUserCommand(
+        UserSignUpCommand command = new UserSignUpCommand(
                 request.nickName(),
                 request.email(),
                 request.gender(),
@@ -43,5 +46,21 @@ public class UserUsecaseImpl implements UserUsecase {
         User user = User.createFromUser(command);
         User newUser = userRepository.save(user);
         return new UserSignUpResponse(newUser.getNickName(), newUser.getEmail());
+    }
+
+    @Override
+    public GlobalResponseDto update(UserUpdateRequest request) {
+
+        User updateUser =  userRepository.findById(request.userId()).
+                orElseThrow(() -> new CommonException(ErrorCode.USER_INVALID_ID));
+
+        UserUpdateCommand command = new UserUpdateCommand(
+                request.activeInsta(),
+                request.activeYoutube(),
+                request.activeYoutube(),
+                request.mainPlatform()
+        );
+        updateUser.updateFromUser(command);
+        return GlobalResponseDto.success("업데이트 완료");
     }
 }
