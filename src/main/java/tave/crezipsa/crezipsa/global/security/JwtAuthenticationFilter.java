@@ -13,6 +13,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
+import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -33,34 +35,45 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = resolveToken(request);
 
         if (token != null) {
-            String userId = jwtTokenProvider.getUserIdFromToken(token);
+            jwtTokenProvider.validateAccessToken(token);
+            Long userId = jwtTokenProvider.getUserIdFromToken(token);
 
             // DB에서 User 엔티티 조회
-            User user = userRepository.findById(Long.valueOf(userId))
+            User user = userRepository.findById(userId)
                 .orElse(null);
 
             if (user != null) {
                 UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
-                        user,      // ★ Principal로 User 넣기
-                        null,
-                        Collections.emptyList()
+                        user,                         //인증된 User 넣기
+                        null,                        //비밀번호 null
+                        Collections.emptyList()     //권한
                     );
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
-
         filterChain.doFilter(request, response);
     }
 
-
+    //Bearer 인증 방식
     private String resolveToken (HttpServletRequest request){
-            String bearer = request.getHeader("Authorization");
-            if (bearer != null && bearer.startsWith("Bearer ")) {
-                return bearer.substring(7);
-            }
-            return null;
+
+        String bearer = request.getHeader("Authorization");
+        if (bearer != null && bearer.startsWith("Bearer ")) {
+            return bearer.substring(7);
         }
+
+        return null;
+        //토큰 헤더 관련 예외처리
+        //   String bearer = request.getHeader("Authorization");
+//
+//
+//            if(bearer == null){ throw  new CommonException(ErrorCode.MISSING_AUTH_HEADER);}
+//            if (!bearer.startsWith("Bearer ")) { throw  new CommonException(ErrorCode.INVALID_TOKEN);
+//                 }
+//
+//            return bearer.substring(7);
+    }
         
 }

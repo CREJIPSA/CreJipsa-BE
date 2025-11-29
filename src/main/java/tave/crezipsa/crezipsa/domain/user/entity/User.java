@@ -1,13 +1,11 @@
 package tave.crezipsa.crezipsa.domain.user.entity;
-import org.apache.coyote.Request;
-import tave.crezipsa.crezipsa.domain.user.command.CreateUserCommand;
+import tave.crezipsa.crezipsa.domain.user.command.UserSignUpCommand;
+import tave.crezipsa.crezipsa.domain.user.command.UserUpdateCommand;
 import tave.crezipsa.crezipsa.domain.user.enums.Gender;
 import lombok.*;
 import tave.crezipsa.crezipsa.domain.user.enums.Platform;
-import tave.crezipsa.crezipsa.infrastructure.auth.KakaoUserInfo;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Getter
 @AllArgsConstructor
@@ -16,7 +14,6 @@ public class User {
         private Long userId;
         private String nickName;
         private String email;
-        private String password;
         private Gender gender;
         private String profileImageUrl;
         private boolean role;
@@ -26,18 +23,10 @@ public class User {
         private String activeInsta;
         private Platform mainPlatform;
 
-    public static User createFromKakao(KakaoUserInfo kakaoUserInfo) {
-            return User.builder()
-                    .email(kakaoUserInfo.getEmail())
-                    .nickName(kakaoUserInfo.getNickname())
-                    .profileImageUrl(kakaoUserInfo.getProfileImage())
-                    .build();
-    }
-    public static User createFromUser(CreateUserCommand cmd) {
-        return  User.builder()
+        public static User createFromUser(UserSignUpCommand cmd) {
+            return  User.builder()
                 .nickName(cmd.nickName())
                 .email(cmd.email())
-                .password(cmd.password())
                 .gender(cmd.gender())
                 .role(true)
                 .birth(cmd.birth())
@@ -47,5 +36,12 @@ public class User {
                 .mainPlatform(cmd.mainPlatform())
                 .build();
         }
+        public void updateFromUser(UserUpdateCommand cmd) {
+            if(cmd.getActiveYoutube() != null) { this.activeYotube = cmd.getActiveYoutube(); }
+            if(cmd.getActiveInsta() != null) { this.activeInsta = cmd.getActiveInsta() ;}
+            if(cmd.getActiveTiktok() != null) { this.activeTiktok = cmd.getActiveTiktok(); }
+            if(cmd.getMainPlatform() != null) { this.mainPlatform = cmd.getMainPlatform(); }
+        }
+
 }
 

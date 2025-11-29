@@ -29,9 +29,6 @@ public class UserJpaEntity {
     @Column(unique = true, length = 100)
     private String email;
 
-    @Column(nullable = false, length = 255)
-    private String password;
-
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
@@ -39,7 +36,7 @@ public class UserJpaEntity {
     private String profileImageUrl;
 
     @Column
-    private Boolean role = false;
+    private Boolean role = true;
 
     private LocalDate birth;
 
