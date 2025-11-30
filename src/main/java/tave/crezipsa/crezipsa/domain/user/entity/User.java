@@ -18,29 +18,34 @@ public class User {
         private String profileImageUrl;
         private boolean role;
         private LocalDate birth;
-        private String activeYotube;
+        private String activeYoutube;
         private String activeTiktok;
         private String activeInsta;
         private Platform mainPlatform;
 
         public static User createFromUser(UserSignUpCommand cmd) {
-            return  User.builder()
+            return User.builder()
                 .nickName(cmd.nickName())
                 .email(cmd.email())
                 .gender(cmd.gender())
                 .role(true)
                 .birth(cmd.birth())
-                .activeYotube(cmd.activeYoutube())
+                .activeYoutube(cmd.activeYoutube())
                 .activeInsta(cmd.activeInsta())
                 .activeTiktok(cmd.activeTiktok())
                 .mainPlatform(cmd.mainPlatform())
                 .build();
         }
         public void updateFromUser(UserUpdateCommand cmd) {
-            if(cmd.getActiveYoutube() != null) { this.activeYotube = cmd.getActiveYoutube(); }
+
+            if(cmd.getActiveYoutube() != null) { this.activeYoutube = cmd.getActiveYoutube(); }
             if(cmd.getActiveInsta() != null) { this.activeInsta = cmd.getActiveInsta() ;}
             if(cmd.getActiveTiktok() != null) { this.activeTiktok = cmd.getActiveTiktok(); }
             if(cmd.getMainPlatform() != null) { this.mainPlatform = cmd.getMainPlatform(); }
+
+            System.out.println(this.mainPlatform);
+            System.out.println("\n\n\n********"+ this.userId );
+
         }
 
 }
