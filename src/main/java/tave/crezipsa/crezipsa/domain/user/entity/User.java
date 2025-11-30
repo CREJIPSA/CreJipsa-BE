@@ -43,9 +43,6 @@ public class User {
             if(cmd.getActiveTiktok() != null) { this.activeTiktok = cmd.getActiveTiktok(); }
             if(cmd.getMainPlatform() != null) { this.mainPlatform = cmd.getMainPlatform(); }
 
-            System.out.println(this.mainPlatform);
-            System.out.println("\n\n\n********"+ this.userId );
-
         }
 
 }
