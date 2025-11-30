@@ -6,6 +6,7 @@ import tave.crezipsa.crezipsa.domain.user.entity.UserInterest;
 import tave.crezipsa.crezipsa.domain.user.repository.UserInterestRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -19,8 +20,8 @@ public class UserInterestRepositoryImpl implements UserInterestRepository {
     }
 
     @Override
-    public UserInterest deleteByUserInterestIdAndUserId(Long interestId, Long userId){
-        return userInterestJpaRepository.deleteByInterestIdAndUserId(interestId,userId);
+    public Boolean deleteByInterestId(Long interestId) {
+        return userInterestJpaRepository.deleteByInterestId(interestId);
     }
 
     @Override
@@ -28,4 +29,13 @@ public class UserInterestRepositoryImpl implements UserInterestRepository {
         return userInterestJpaRepository.findAllByUserId(userId);
     }
 
+    @Override
+    public Boolean existsByUserIdAndCategory(Long userId, String category) {
+        return userInterestJpaRepository.existsByUserIdAndCategory(userId, category);
+    }
+
+    @Override
+    public Optional<UserInterest> findByUserIdAndCategoryId(Long userId, String category) {
+        return userInterestJpaRepository.findByUserIdAndCategory(userId, category);
+    }
 }

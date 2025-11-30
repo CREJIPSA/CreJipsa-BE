@@ -8,9 +8,14 @@ import tave.crezipsa.crezipsa.application.user.dto.response.UserSignUpResponse;
 import tave.crezipsa.crezipsa.application.user.dto.response.UserUpdateResponse;
 import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
 
+import java.util.List;
+
 
 public interface UserUsecase {
     UserSignUpResponse signUp(UserSignUpRequest userSignUpRequest);
     UserUpdateResponse update(Long userId, UserUpdateRequest request);
-    UserInterestResponse addUserInsert(Long userId, UserInterestRequest request);
+
+    UserInterestResponse addUserInterest(Long userId, UserInterestRequest request);
+    List<UserInterestResponse> getUserInterest(Long userId);
+    void deleteUserInterest(Long userId, UserInterestRequest request);
 }

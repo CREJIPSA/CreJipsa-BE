@@ -5,9 +5,7 @@ import lombok.*;
 
 @Entity
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
 public class UserInterest {
 
     @Id
@@ -16,5 +14,12 @@ public class UserInterest {
 
     @Column(name = "user_id")
     private Long userId;
+
     private String category;
+
+    public UserInterest(Long userId, String category) {
+        this.userId = userId;
+        this.category = category;
+    }
+
 }
