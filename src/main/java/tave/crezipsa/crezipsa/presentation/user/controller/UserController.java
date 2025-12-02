@@ -5,8 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import tave.crezipsa.crezipsa.application.user.dto.request.UserInterestRequest;
 import tave.crezipsa.crezipsa.application.user.dto.request.UserSignUpRequest;
 import tave.crezipsa.crezipsa.application.user.dto.request.UserUpdateRequest;
+import tave.crezipsa.crezipsa.application.user.dto.response.UserInterestResponse;
 import tave.crezipsa.crezipsa.application.user.dto.response.UserSignUpResponse;
 import tave.crezipsa.crezipsa.application.user.usecase.UserUsecase;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
@@ -36,4 +38,19 @@ public class UserController {
         return GlobalResponseDto.success();
     }
 
+    @PostMapping("/interest")
+    public GlobalResponseDto insertInterest(
+            @AuthenticationPrincipal User user, @Valid @RequestBody UserInterestRequest request){
+
+        UserInterestResponse interestResponse = userUsecase.addUserInterest(user.getUserId(),request);
+        return GlobalResponseDto.success(interestResponse);
+    }
+
+    @DeleteMapping("/interest")
+    public GlobalResponseDto deleteInterest(
+            @AuthenticationPrincipal User user, @Valid @RequestBody UserInterestRequest request){
+
+        userUsecase.deleteUserInterest(user.getUserId(),request);
+        return GlobalResponseDto.success();
+    }
 }
