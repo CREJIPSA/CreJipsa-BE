@@ -12,7 +12,10 @@ import tave.crezipsa.crezipsa.application.user.dto.response.UserInterestResponse
 import tave.crezipsa.crezipsa.application.user.dto.response.UserSignUpResponse;
 import tave.crezipsa.crezipsa.application.user.usecase.UserUsecase;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
+import tave.crezipsa.crezipsa.domain.user.entity.UserInterest;
 import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
@@ -52,5 +55,13 @@ public class UserController {
 
         userUsecase.deleteUserInterest(user.getUserId(),request);
         return GlobalResponseDto.success();
+    }
+
+    @GetMapping("/interest")
+    public GlobalResponseDto getInterest(
+            @AuthenticationPrincipal User user, @Valid UserInterestRequest request){
+
+        List<UserInterestResponse> userInterest =  userUsecase.getUserInterest(user.getUserId());
+        return GlobalResponseDto.success(userInterest);
     }
 }

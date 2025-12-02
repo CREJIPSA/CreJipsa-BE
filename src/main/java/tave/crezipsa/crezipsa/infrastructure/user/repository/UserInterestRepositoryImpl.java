@@ -20,8 +20,8 @@ public class UserInterestRepositoryImpl implements UserInterestRepository {
     }
 
     @Override
-    public Boolean deleteByInterestId(Long interestId) {
-        return userInterestJpaRepository.deleteByInterestId(interestId);
+    public void deleteByInterestId(Long interestId) {
+        userInterestJpaRepository.deleteByInterestId(interestId);
     }
 
     @Override
