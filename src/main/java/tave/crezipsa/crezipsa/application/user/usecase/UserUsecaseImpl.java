@@ -15,7 +15,6 @@ import tave.crezipsa.crezipsa.domain.user.entity.User;
 import tave.crezipsa.crezipsa.domain.user.entity.UserInterest;
 import tave.crezipsa.crezipsa.domain.user.repository.UserInterestRepository;
 import tave.crezipsa.crezipsa.domain.user.repository.UserRepository;
-import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 
@@ -84,11 +83,12 @@ public class UserUsecaseImpl implements UserUsecase {
     }
 
     @Override
-    public void deleteUserInterest(Long userId, UserInterestRequest request) {
-        UserInterest userInterest = userInterestRepository.findByUserIdAndCategoryId(userId,request.category())
-                .orElseThrow(() -> new CommonException(ErrorCode.INVALD_INTEREST));
+    public void deleteUserInterest(UserInterestRequest request) {
+        if( !userInterestRepository.existByInterestId(request.interestId()) ){
+            throw new CommonException( ErrorCode.INVALD_INTEREST );
+        }
 
-        userInterestRepository.deleteByInterestId(userInterest.getInterestId());
+        userInterestRepository.deleteByInterestId(request.interestId());
     }
 
 }

@@ -53,7 +53,7 @@ public class UserController {
     public GlobalResponseDto deleteInterest(
             @AuthenticationPrincipal User user, @Valid @RequestBody UserInterestRequest request){
 
-        userUsecase.deleteUserInterest(user.getUserId(),request);
+        userUsecase.deleteUserInterest(request);
         return GlobalResponseDto.success();
     }
 

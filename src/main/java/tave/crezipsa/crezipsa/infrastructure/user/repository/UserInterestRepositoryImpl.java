@@ -33,9 +33,9 @@ public class UserInterestRepositoryImpl implements UserInterestRepository {
     public Boolean existsByUserIdAndCategory(Long userId, String category) {
         return userInterestJpaRepository.existsByUserIdAndCategory(userId, category);
     }
-
+    
     @Override
-    public Optional<UserInterest> findByUserIdAndCategoryId(Long userId, String category) {
-        return userInterestJpaRepository.findByUserIdAndCategory(userId, category);
+    public Boolean existByInterestId(Long interestId){
+        return userInterestJpaRepository.existsById(interestId);
     }
 }

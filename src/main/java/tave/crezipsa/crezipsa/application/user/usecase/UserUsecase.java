@@ -17,5 +17,5 @@ public interface UserUsecase {
 
     UserInterestResponse addUserInterest(Long userId, UserInterestRequest request);
     List<UserInterestResponse> getUserInterest(Long userId);
-    void deleteUserInterest(Long userId, UserInterestRequest request);
+    void deleteUserInterest(UserInterestRequest request);
 }

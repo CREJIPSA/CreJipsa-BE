@@ -11,5 +11,5 @@ public interface UserInterestRepository {
     void deleteByInterestId(Long interestId);
     List<UserInterest> findAllByUserId(Long userId);
     Boolean existsByUserIdAndCategory(Long userId, String category);
-    Optional<UserInterest> findByUserIdAndCategoryId(Long userId, String category);
+    Boolean existByInterestId(Long interestId);
 }
