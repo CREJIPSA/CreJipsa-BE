@@ -24,6 +24,7 @@ public class User {
         private Platform mainPlatform;
 
         public static User createFromUser(UserSignUpCommand cmd) {
+
             return User.builder()
                 .nickName(cmd.nickName())
                 .email(cmd.email())

@@ -64,15 +64,12 @@ public class UserUsecaseImpl implements UserUsecase {
             throw new CommonException(ErrorCode.ALREADY_INTEREST);
         }
 
-        UserInterest userInterest = new UserInterest(userId, request.category());
-        UserInterest newUserInterest = userInterestRepository.save(userInterest);
+        UserInterest newUserInterest = userInterestRepository.save( UserInterest.create(userId, request.category()) );
 
-        return new UserInterestResponse(
-                newUserInterest.getUserId(),
-                newUserInterest.getInterestId(),
-                newUserInterest.getCategory());
+        return UserInterestResponse.from(newUserInterest);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<UserInterestResponse> getUserInterest(Long userId) {
 
@@ -80,11 +77,7 @@ public class UserUsecaseImpl implements UserUsecase {
         List<UserInterestResponse> responses = new ArrayList<>();
 
         for (UserInterest interest : interests) {
-            responses.add(new UserInterestResponse(
-                    interest.getUserId(),
-                    interest.getInterestId(),
-                    interest.getCategory()
-            ));
+            responses.add(UserInterestResponse.from(interest));
         }
 
         return responses;

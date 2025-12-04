@@ -17,9 +17,13 @@ public class UserInterest {
 
     private String category;
 
-    public UserInterest(Long userId, String category) {
+    private UserInterest(Long userId, String category) {
         this.userId = userId;
         this.category = category;
+    }
+
+    public static UserInterest create(Long userId, String category) {
+        return new UserInterest(userId, category);
     }
 
 }
