@@ -15,7 +15,8 @@ public enum ErrorCode implements BaseErrorCode {
 	// 인증 관련
 	MISSING_AUTH_HEADER(400, "A40101", "Authorization 헤더가 누락되었습니다."),
 	INVALID_TOKEN(401, "A40102", "토큰이 유효하지 않습니다."),
-	KAKAO_USERINFO_FAILED(400, "A40103", "카카오 사용자 정보를 가져오지 못했습니다."),
+	ACCESS_TOKEN_EXPIRED(401,"A40103","토큰 유효시간이 만료되었습니다."),
+	KAKAO_USERINFO_FAILED(400, "A40104", "카카오 사용자 정보를 가져오지 못했습니다."),
 
 	// 커뮤니티 관련
 	COMMUNITY_NOT_FOUND(404, "C40401", "해당 커뮤니티 게시글을 찾을 수 없습니다."),

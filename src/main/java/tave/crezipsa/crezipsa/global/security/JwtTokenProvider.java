@@ -50,12 +50,16 @@ public class JwtTokenProvider {
     }
 
     //토큰 유효성 검사: 우리 서버에서 발급한 토큰/만료시간 확인, 누구의 토큰인지는 중요x
-    public void validateAccessToken(String token) {
+    public void validateToken(String token) {
         try {
             Jwts.parser()
                     .setSigningKey(secretKey)
                     .parseClaimsJws(token);
-        } catch (JwtException | IllegalArgumentException e) {
+
+        }catch (ExpiredJwtException e){
+            throw new CommonException(ErrorCode.ACCESS_TOKEN_EXPIRED);
+        }
+        catch (JwtException e) {
             throw new CommonException(ErrorCode.INVALID_TOKEN);
         }
     }
