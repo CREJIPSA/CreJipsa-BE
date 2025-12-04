@@ -57,23 +57,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     //Bearer 인증 방식
-    private String resolveToken (HttpServletRequest request){
-
+    private String resolveToken (HttpServletRequest request) {
         String bearer = request.getHeader("Authorization");
+
         if (bearer != null && bearer.startsWith("Bearer ")) {
             return bearer.substring(7);
         }
-
         return null;
-        //토큰 헤더 관련 예외처리
-        //   String bearer = request.getHeader("Authorization");
-//
-//
-//            if(bearer == null){ throw  new CommonException(ErrorCode.MISSING_AUTH_HEADER);}
-//            if (!bearer.startsWith("Bearer ")) { throw  new CommonException(ErrorCode.INVALID_TOKEN);
-//                 }
-//
-//            return bearer.substring(7);
     }
-        
 }

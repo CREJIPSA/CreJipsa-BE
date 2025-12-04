@@ -6,7 +6,6 @@ import tave.crezipsa.crezipsa.domain.user.enums.Platform;
 import java.time.LocalDate;
 
 public record UserUpdateRequest(
-        Long userId,
         String activeYoutube,
         String activeTiktok,
         String activeInsta,

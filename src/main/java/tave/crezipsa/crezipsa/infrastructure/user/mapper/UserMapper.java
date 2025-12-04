@@ -17,9 +17,10 @@ public class UserMapper {
                 .profileImageUrl(e.getProfileImageUrl())
                 .role(e.getRole())
                 .birth(e.getBirth())
-                .activeYotube(e.getActiveYoutube())
+                .activeYoutube(e.getActiveYoutube())
                 .activeTiktok(e.getActiveTiktok())
                 .activeInsta(e.getActiveInsta())
+                .mainPlatform(e.getMainPlatform())
                 .build();
     }
     public static UserJpaEntity toJpaUserEntity(User d) {
@@ -33,9 +34,10 @@ public class UserMapper {
                 .profileImageUrl(d.getProfileImageUrl())
                 .role(d.isRole())
                 .birth(d.getBirth())
-                .activeYoutube(d.getActiveYotube())
+                .activeYoutube(d.getActiveYoutube())
                 .activeTiktok(d.getActiveTiktok())
                 .activeInsta(d.getActiveInsta())
+                .mainPlatform(d.getMainPlatform())
                 .build();
     }
 

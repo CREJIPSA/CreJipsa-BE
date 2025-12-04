@@ -13,6 +13,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
     Optional<UserJpaEntity> findById(Long userId);
     Optional<UserJpaEntity> findByNickName(String nickName);
 
+    UserJpaEntity save(UserJpaEntity user);
     Boolean existsByEmail(String email);
     Boolean existsByNickName(String nickName);
 }

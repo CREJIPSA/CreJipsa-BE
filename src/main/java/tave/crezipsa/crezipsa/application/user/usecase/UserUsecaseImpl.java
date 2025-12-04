@@ -3,16 +3,23 @@ package tave.crezipsa.crezipsa.application.user.usecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tave.crezipsa.crezipsa.application.user.dto.request.UserInterestRequest;
 import tave.crezipsa.crezipsa.application.user.dto.request.UserSignUpRequest;
 import tave.crezipsa.crezipsa.application.user.dto.request.UserUpdateRequest;
+import tave.crezipsa.crezipsa.application.user.dto.response.UserInterestResponse;
 import tave.crezipsa.crezipsa.application.user.dto.response.UserSignUpResponse;
+import tave.crezipsa.crezipsa.application.user.dto.response.UserUpdateResponse;
 import tave.crezipsa.crezipsa.domain.user.command.UserSignUpCommand;
 import tave.crezipsa.crezipsa.domain.user.command.UserUpdateCommand;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
+import tave.crezipsa.crezipsa.domain.user.entity.UserInterest;
+import tave.crezipsa.crezipsa.domain.user.repository.UserInterestRepository;
 import tave.crezipsa.crezipsa.domain.user.repository.UserRepository;
-import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +27,7 @@ import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 public class UserUsecaseImpl implements UserUsecase {
 
     private final UserRepository userRepository;
+    private final UserInterestRepository userInterestRepository;
 
     @Override
     public UserSignUpResponse signUp(UserSignUpRequest request) {
@@ -31,36 +39,56 @@ public class UserUsecaseImpl implements UserUsecase {
             throw new CommonException(ErrorCode.USER_ALREADY_EXISTS_NICKNAME);
         }
 
-        UserSignUpCommand command = new UserSignUpCommand(
-                request.nickName(),
-                request.email(),
-                request.gender(),
-                false,
-                request.birth(),
-                request.activeYoutube(),
-                request.activeInsta(),
-                request.activeTiktok(),
-                request.mainPlatform()
-        );
+        User user = User.createFromUser(UserSignUpCommand.from(request));
 
-        User user = User.createFromUser(command);
-        User newUser = userRepository.save(user);
-        return new UserSignUpResponse(newUser.getNickName(), newUser.getEmail());
+        return UserSignUpResponse.from(userRepository.save(user));
     }
 
     @Override
-    public GlobalResponseDto update(UserUpdateRequest request) {
+    public UserUpdateResponse update(Long userId, UserUpdateRequest request) {
 
-        User updateUser =  userRepository.findById(request.userId()).
+        User user =  userRepository.findById(userId).
                 orElseThrow(() -> new CommonException(ErrorCode.USER_INVALID_ID));
 
-        UserUpdateCommand command = new UserUpdateCommand(
-                request.activeInsta(),
-                request.activeYoutube(),
-                request.activeYoutube(),
-                request.mainPlatform()
-        );
-        updateUser.updateFromUser(command);
-        return GlobalResponseDto.success("업데이트 완료");
+        user.updateFromUser(UserUpdateCommand.from(request));
+
+        return UserUpdateResponse.from(userRepository.save(user));
+
     }
+
+    @Override
+    public UserInterestResponse addUserInterest(Long userId, UserInterestRequest request) {
+
+        if (userInterestRepository.existsByUserIdAndCategory(userId, request.category())) {
+            throw new CommonException(ErrorCode.ALREADY_INTEREST);
+        }
+
+        UserInterest newUserInterest = userInterestRepository.save( UserInterest.create(userId, request.category()) );
+
+        return UserInterestResponse.from(newUserInterest);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<UserInterestResponse> getUserInterest(Long userId) {
+
+        List<UserInterest> interests = userInterestRepository.findAllByUserId(userId);
+        List<UserInterestResponse> responses = new ArrayList<>();
+
+        for (UserInterest interest : interests) {
+            responses.add(UserInterestResponse.from(interest));
+        }
+
+        return responses;
+    }
+
+    @Override
+    public void deleteUserInterest(UserInterestRequest request) {
+        if( !userInterestRepository.existByInterestId(request.interestId()) ){
+            throw new CommonException( ErrorCode.INVALD_INTEREST );
+        }
+
+        userInterestRepository.deleteByInterestId(request.interestId());
+    }
+
 }

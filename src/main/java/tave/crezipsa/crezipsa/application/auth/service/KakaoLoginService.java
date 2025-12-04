@@ -24,8 +24,8 @@ public class KakaoLoginService {
 
     public LoginResponse login(String code) {
 
-        String accessToken = kakaoOAuthClient.getAccessToken(code);
-        KakaoUserInfo kakaoUserInfo = kakaoOAuthClient.getUserInfo(accessToken);
+        String kakaoToken = kakaoOAuthClient.getAccessToken(code);
+        KakaoUserInfo kakaoUserInfo = kakaoOAuthClient.getUserInfo(kakaoToken);
 
         User user = userRepository.findByEmail(kakaoUserInfo.getEmail())
                 .orElse(null);
@@ -48,7 +48,7 @@ public class KakaoLoginService {
                         .build()
                 );
 
-        auth.updateTokens(accessToken, refreshToken);
+        auth.updateTokens(kakaoToken, refreshToken);
         authRepository.save(auth);
 
         return LoginResponse.success(jwt, refreshToken, kakaoUserInfo);
