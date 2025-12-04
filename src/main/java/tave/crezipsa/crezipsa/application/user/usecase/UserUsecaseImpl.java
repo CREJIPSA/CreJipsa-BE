@@ -40,22 +40,9 @@ public class UserUsecaseImpl implements UserUsecase {
             throw new CommonException(ErrorCode.USER_ALREADY_EXISTS_NICKNAME);
         }
 
-        UserSignUpCommand command = new UserSignUpCommand(
-                request.nickName(),
-                request.email(),
-                request.gender(),
-                false,
-                request.birth(),
-                request.activeYoutube(),
-                request.activeInsta(),
-                request.activeTiktok(),
-                request.mainPlatform()
-        );
+        User user = User.createFromUser(UserSignUpCommand.from(request));
 
-        User user = User.createFromUser(command);
-        User newUser = userRepository.save(user);
-
-        return new UserSignUpResponse(newUser.getNickName(), newUser.getEmail());
+        return UserSignUpResponse.from(userRepository.save(user));
     }
 
     @Override
@@ -64,21 +51,10 @@ public class UserUsecaseImpl implements UserUsecase {
         User user =  userRepository.findById(userId).
                 orElseThrow(() -> new CommonException(ErrorCode.USER_INVALID_ID));
 
-        UserUpdateCommand command = new UserUpdateCommand(
-                request.activeYoutube(),
-                request.activeTiktok(),
-                request.activeInsta(),
-                request.mainPlatform()
-        );
-        user.updateFromUser(command);
-        User updateUser = userRepository.save(user);
+        user.updateFromUser(UserUpdateCommand.from(request));
 
-        return new UserUpdateResponse(
-                updateUser.getUserId(),
-                updateUser.getActiveYoutube(),
-                updateUser.getActiveTiktok(),
-                updateUser.getActiveInsta(),
-                updateUser.getMainPlatform());
+        return UserUpdateResponse.from(userRepository.save(user));
+
     }
 
     @Override
