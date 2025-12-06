@@ -30,10 +30,9 @@ public class JwtTokenProvider {
     }
 
     //토큰 생성
-    public String generateAccessToken(Long userId, String email) {
+    public String generateAccessToken(Long userId) {
         return Jwts.builder()
                 .setSubject(userId.toString())  // 토큰이 누구거인지
-                .claim("email",email)
                 .setIssuedAt(new Date())        //발급 시간
                 .setExpiration(new Date(System.currentTimeMillis()+ accessExpireMs))
                 .signWith(secretKey, SignatureAlgorithm.HS256) //서명 키 바꾸기 **

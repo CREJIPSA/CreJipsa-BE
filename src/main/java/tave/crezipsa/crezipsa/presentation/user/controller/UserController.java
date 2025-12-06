@@ -58,8 +58,7 @@ public class UserController {
     }
 
     @GetMapping("/interest")
-    public GlobalResponseDto getInterest(
-            @AuthenticationPrincipal User user, @Valid UserInterestRequest request){
+    public GlobalResponseDto getInterest(@AuthenticationPrincipal User user){
 
         List<UserInterestResponse> userInterest =  userUsecase.getUserInterest(user.getUserId());
         return GlobalResponseDto.success(userInterest);
