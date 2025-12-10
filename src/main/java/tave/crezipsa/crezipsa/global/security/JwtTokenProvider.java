@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.*;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
-import tave.crezipsa.crezipsa.global.exception.model.CommonException;
+import tave.crezipsa.crezipsa.global.exception.model.JwtAuthenticationException;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -56,10 +56,10 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token);
 
         }catch (ExpiredJwtException e){
-            throw new CommonException(ErrorCode.ACCESS_TOKEN_EXPIRED);
+            throw new JwtAuthenticationException(ErrorCode.ACCESS_TOKEN_EXPIRED);
         }
         catch (JwtException e) {
-            throw new CommonException(ErrorCode.INVALID_TOKEN);
+            throw new JwtAuthenticationException(ErrorCode.INVALID_TOKEN);
         }
     }
 
