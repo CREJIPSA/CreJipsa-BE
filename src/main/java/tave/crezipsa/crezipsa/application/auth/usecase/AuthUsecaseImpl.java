@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tave.crezipsa.crezipsa.application.auth.dto.response.TokenResponse;
 import tave.crezipsa.crezipsa.domain.auth.entity.Auth;
 import tave.crezipsa.crezipsa.domain.auth.repository.AuthRepository;
+import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 import tave.crezipsa.crezipsa.global.security.JwtTokenProvider;
@@ -29,6 +30,11 @@ public class AuthUsecaseImpl implements AuthUsecase {
         auth.updateAccessToken(tokenProvider.generateAccessToken(userId));
 
         return TokenResponse.from(auth);
+    }
+
+    @Override
+    public void deleteToken(Long userId) {
+        authRepository.deleteByUserId(userId);
     }
 
 }

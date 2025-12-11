@@ -24,13 +24,14 @@ public class AuthRepositoryImpl implements AuthRepository {
     }
 
     @Override
-    public boolean existsByUserId(Long userId) {
-        return authJpaRepository.existsByUserId(userId);
-    }
-
-    @Override
     public Optional<Auth> findByUserIdAndRefreshToken(Long userId, String refreshToken) {
         return authJpaRepository.findByUserIdAndRefreshToken(userId, refreshToken);
     }
+
+    @Override
+    public void deleteByUserId(Long userId) {
+        authJpaRepository.deleteByUserId(userId);
+    }
+
 
 }
