@@ -1,4 +1,4 @@
-package tave.crezipsa.crezipsa.application.auth.service;
+package tave.crezipsa.crezipsa.application.auth.usecase;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import tave.crezipsa.crezipsa.infrastructure.auth.client.KakaoOAuthClient;
 
 @Service
 @RequiredArgsConstructor
-public class KakaoLoginService {
+public class KakaoLoginUsecase {
 
     private final KakaoOAuthClient kakaoOAuthClient;
     private final UserRepository userRepository;
@@ -38,7 +38,7 @@ public class KakaoLoginService {
         }
 
         // 이메일도 존재하고//새로운 유저가 아닐때 바로 토큰 발급
-        String jwt = jwtTokenProvider.generateAccessToken(user.getUserId(), user.getEmail());
+        String jwt = jwtTokenProvider.generateAccessToken(user.getUserId());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUserId());
 
         Auth auth = authRepository.findByUserId(user.getUserId())

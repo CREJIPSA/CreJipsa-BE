@@ -17,13 +17,21 @@ public class AuthRepositoryImpl implements AuthRepository {
     public Auth save(Auth auth) {
         return authJpaRepository.save(auth);
     }
+
     @Override
     public Optional<Auth> findByUserId(Long userId){
         return authJpaRepository.findByUserId(userId);
     }
+
     @Override
-    public boolean existsByUserId(Long userId) {
-        return authJpaRepository.existsByUserId(userId);
+    public Optional<Auth> findByUserIdAndRefreshToken(Long userId, String refreshToken) {
+        return authJpaRepository.findByUserIdAndRefreshToken(userId, refreshToken);
     }
+
+    @Override
+    public void deleteByUserId(Long userId) {
+        authJpaRepository.deleteByUserId(userId);
+    }
+
 
 }

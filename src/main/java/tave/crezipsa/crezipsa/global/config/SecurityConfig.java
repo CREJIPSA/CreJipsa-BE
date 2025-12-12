@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import tave.crezipsa.crezipsa.global.security.JwtAuthenticationEntryPoint;
 import tave.crezipsa.crezipsa.global.security.JwtAuthenticationFilter;
 
 @Configuration
@@ -17,6 +18,7 @@ import tave.crezipsa.crezipsa.global.security.JwtAuthenticationFilter;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -26,6 +28,10 @@ public class SecurityConfig {
 
                 // 세션 X
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // 예외처리
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint))
 
                 // 인증/인가 설정
                 .authorizeHttpRequests(auth -> auth

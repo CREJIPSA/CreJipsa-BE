@@ -35,7 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = resolveToken(request);
 
         if (token != null) {
-            jwtTokenProvider.validateAccessToken(token);
+            jwtTokenProvider.validateToken(token);
             Long userId = jwtTokenProvider.getUserIdFromToken(token);
 
             // DB에서 User 엔티티 조회
