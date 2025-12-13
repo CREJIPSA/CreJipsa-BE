@@ -14,4 +14,13 @@ public class StoryboardMapper {
 			.build();
 	}
 
+	public static StoryboardJpaEntity toJpa(Storyboard d) {
+		return StoryboardJpaEntity.builder()
+			.storyBoardId(d.getId())
+			.userId(d.getUserId())
+			.storyboardTitle(d.getTitle())
+			.content(d.getContent())
+			.build();
+	}
+
 }

@@ -13,4 +13,14 @@ public class ChatMessageMapper {
 			.content(e.getContent())
 			.build();
 	}
+
+	public static ChatMessageJpaEntity toJpa(ChatMessage d) {
+		return ChatMessageJpaEntity.builder()
+			.messageId(d.getId())
+			.chatRoomId(d.getChatRoomId())
+			.senderType(ChatMessageJpaEntity.SenderType.valueOf(d.getSenderType().name()))
+			.content(d.getContent())
+			.build();
+	}
+
 }
