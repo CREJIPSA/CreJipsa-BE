@@ -29,6 +29,9 @@ public enum ErrorCode implements BaseErrorCode {
 	UNAUTHORIZED_COMMUNITY(404, "C40403", "게시글 권한이 없습니다"),
 	UNAUTHORIZED_COMMENT(404, "C40404", "댓글 권한이 없습니다"),
 
+	//스토리보드 관련
+	CHAT_NOT_FOUND(404, "C40405", "대화내역이 존재하지 않습니다"),
+
 
 	// 서버 오류
 	INTERNAL_SERVER_ERROR(500, "S50001", "서버 내부 오류가 발생했습니다.");
