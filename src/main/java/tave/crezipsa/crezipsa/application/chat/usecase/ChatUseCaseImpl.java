@@ -25,6 +25,7 @@ public class ChatUseCaseImpl implements ChatUseCase {
 	private final ChatRoomRepositoryPort chatRoomRepository;
 	private final ChatMessageRepositoryPort chatMessageRepository;
 	private final StoryboardRepositoryPort storyboardRepository;
+	private final StoryboardGeneratorPort storyboardGeneratorPort;
 
 
 	@Override
