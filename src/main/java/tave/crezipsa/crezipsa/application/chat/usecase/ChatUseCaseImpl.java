@@ -77,4 +77,26 @@ public class ChatUseCaseImpl implements ChatUseCase {
 
 		storyboardRepository.save(storyboard);
 	}
+
+	public Long createStoryboardFromChat(Long chatRoomId, Long userId) {
+
+		List<ChatMessage> messages =
+			chatMessageRepository.findByChatRoomId(chatRoomId);
+
+		String prompt = messages.stream()
+			.map(ChatMessage::getContent)
+			.collect(Collectors.joining("\n"));
+
+		String storyboardContent =
+			storyboardGeneratorPort.generate(prompt);
+
+		Storyboard storyboard = Storyboard.create(
+			userId,
+			"AI 스토리보드",
+			storyboardContent
+		);
+
+		return storyboardRepository.save(storyboard).getId();
+	}
+
 }
