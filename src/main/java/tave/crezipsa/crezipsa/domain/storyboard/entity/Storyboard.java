@@ -15,15 +15,22 @@ public class Storyboard {
 	private final Long userId;
 
 	private final String title;
-	private final String content;
+
+	private final String cutSummary;
+	private final String script;
+	private final String caption;
+	private final String time;
 
 	private final LocalDateTime createdAt;
 
-	public static Storyboard create(Long userId, String title, String content) {
+	public static Storyboard create(Long userId, String title, String cutSummary, String script, String caption, String time) {
 		return Storyboard.builder()
 			.userId(userId)
 			.title(title)
-			.content(content)
+			.cutSummary(cutSummary)
+			.script(script)
+			.caption(caption)
+			.time(time)
 			.createdAt(LocalDateTime.now())
 			.build();
 	}
