@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import lombok.RequiredArgsConstructor;
-import tave.crezipsa.crezipsa.domain.chat.port.StoryboardGeneratorPort;
+import tave.crezipsa.crezipsa.domain.storyboard.port.StoryboardGeneratorPort;
 
 @Component
 @RequiredArgsConstructor
