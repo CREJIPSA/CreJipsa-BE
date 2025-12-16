@@ -30,7 +30,7 @@ public class ChatController {
 	) {
 		Long chatRoomId = chatUseCase.createChatRoom(
 			user.getUserId(),
-			title == null ? "새 채팅" : title
+			title
 		);
 
 		return GlobalResponseDto.success(chatRoomId);

@@ -24,7 +24,8 @@ public class ChatUseCaseImpl implements ChatUseCase {
 
 	@Override
 	public Long createChatRoom(Long userId, String title) {
-		ChatRoom room = ChatRoom.create(userId, title);
+		String checkTitle = resolveChatRooomTitle(title);
+		ChatRoom room = ChatRoom.create(userId, checkTitle);
 		return chatRoomRepository.save(room).getId();
 	}
 
