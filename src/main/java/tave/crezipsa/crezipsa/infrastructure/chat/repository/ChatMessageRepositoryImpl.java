@@ -29,4 +29,11 @@ public class ChatMessageRepositoryImpl implements ChatMessageRepositoryPort {
 			.map(ChatMessageMapper::toDomain)
 			.collect(Collectors.toList());
 	}
+
+	@Override
+	public ChatMessage findById(Long messageId) {
+		return chatMessageJpaRepository.findById(messageId)
+			.map(ChatMessageMapper::toDomain)
+			.orElse(null);
+	}
 }

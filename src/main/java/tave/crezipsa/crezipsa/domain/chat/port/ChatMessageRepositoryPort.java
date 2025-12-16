@@ -8,5 +8,6 @@ public interface ChatMessageRepositoryPort {
 
 	ChatMessage save(ChatMessage message);
 	List<ChatMessage> findByChatRoomId(Long chatRoomId);
+	ChatMessage findById(Long id);
 
 }
