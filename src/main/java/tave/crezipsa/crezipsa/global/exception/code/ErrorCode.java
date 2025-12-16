@@ -8,7 +8,7 @@ public enum ErrorCode implements BaseErrorCode {
 	USER_INVALID_ROLE(401, "U40101","권한이 없는 사용자입니다."),
 	USER_INVALID_ID(401,"U40102", "존재하지 않는 유저입니다."),
 
-
+	//카테고리 관련
 	INVALD_INTEREST(404,"I40401", "존재하지 않은 사용자 관심 카테고리입니다."),
 	ALREADY_INTEREST(400,"I40001","이미 선택한 사용자 관심 카테고리입니다."),
 
@@ -16,6 +16,9 @@ public enum ErrorCode implements BaseErrorCode {
 	MISSING_AUTH_HEADER(400, "A40101", "Authorization 헤더가 누락되었습니다."),
 	INVALID_TOKEN(401, "A40102", "토큰이 유효하지 않습니다."),
 	KAKAO_USERINFO_FAILED(400, "A40103", "카카오 사용자 정보를 가져오지 못했습니다."),
+
+	// 스토리보드 관련
+	INVALID_SENDER_TYPE(401,"S40101", "Sender TYPE이 올바르지 않습니다."),
 
 	// 커뮤니티 관련
 	COMMUNITY_NOT_FOUND(404, "C40401", "해당 커뮤니티 게시글을 찾을 수 없습니다."),
