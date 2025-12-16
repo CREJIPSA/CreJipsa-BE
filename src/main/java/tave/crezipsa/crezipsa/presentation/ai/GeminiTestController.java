@@ -2,7 +2,7 @@ package tave.crezipsa.crezipsa.presentation.ai;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import tave.crezipsa.crezipsa.domain.chat.port.StoryboardGeneratorPort;
+import tave.crezipsa.crezipsa.domain.storyboard.port.StoryboardGeneratorPort;
 
 @RestController
 @RequiredArgsConstructor
