@@ -47,32 +47,4 @@ public class ChatUseCaseImpl implements ChatUseCase {
 		return new GeminiChatResponse(aiReply);
 	}
 
-	@Override
-	public StoryboardStructuredResponse saveStoryboard(Long userId, Long chatMessageId, String title) {
-
-		ChatMessage msg = chatMessageRepository.findById(chatMessageId);
-
-		if (msg == null) {
-			throw new CommonException(ErrorCode.CHAT_NOT_FOUND);
-		}
-		if (msg.getSenderType() != ChatMessage.SenderType.AI) {
-			throw new CommonException(ErrorCode.INVALID_SENDER_TYPE);
-		}
-
-		StoryboardStructuredResponse structured =
-			storyboardStructurerPort.structure(msg.getContent());
-
-		Storyboard storyboard = Storyboard.create(
-			userId,
-			(title == null || title.isBlank()) ? "AI 스토리보드" : title,
-			structured.cutSummary(),
-			structured.script(),
-			structured.caption(),
-			structured.time()
-		);
-
-		storyboardRepository.save(storyboard);
-
-		return structured;
-	}
 }

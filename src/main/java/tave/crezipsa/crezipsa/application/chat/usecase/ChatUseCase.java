@@ -7,5 +7,4 @@ public interface ChatUseCase {
 
 	Long createChatRoom ( Long userId, String title);
 	GeminiChatResponse sendUserMessage(Long chatRoomId, Long userId, String message);
-	StoryboardStructuredResponse saveStoryboard(Long userId, Long chatMessageId, String title);
 }
