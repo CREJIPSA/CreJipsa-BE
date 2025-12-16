@@ -1,5 +1,7 @@
 package tave.crezipsa.crezipsa.infrastructure.storyboard.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,6 +31,15 @@ public class StoryboardJpaEntity {
 	private String storyboardTitle;
 
 	@Column(columnDefinition = "TEXT")
-	private String content;
+	private String cutSummary;
 
+	@Column(columnDefinition = "TEXT")
+	private String script;
+
+	@Column(columnDefinition = "TEXT")
+	private String caption;
+
+	private String time;
+
+	private LocalDateTime createdAt;
 }
