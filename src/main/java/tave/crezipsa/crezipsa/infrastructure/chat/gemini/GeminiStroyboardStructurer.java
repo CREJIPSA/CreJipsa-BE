@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import lombok.RequiredArgsConstructor;
-import tave.crezipsa.crezipsa.application.chat.dto.response.StoryboardStructuredResponse;
+import tave.crezipsa.crezipsa.application.storyboard.dto.response.StoryboardStructuredResponse;
 import tave.crezipsa.crezipsa.domain.storyboard.port.StoryboardStructurerPort;
 
 @Component

@@ -1,5 +1,9 @@
 package tave.crezipsa.crezipsa.presentation.chat;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,6 +16,9 @@ import tave.crezipsa.crezipsa.application.chat.usecase.ChatUseCase;
 public class ChatController {
 
 	private final ChatUseCase chatUseCase;
+
+
+
 
 
 }

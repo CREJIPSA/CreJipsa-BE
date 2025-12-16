@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.application.chat.dto.response.GeminiChatResponse;
-import tave.crezipsa.crezipsa.application.chat.dto.response.StoryboardStructuredResponse;
+import tave.crezipsa.crezipsa.application.storyboard.dto.response.StoryboardStructuredResponse;
 import tave.crezipsa.crezipsa.domain.chat.entity.ChatMessage;
 import tave.crezipsa.crezipsa.domain.chat.entity.ChatRoom;
 import tave.crezipsa.crezipsa.domain.chat.port.ChatMessageRepositoryPort;
