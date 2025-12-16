@@ -29,4 +29,16 @@ public class StoryboardRepositoryImpl implements StoryboardRepositoryPort {
 			.map(StoryboardMapper::toDomain)
 			.collect(Collectors.toList());
 	}
+
+	@Override
+	public Storyboard findById(Long storyboardId) {
+		return storyboardJpaRepository.findById(storyboardId)
+			.map(StoryboardMapper::toDomain)
+			.orElse(null);
+	}
+
+	@Override
+	public void deleteById(Long storyboardId) {
+		storyboardJpaRepository.deleteById(storyboardId);
+	}
 }

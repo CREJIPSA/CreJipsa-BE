@@ -8,5 +8,7 @@ public interface StoryboardRepositoryPort {
 
 	Storyboard save(Storyboard storyboard);
 	List<Storyboard> findByUserId(Long userId);
+	Storyboard findById(Long storyboardId);
+	void deleteById(Long storyboardId);
 
 }
