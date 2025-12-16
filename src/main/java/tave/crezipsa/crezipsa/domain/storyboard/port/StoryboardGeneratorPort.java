@@ -1,4 +1,4 @@
-package tave.crezipsa.crezipsa.domain.chat.port;
+package tave.crezipsa.crezipsa.domain.storyboard.port;
 
 public interface StoryboardGeneratorPort {
 
