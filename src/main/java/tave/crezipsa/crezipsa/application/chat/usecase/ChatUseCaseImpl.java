@@ -1,19 +1,19 @@
 package tave.crezipsa.crezipsa.application.chat.usecase;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import tave.crezipsa.crezipsa.application.chat.dto.response.GeminiChatResponse;
+import tave.crezipsa.crezipsa.application.chat.dto.response.StoryboardStructuredResponse;
 import tave.crezipsa.crezipsa.domain.chat.entity.ChatMessage;
 import tave.crezipsa.crezipsa.domain.chat.entity.ChatRoom;
 import tave.crezipsa.crezipsa.domain.chat.port.ChatMessageRepositoryPort;
 import tave.crezipsa.crezipsa.domain.chat.port.ChatRoomRepositoryPort;
-import tave.crezipsa.crezipsa.domain.chat.port.StoryboardGeneratorPort;
+import tave.crezipsa.crezipsa.domain.storyboard.port.StoryboardGeneratorPort;
 import tave.crezipsa.crezipsa.domain.storyboard.entity.Storyboard;
 import tave.crezipsa.crezipsa.domain.storyboard.port.StoryboardRepositoryPort;
+import tave.crezipsa.crezipsa.domain.storyboard.port.StoryboardStructurerPort;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 
@@ -26,6 +26,7 @@ public class ChatUseCaseImpl implements ChatUseCase {
 	private final ChatMessageRepositoryPort chatMessageRepository;
 	private final StoryboardRepositoryPort storyboardRepository;
 	private final StoryboardGeneratorPort storyboardGeneratorPort;
+	private final StoryboardStructurerPort storyboardStructurerPort;
 
 
 	@Override
@@ -35,68 +36,41 @@ public class ChatUseCaseImpl implements ChatUseCase {
 	}
 
 	@Override
-	public void sendUserMessage(Long chatRoomId, Long userId, String message) {
-		chatMessageRepository.save(
-			ChatMessage.builder()
-				.chatRoomId(chatRoomId)
-				.senderType(ChatMessage.SenderType.USER)
-				.content(message)
-				.build()
-		);
+	public GeminiChatResponse sendUserMessage(Long chatRoomId, Long userId, String message) {
+
+		chatMessageRepository.save(ChatMessage.fromUser(chatRoomId,message));
 
 		String aiReply = storyboardGeneratorPort.generate(message);
 
-		chatMessageRepository.save(
-			ChatMessage.builder()
-				.chatRoomId(chatRoomId)
-				.senderType(ChatMessage.SenderType.AI)
-				.content(aiReply)
-				.build()
-		);
+		chatMessageRepository.save(ChatMessage.fromAI(chatRoomId, aiReply));
+
+		return new GeminiChatResponse(aiReply);
 	}
 
 	@Override
-	public void generateStoryboard(Long chatRoomId, Long userId) {
-		List<ChatMessage> messages = chatMessageRepository.findByChatRoomId(chatRoomId);
+	public Long saveStoryboard(Long userId, Long chatMessageId, String title) {
 
-		if(messages.isEmpty()) {
+		ChatMessage msg = chatMessageRepository.findById(chatMessageId);
+
+		if (msg == null) {
 			throw new CommonException(ErrorCode.CHAT_NOT_FOUND);
 		}
+		if (msg.getSenderType() != ChatMessage.SenderType.AI) {
+			throw new CommonException(ErrorCode.INVALID_SENDER_TYPE);
+		}
 
-		String prompt = messages.stream()
-			.map(m -> m.getSenderType() + ": " + m.getContent())
-			.collect(Collectors.joining("\n"));
-
-		String result = storyboardGeneratorPort.generate(prompt);
-
-		Storyboard storyboard = Storyboard.builder()
-			.userId(userId)
-			.title("스토리보드")
-			.content(result)
-			.build();
-
-		storyboardRepository.save(storyboard);
-	}
-
-	public Long createStoryboardFromChat(Long chatRoomId, Long userId) {
-
-		List<ChatMessage> messages =
-			chatMessageRepository.findByChatRoomId(chatRoomId);
-
-		String prompt = messages.stream()
-			.map(ChatMessage::getContent)
-			.collect(Collectors.joining("\n"));
-
-		String storyboardContent =
-			storyboardGeneratorPort.generate(prompt);
+		StoryboardStructuredResponse structured =
+			storyboardStructurerPort.structure(msg.getContent());
 
 		Storyboard storyboard = Storyboard.create(
 			userId,
-			"AI 스토리보드",
-			storyboardContent
+			(title == null || title.isBlank()) ? "AI 스토리보드" : title,
+			structured.cutSummary(),
+			structured.script(),
+			structured.caption(),
+			structured.time()
 		);
 
 		return storyboardRepository.save(storyboard).getId();
 	}
-
 }

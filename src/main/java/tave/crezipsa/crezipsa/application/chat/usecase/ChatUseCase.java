@@ -1,9 +1,10 @@
 package tave.crezipsa.crezipsa.application.chat.usecase;
 
+import tave.crezipsa.crezipsa.application.chat.dto.response.GeminiChatResponse;
+
 public interface ChatUseCase {
 
 	Long createChatRoom ( Long userId, String title);
-	void sendUserMessage(Long chatRoomId, Long userId, String message);
-	void generateStoryboard(Long chatRoomId, Long userId);
-
+	GeminiChatResponse sendUserMessage(Long chatRoomId, Long userId, String message);
+	Long saveStoryboard(Long userId, Long chatMessageId, String title);
 }
