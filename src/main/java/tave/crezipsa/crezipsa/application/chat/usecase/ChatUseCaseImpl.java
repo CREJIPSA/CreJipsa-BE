@@ -48,7 +48,7 @@ public class ChatUseCaseImpl implements ChatUseCase {
 	}
 
 	@Override
-	public Long saveStoryboard(Long userId, Long chatMessageId, String title) {
+	public StoryboardStructuredResponse saveStoryboard(Long userId, Long chatMessageId, String title) {
 
 		ChatMessage msg = chatMessageRepository.findById(chatMessageId);
 
@@ -71,6 +71,8 @@ public class ChatUseCaseImpl implements ChatUseCase {
 			structured.time()
 		);
 
-		return storyboardRepository.save(storyboard).getId();
+		storyboardRepository.save(storyboard);
+
+		return structured;
 	}
 }
