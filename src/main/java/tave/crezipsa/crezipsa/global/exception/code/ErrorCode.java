@@ -19,6 +19,7 @@ public enum ErrorCode implements BaseErrorCode {
 
 	// 스토리보드 관련
 	INVALID_SENDER_TYPE(401,"S40101", "Sender TYPE이 올바르지 않습니다."),
+	STORYBOARD_NOT_FOUND(404, "S40401", "존재하지 않는 스토리보드입니다."),
 
 	// 커뮤니티 관련
 	COMMUNITY_NOT_FOUND(404, "C40401", "해당 커뮤니티 게시글을 찾을 수 없습니다."),
