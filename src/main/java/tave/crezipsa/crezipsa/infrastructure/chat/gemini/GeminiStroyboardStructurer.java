@@ -1,15 +1,22 @@
 package tave.crezipsa.crezipsa.infrastructure.chat.gemini;
 
+import java.net.URI;
 import java.util.Map;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import tave.crezipsa.crezipsa.application.storyboard.dto.response.StoryboardStructuredResponse;
 import tave.crezipsa.crezipsa.domain.storyboard.port.StoryboardStructurerPort;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class GeminiStroyboardStructurer implements StoryboardStructurerPort {
@@ -21,24 +28,33 @@ public class GeminiStroyboardStructurer implements StoryboardStructurerPort {
 	private String url;
 
 	private final WebClient webClient = WebClient.create();
+	private final ObjectMapper om = new ObjectMapper();
 
 	@Override
 	public StoryboardStructuredResponse structure(String aiMessageContent) {
 
+		// 프롬프트: JSON 포맷을 강제하는 강력한 지시사항
 		String prompt = """
-        아래 텍스트를 영상 스토리보드 형태로 구조화해줘.
-        반드시 아래 4개 필드를 모두 채워서 출력해.
-        출력 형식은 JSON만. 다른 말 하지마.
-
+        역할: 너는 전문 영상 기획자다.
+        임무: 아래 입력된 텍스트 내용을 바탕으로 영상 촬영을 위한 '스토리보드' 정보 하나를 추출해라.
+        
+        [출력 포맷]
+        반드시 아래 JSON 형식으로만 출력해. 마크다운 코드 블록(```json)이나 잡담은 절대 포함하지 마.
         {
-          "cutSummary": "...",
-          "script": "...",
-          "caption": "...",
-          "time": "..."
+          "cutSummary": "해당 컷의 핵심 요약 (1문장)",
+          "script": "영상에서 실제로 말해야 할 대사나 내레이션",
+          "caption": "화면에 띄울 자막 내용",
+          "time": "예상 소요 시간 (예: 5초)"
         }
 
-        텍스트:
+        [입력 텍스트]
         """ + aiMessageContent;
+
+		String safeUrl = url.trim();
+		String safeKey = apiKey.trim();
+
+		// ★ 중요: URI 객체로 변환하여 인코딩 방지
+		URI uri = URI.create(safeUrl + "?key=" + safeKey);
 
 		Map<String, Object> body = Map.of(
 			"contents", new Object[]{
@@ -48,23 +64,33 @@ public class GeminiStroyboardStructurer implements StoryboardStructurerPort {
 			}
 		);
 
-		String jsonText = webClient.post()
-			.uri(url + "?key=" + apiKey)
+		// 1. 요청 및 원본 텍스트 수신
+		String rawResponse = webClient.post()
+			.uri(uri)
+			.header("Content-Type", "application/json")
 			.bodyValue(body)
 			.retrieve()
 			.bodyToMono(Map.class)
 			.map(response -> {
-				var candidates = (java.util.List<Map<String, Object>>) response.get("candidates");
-				var content = (Map<String, Object>) candidates.get(0).get("content");
-				var parts = (java.util.List<Map<String, String>>) content.get("parts");
-				return parts.get(0).get("text"); // JSON 문자열이 오게 유도
+				try {
+					var candidates = (List<Map<String, Object>>) response.get("candidates");
+					var content = (Map<String, Object>) candidates.get(0).get("content");
+					var parts = (List<Map<String, String>>) content.get("parts");
+					return parts.get(0).get("text");
+				} catch (Exception e) {
+					log.error("Gemini Structurer 응답 파싱 실패: {}", response);
+					throw new RuntimeException("Gemini Parsing Error");
+				}
 			})
 			.block();
 
-		// JSON 파싱 (Jackson)
+		// 2. 응답 정제 (마크다운 제거)
+		String cleanedJson = cleanJson(rawResponse);
+		log.info("Gemini 정제된 응답: {}", cleanedJson);
+
+		// 3. JSON 변환
 		try {
-			com.fasterxml.jackson.databind.ObjectMapper om = new com.fasterxml.jackson.databind.ObjectMapper();
-			Map<String, String> m = om.readValue(jsonText, new com.fasterxml.jackson.core.type.TypeReference<>() {});
+			Map<String, String> m = om.readValue(cleanedJson, new TypeReference<>() {});
 			return new StoryboardStructuredResponse(
 				m.get("cutSummary"),
 				m.get("script"),
@@ -72,15 +98,29 @@ public class GeminiStroyboardStructurer implements StoryboardStructurerPort {
 				m.get("time")
 			);
 		} catch (Exception e) {
-			// 실패시 원문을 script에 넣는 등 fallback 가능
+			log.error("JSON 변환 실패. 원본: {}", rawResponse, e);
+			// 실패 시 Fallback: 원본 내용을 script에 저장
 			return new StoryboardStructuredResponse(
-				null,
+				"구조화 실패",
 				aiMessageContent,
 				null,
 				null
 			);
 		}
 	}
+
+	// 마크다운 제거 메서드
+	private String cleanJson(String text) {
+		if (text == null || text.isBlank()) return "{}";
+		String cleaned = text.trim();
+		if (cleaned.startsWith("```json")) {
+			cleaned = cleaned.substring(7);
+		} else if (cleaned.startsWith("```")) {
+			cleaned = cleaned.substring(3);
+		}
+		if (cleaned.endsWith("```")) {
+			cleaned = cleaned.substring(0, cleaned.length() - 3);
+		}
+		return cleaned.trim();
+	}
 }
-
-
