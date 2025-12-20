@@ -68,12 +68,7 @@ public class StoryboardUsecaseImpl implements StoryboardUsecase {
 			throw new CommonException(ErrorCode.STORYBOARD_NOT_FOUND);
 		}
 
-		return new StoryboardStructuredResponse(
-			storyboard.getCutSummary(),
-			storyboard.getScript(),
-			storyboard.getCaption(),
-			storyboard.getTime()
-		);
+		return StoryboardStructuredResponse.from(storyboard);
 	}
 
 	@Override
