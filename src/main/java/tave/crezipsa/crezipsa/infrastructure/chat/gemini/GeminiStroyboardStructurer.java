@@ -24,7 +24,7 @@ public class GeminiStroyboardStructurer implements StoryboardStructurerPort {
 	@Value("${gemini.api-key}")
 	private String apiKey;
 
-	@Value("${gemini.url}")
+	@Value("${gemini.url:https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent}")
 	private String url;
 
 	private final WebClient webClient = WebClient.create();
