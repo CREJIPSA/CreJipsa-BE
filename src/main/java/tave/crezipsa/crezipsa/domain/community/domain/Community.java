@@ -67,9 +67,7 @@ public class Community extends BaseEntity {
 			throw new CommonException(ErrorCode.INVALID_FIELD_TYPE);
 		}
 
-		if (field == CommunityField.TIP) {
-			if (imageUrls == null || imageUrls.isEmpty()) throw new CommonException(ErrorCode.INVALID_TIP_UPLOAD);
-		}
+		validateTipField(field, imageUrls);
 
 		return Community.builder()
 			.title(title)
@@ -80,4 +78,13 @@ public class Community extends BaseEntity {
 			.likeCount(0L)
 			.build();
 	}
+
+	private static void validateTipField(CommunityField field, List<String> imageUrls) {
+		if (field == CommunityField.TIP) {
+			if (imageUrls == null || imageUrls.isEmpty()) {
+				throw new CommonException(ErrorCode.INVALID_TIP_UPLOAD);
+			}
+		}
+	}
+
 }
