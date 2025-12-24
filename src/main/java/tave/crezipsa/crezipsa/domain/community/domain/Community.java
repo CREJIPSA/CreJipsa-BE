@@ -59,7 +59,10 @@ public class Community extends BaseEntity {
 	public void update(String title, String content, List<String> imageUrls) {
 		if (title != null) this.title = title;
 		if (content != null) this.content = content;
-		if (imageUrls != null) this.imageUrls = imageUrls;
+		if (imageUrls != null) {
+			validateTipField(this.field, imageUrls);
+			this.imageUrls = imageUrls;
+		}
 	}
 
 	public static Community create(String title, String content, CommunityField field, List<String> imageUrls, Long writerId) {
