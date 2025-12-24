@@ -67,6 +67,10 @@ public class Community extends BaseEntity {
 			throw new CommonException(ErrorCode.INVALID_FIELD_TYPE);
 		}
 
+		if (field == CommunityField.TIP) {
+			if (imageUrls == null || imageUrls.isEmpty()) throw new CommonException(ErrorCode.INVALID_TIP_UPLOAD);
+		}
+
 		return Community.builder()
 			.title(title)
 			.content(content)
