@@ -35,15 +35,14 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 	private final CommentUsecase commentUsecase;
 
 	@Override
-	public CommunityResponse createCommunity(Long userId, CommunityCreateRequest communityCreateRequest) {
-		Community community = Community.builder()
-			.title(communityCreateRequest.getTitle())
-			.content(communityCreateRequest.getContent())
-			.imageUrls(communityCreateRequest.getImageUrls())
-			.field(communityCreateRequest.getField())
-			.writerId(userId)
-			.likeCount(0L)
-			.build();
+	public CommunityResponse createCommunity(Long userId, CommunityCreateRequest request) {
+		Community community = Community.create(
+			request.getTitle(),
+			request.getContent(),
+			request.getField(),
+			request.getImageUrls(),
+			userId
+		);
 
 		return CommunityResponse.of(communityRepository.save(community));
 	}
