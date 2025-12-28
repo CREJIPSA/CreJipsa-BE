@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
+import tave.crezipsa.crezipsa.domain.community.domain.Community;
+import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 import tave.crezipsa.crezipsa.domain.community.domain.Like;
 import tave.crezipsa.crezipsa.domain.community.domain.LikeId;
 import tave.crezipsa.crezipsa.domain.community.repository.LikeRepository;
@@ -55,5 +57,15 @@ public class LikeRepositoryImpl implements LikeRepository {
 	@Override
 	public Page<Like> findAllByUserIdAndIsLikedTrue(Long userId, Pageable pageable) {
 		return likeJpaRepository.findAllByUserIdAndIsLikedTrue(userId, pageable);
+	}
+
+	@Override
+	public Page<Community> findMyLikedCommunitiesLatest(Long userId, CommunityField field, Pageable pageable) {
+		return likeJpaRepository.findMyLikedCommunitiesLatest(userId, field, pageable);
+	}
+
+	@Override
+	public Page<Community> findMyLikedCommunitiesPopular(Long userId,CommunityField field, Pageable pageable) {
+		return likeJpaRepository.findMyLikedCommunitiesPopular(userId, field, pageable);
 	}
 }
