@@ -9,11 +9,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.application.community.dto.response.MyLikedCommunityResponse;
 import tave.crezipsa.crezipsa.application.community.usecase.LikeUseCase;
+import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
 import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
 
@@ -44,9 +46,11 @@ public class LikeController {
 	@GetMapping("/me")
 	public GlobalResponseDto<List<MyLikedCommunityResponse>> getMyLikedCommunities(
 		@AuthenticationPrincipal User user,
+		@RequestParam(required = false)CommunityField field,
+		@RequestParam(defaultValue =  "latest") String sort,
 		Pageable pageable
 	) {
-		var slice = likeUseCase.getMyLikedCommunities(user.getUserId(), pageable);
+		var slice = likeUseCase.getMyLikedCommunities(user.getUserId(), field, sort, pageable);
 		return GlobalResponseDto.success(slice.getContent());
 	}
 
