@@ -2,6 +2,7 @@ package tave.crezipsa.crezipsa.presentation.community.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,8 +49,11 @@ public class LikeController {
 		@AuthenticationPrincipal User user,
 		@RequestParam(required = false)CommunityField field,
 		@RequestParam(defaultValue =  "latest") String sort,
-		Pageable pageable
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int size
 	) {
+		Pageable pageable = PageRequest.of(page, size);
+
 		var slice = likeUseCase.getMyLikedCommunities(user.getUserId(), field, sort, pageable);
 		return GlobalResponseDto.success(slice.getContent());
 	}
