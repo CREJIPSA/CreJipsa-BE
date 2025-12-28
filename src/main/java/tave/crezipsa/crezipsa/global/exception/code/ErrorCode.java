@@ -8,7 +8,7 @@ public enum ErrorCode implements BaseErrorCode {
 	USER_INVALID_ROLE(401, "U40101","권한이 없는 사용자입니다."),
 	USER_INVALID_ID(401,"U40102", "존재하지 않는 유저입니다."),
 
-
+	//카테고리 관련
 	INVALD_INTEREST(404,"I40401", "존재하지 않은 사용자 관심 카테고리입니다."),
 	ALREADY_INTEREST(400,"I40001","이미 선택한 사용자 관심 카테고리입니다."),
 
@@ -18,6 +18,16 @@ public enum ErrorCode implements BaseErrorCode {
 	INVALID_REFRESH_TOKEN(401, "A40103", "토큰이 일치하지 않습니다."),
 	ACCESS_TOKEN_EXPIRED(401,"A40104","토큰 유효시간이 만료되었습니다."),
 	KAKAO_USERINFO_FAILED(400, "A40105", "카카오 사용자 정보를 가져오지 못했습니다."),
+
+	// 스토리보드 관련
+	INVALID_SENDER_TYPE(401,"S40101", "Sender TYPE이 올바르지 않습니다."),
+	STORYBOARD_NOT_FOUND(404, "S40401", "존재하지 않는 스토리보드입니다."),
+
+	//제미나이 관련
+	GEMINI_EMPTY_RESPONSE(404,"G40401", "제미나이 응답 오류입니다."),
+	GEMINI_CLIENT_ERROR(400, "G40001", "Gemini 요청 값이 올바르지 않습니다."),
+	GEMINI_SERVER_ERROR(502, "G50202", "Gemini 서버 오류가 발생했습니다."),
+	GEMINI_REQUEST_FAILED(504, "G50401", "Gemini 요청 처리 중 오류가 발생했습니다."),
 
 	// 커뮤니티 관련
 	COMMUNITY_NOT_FOUND(404, "C40401", "해당 커뮤니티 게시글을 찾을 수 없습니다."),
@@ -30,6 +40,9 @@ public enum ErrorCode implements BaseErrorCode {
 	NOT_LIKED(400,"C40003", "좋아요를 누르지 않은 글입니다."),
 	UNAUTHORIZED_COMMUNITY(404, "C40403", "게시글 권한이 없습니다"),
 	UNAUTHORIZED_COMMENT(404, "C40404", "댓글 권한이 없습니다"),
+
+	//스토리보드 관련
+	CHAT_NOT_FOUND(404, "C40405", "대화내역이 존재하지 않습니다"),
 
 
 	// 서버 오류
