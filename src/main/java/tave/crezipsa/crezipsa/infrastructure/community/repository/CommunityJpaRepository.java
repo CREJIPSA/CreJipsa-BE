@@ -25,6 +25,7 @@ public interface CommunityJpaRepository extends JpaRepository<Community, Long> {
 """)
 	Page<Community> findMyCommunitiesLatest(
 		@Param("writerId") Long writerId,
+		@Param("field") CommunityField field,
 		Pageable pageable
 	);
 
@@ -37,6 +38,7 @@ public interface CommunityJpaRepository extends JpaRepository<Community, Long> {
 """)
 	Page<Community> findMyCommunitiesPopular(
 		@Param("writerId") Long writerId,
+		@Param("field") CommunityField field,
 		Pageable pageable
 	);
 
