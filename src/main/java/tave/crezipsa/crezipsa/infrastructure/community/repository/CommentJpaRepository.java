@@ -19,11 +19,19 @@ public interface CommentJpaRepository extends JpaRepository<Comment, Long> {
 	long countByCommunityId(Long communityId);
 
 	@Query("""
-select distinct c
-from Comment cm
-join Community c on c.communityId = cm.communityId
-where cm.userId = :userId
-order by cm.createdAt desc
+select c
+from Community c
+where c.communityId in (
+    select cm.communityId
+    from Comment cm
+    where cm.userId = :userId
+)
+order by (
+    select max(cm2.createdAt)
+    from Comment cm2
+    where cm2.communityId = c.communityId
+      and cm2.userId = :userId
+) desc
 """)
 	Page<Community> findMyCommentedCommunitiesLatest(
 		@Param("userId") Long userId,
@@ -31,11 +39,14 @@ order by cm.createdAt desc
 	);
 
 	@Query("""
-select distinct c
-from Comment cm
-join Community c on c.communityId = cm.communityId
-where cm.userId = :userId
-order by c.likeCount desc, cm.createdAt desc
+select c
+from Community c
+where c.communityId in (
+    select cm.communityId
+    from Comment cm
+    where cm.userId = :userId
+)
+order by c.likeCount desc, c.createdAt desc
 """)
 	Page<Community> findMyCommentedCommunitiesPopular(
 		@Param("userId") Long userId,
