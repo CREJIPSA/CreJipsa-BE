@@ -96,13 +96,13 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 	}
 
 	@Override
-	public List<MyCommunityResponse> getMyCommunities(Long userId, String sort, int page, int size) {
+	public List<MyCommunityResponse> getMyCommunities(Long userId, CommunityField field, String sort, int page, int size) {
 		Pageable pageable = PageRequest.of(page, size);
 
 		Page<Community> pageResult =
 			"popular".equals(sort)
-				? communityRepository.findMyCommunitiesPopular(userId, pageable)
-				: communityRepository.findMyCommunitiesLatest(userId, pageable);
+				? communityRepository.findMyCommunitiesPopular(userId,field, pageable)
+				: communityRepository.findMyCommunitiesLatest(userId,field, pageable);
 
 		return pageResult
 			.map(c -> {

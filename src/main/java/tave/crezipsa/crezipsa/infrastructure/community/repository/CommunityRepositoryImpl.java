@@ -50,12 +50,12 @@ public class CommunityRepositoryImpl implements CommunityRepository {
 	}
 
 	@Override
-	public Page<Community> findMyCommunitiesLatest(Long writerId, Pageable pageable) {
+	public Page<Community> findMyCommunitiesLatest(Long writerId, CommunityField field, Pageable pageable) {
 		return communityJpaRepository.findMyCommunitiesLatest(writerId, pageable);
 	}
 
 	@Override
-	public Page<Community> findMyCommunitiesPopular(Long writerId, Pageable pageable) {
+	public Page<Community> findMyCommunitiesPopular(Long writerId, CommunityField field, Pageable pageable) {
 		return communityJpaRepository.findMyCommunitiesPopular(writerId, pageable);
 	}
 }

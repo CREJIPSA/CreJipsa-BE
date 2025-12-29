@@ -20,6 +20,7 @@ public interface CommunityJpaRepository extends JpaRepository<Community, Long> {
 	select c
 	from Community c
 	where c.writerId = :writerId
+	  and (:field is null or c.field = :field)
 	order by c.createdAt desc
 """)
 	Page<Community> findMyCommunitiesLatest(
@@ -31,6 +32,7 @@ public interface CommunityJpaRepository extends JpaRepository<Community, Long> {
 	select c
 	from Community c
 	where c.writerId = :writerId
+	  and (:field is null or c.field = :field)
 	order by c.likeCount desc, c.createdAt desc
 """)
 	Page<Community> findMyCommunitiesPopular(

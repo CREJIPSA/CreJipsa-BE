@@ -17,6 +17,6 @@ public interface CommunityRepository {
 	void delete(Community community);
 	List<Community> findByWriterId(Long writerId);
 	List<Community> findByField(CommunityField field);
-	Page<Community> findMyCommunitiesLatest(Long writerId, Pageable pageable);
-	Page<Community> findMyCommunitiesPopular(Long writerId, Pageable pageable);
+	Page<Community> findMyCommunitiesLatest(Long writerId, CommunityField field, Pageable pageable);
+	Page<Community> findMyCommunitiesPopular(Long writerId, CommunityField field,  Pageable pageable);
 }

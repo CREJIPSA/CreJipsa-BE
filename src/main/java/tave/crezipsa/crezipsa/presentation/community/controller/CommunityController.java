@@ -82,11 +82,12 @@ public class CommunityController {
 	@GetMapping("/my")
 	public GlobalResponseDto<List<MyCommunityResponse>> getCommunitiesByUserId(
 		@AuthenticationPrincipal User user,
+		@RequestParam(required = false) CommunityField field,
 		@RequestParam(defaultValue = "latest") String sort,
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size){
 
-		List<MyCommunityResponse> responses = communityUseCase.getMyCommunities(user.getUserId(), sort, page, size);
+		List<MyCommunityResponse> responses = communityUseCase.getMyCommunities(user.getUserId(), field,sort, page, size);
 		return GlobalResponseDto.success(responses);
 	}
 
