@@ -22,7 +22,7 @@ import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/likes")
+@RequestMapping("/api/likes")
 public class LikeController {
 
 	private final LikeUseCase likeUseCase;
