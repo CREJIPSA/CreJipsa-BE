@@ -3,6 +3,8 @@ package tave.crezipsa.crezipsa.infrastructure.community.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
@@ -47,4 +49,13 @@ public class CommunityRepositoryImpl implements CommunityRepository {
 		return communityJpaRepository.findByField(field);
 	}
 
+	@Override
+	public Page<Community> findMyCommunitiesLatest(Long writerId, Pageable pageable) {
+		return communityJpaRepository.findMyCommunitiesLatest(writerId, pageable);
+	}
+
+	@Override
+	public Page<Community> findMyCommunitiesPopular(Long writerId, Pageable pageable) {
+		return communityJpaRepository.findMyCommunitiesPopular(writerId, pageable);
+	}
 }
