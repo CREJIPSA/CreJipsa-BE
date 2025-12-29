@@ -3,7 +3,9 @@ package tave.crezipsa.crezipsa.application.community.usecase;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -94,15 +96,21 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 	}
 
 	@Override
-	public List<MyCommunityResponse> getMyCommunities(Long userId) {
-		return communityRepository.findByWriterId(userId)
-			.stream()
+	public List<MyCommunityResponse> getMyCommunities(Long userId, String sort, int page, int size) {
+		Pageable pageable = PageRequest.of(page, size);
+
+		Page<Community> pageResult =
+			"popular".equals(sort)
+				? communityRepository.findMyCommunitiesPopular(userId, pageable)
+				: communityRepository.findMyCommunitiesLatest(userId, pageable);
+
+		return pageResult
 			.map(c -> {
-				long likeCount = likeRepository.countByCommunityIdAndIsLikedTrue(c.getCommunityId());
+				long likeCount = c.getLikeCount();
 				long commentCount = commentRepository.countByCommunityId(c.getCommunityId());
 				return MyCommunityResponse.of(c, likeCount, commentCount);
 			})
-			.toList();
+			.getContent();
 	}
 
 	@Override
