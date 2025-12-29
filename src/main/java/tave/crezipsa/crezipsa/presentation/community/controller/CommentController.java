@@ -71,8 +71,12 @@ public class CommentController {
 
 	// 5) 내가 쓴 댓글 조회(내 댓글함)
 	@GetMapping("/my")
-	public GlobalResponseDto<List<MyCommentResponse>> getMyComments(@AuthenticationPrincipal User user) {
-		List<MyCommentResponse> responses = commentUsecase.getMyComments(user.getUserId());
+	public GlobalResponseDto<List<MyCommentResponse>> getMyComments(
+		@AuthenticationPrincipal User user,
+		@RequestParam(defaultValue = "latest") String sort,
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int size) {
+		List<MyCommentResponse> responses = commentUsecase.getMyComments(user.getUserId(), sort, page, size);
 		return GlobalResponseDto.success(responses);
 	}
 
