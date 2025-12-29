@@ -3,10 +3,13 @@ package tave.crezipsa.crezipsa.infrastructure.community.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.domain.community.domain.Comment;
+import tave.crezipsa.crezipsa.domain.community.domain.Community;
 import tave.crezipsa.crezipsa.domain.community.repository.CommentRepository;
 
 @Repository
@@ -48,5 +51,15 @@ public class CommentRepositoryImpl implements CommentRepository {
 	@Override
 	public long countByCommunityId(Long communityId) {
 		return commentJpaRepository.countByCommunityId(communityId);
+	}
+
+	@Override
+	public Page<Community> findMyCommentedCommunitiesLatest(Long userId, Pageable pageable) {
+		return commentJpaRepository.findMyCommentedCommunitiesLatest(userId, pageable);
+	}
+
+	@Override
+	public Page<Community> findMyCommentedCommunitiesPopular(Long userId, Pageable pageable) {
+		return commentJpaRepository.findMyCommentedCommunitiesPopular(userId, pageable);
 	}
 }
