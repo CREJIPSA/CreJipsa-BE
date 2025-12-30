@@ -2,6 +2,6 @@ package tave.crezipsa.crezipsa.domain.user.enums;
 
 public enum Platform {
     YOUTUBE,
-    INSTA,
+    INSTAGRAM,  //수정됨:
     TIKTOK
 }
