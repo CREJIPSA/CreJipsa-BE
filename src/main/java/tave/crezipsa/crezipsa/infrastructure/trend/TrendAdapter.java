@@ -37,9 +37,6 @@ public class TrendAdapter implements TrendQueryPort {
                 rs.getString("platform")
         ));
 
-        System.out.println("MAPPED SIZE=" + rows.size());
-        System.out.println("MAPPED=" + rows);
-
         return rows;
     }
 }
