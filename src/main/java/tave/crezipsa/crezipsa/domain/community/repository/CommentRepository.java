@@ -4,7 +4,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import tave.crezipsa.crezipsa.domain.community.domain.Comment;
+import tave.crezipsa.crezipsa.domain.community.domain.Community;
 
 public interface CommentRepository {
 
@@ -15,5 +19,8 @@ public interface CommentRepository {
 	List<Comment> findByParentId(Long parentId);
 	void delete(Comment comment);
 	long countByCommunityId(Long communityId);
+	Page<Community> findMyCommentedCommunitiesLatest(Long userId, Pageable pageable);
+	Page<Community> findMyCommentedCommunitiesPopular(Long userId, Pageable pageable);
+
 }
 

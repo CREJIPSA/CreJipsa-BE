@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -117,17 +120,16 @@ public class CommentUseCaseImpl implements  CommentUsecase {
 	}
 
 	@Override
-	public List<MyCommentResponse> getMyComments(Long userId) {
+	public List<MyCommentResponse> getMyComments(Long userId, String sort, int page, int size) {
+		Pageable pageable = PageRequest.of(page, size);
 
-		List<Comment> myComments = commentRepository.findByUserId(userId);
+		Page<Community> pageResult =
+			"popular".equals(sort)
+				? commentRepository.findMyCommentedCommunitiesPopular(userId, pageable)
+				: commentRepository.findMyCommentedCommunitiesLatest(userId, pageable);
 
-		return myComments.stream()
-			.map(comment -> {
-				Community community = communityRepository.findById(comment.getCommunityId())
-					.orElseThrow(() -> new CommonException(ErrorCode.COMMUNITY_NOT_FOUND));
-
-				return MyCommentResponse.of(community);
-			})
+		return pageResult.stream()
+			.map(MyCommentResponse::of)
 			.toList();
 	}
 

@@ -35,6 +35,7 @@ public enum ErrorCode implements BaseErrorCode {
 	INVALID_COMMENT_CONTENT(400, "C4003", "댓글 내용은 비어 있을 수 없습니다."),
 	INVALID_COMMENT_DEPTH(400, "C4004", "대댓글엔 대댓글을 달 수 없습니다."),
 	INVALID_PARENT_COMMUNITY(400, "C4005", "대댓글은 동일한 게시글 내에서만 달 수 있습니다"),
+	INVALID_TIP_UPLOAD(400, "C4006", "팁 게시물은 최소 이미지 1개 첨부가 필수입니다"),
 	COMMENT_NOT_FOUND(404, "C40402", "해당 댓글을 찾을 수 없습니다."),
 	ALREADY_LIKED(400, "C40002", "이미 좋아요를 누른 게시글입니다."),
 	NOT_LIKED(400,"C40003", "좋아요를 누르지 않은 글입니다."),

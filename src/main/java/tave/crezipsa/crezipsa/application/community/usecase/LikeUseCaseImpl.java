@@ -2,6 +2,7 @@ package tave.crezipsa.crezipsa.application.community.usecase;
 
 import java.time.LocalDateTime;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.application.community.dto.response.MyLikedCommunityResponse;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
+import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 import tave.crezipsa.crezipsa.domain.community.domain.Like;
 import tave.crezipsa.crezipsa.domain.community.domain.LikeId;
 import tave.crezipsa.crezipsa.domain.community.repository.CommentRepository;
@@ -76,16 +78,22 @@ public class LikeUseCaseImpl  implements LikeUseCase {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Slice<MyLikedCommunityResponse> getMyLikedCommunities(Long userId, Pageable pageable) {
-		return likeRepository.findAllByUserIdAndIsLikedTrue(userId, pageable)
-			.map(like -> {
-				Community community = communityRepository.findById(like.getCommunityId())
-					.orElseThrow(() -> new CommonException(ErrorCode.COMMUNITY_NOT_FOUND));
-				long likeCount = likeRepository.countByCommunityIdAndIsLikedTrue(like.getCommunityId());
-				long commentCount = commentRepository.countByCommunityId(community.getCommunityId());
+	public Slice<MyLikedCommunityResponse> getMyLikedCommunities(Long userId, CommunityField field, String sort, Pageable pageable) {
+		Page<Community> page =
+			"popular".equals(sort)
+				? likeRepository.findMyLikedCommunitiesPopular(userId, field, pageable)
+				: likeRepository.findMyLikedCommunitiesLatest(userId, field, pageable);
 
-				return MyLikedCommunityResponse.of(community, likeCount, commentCount);
-			});
+		return page.map(community -> {
+			long commentCount =
+				commentRepository.countByCommunityId(community.getCommunityId());
+
+			return MyLikedCommunityResponse.of(
+				community,
+				community.getLikeCount(),
+				commentCount
+			);
+		});
 	}
 
 	public static String preview(String content) {

@@ -43,6 +43,10 @@ dependencies {
     //jdbc
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
+    //XML <-> 자바 객체 변환
+    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.5'
+
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.mysql:mysql-connector-j'

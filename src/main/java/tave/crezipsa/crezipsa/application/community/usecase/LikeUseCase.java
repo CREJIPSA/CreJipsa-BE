@@ -4,12 +4,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 import tave.crezipsa.crezipsa.application.community.dto.response.MyLikedCommunityResponse;
+import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 
 public interface LikeUseCase {
 
 	void like(Long userId, Long communityId);
 	void unlike(Long userId, Long communityId);
 	long getLikeCount(Long communityId);
-	Slice<MyLikedCommunityResponse> getMyLikedCommunities(Long userId, Pageable pageable);
+	Slice<MyLikedCommunityResponse> getMyLikedCommunities(Long userId, CommunityField field, String sort, Pageable pageable);
 
 }

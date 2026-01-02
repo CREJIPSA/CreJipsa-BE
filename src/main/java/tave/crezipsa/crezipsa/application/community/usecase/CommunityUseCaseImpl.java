@@ -3,7 +3,9 @@ package tave.crezipsa.crezipsa.application.community.usecase;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,15 +37,14 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 	private final CommentUsecase commentUsecase;
 
 	@Override
-	public CommunityResponse createCommunity(Long userId, CommunityCreateRequest communityCreateRequest) {
-		Community community = Community.builder()
-			.title(communityCreateRequest.getTitle())
-			.content(communityCreateRequest.getContent())
-			.imageUrls(communityCreateRequest.getImageUrls())
-			.field(communityCreateRequest.getField())
-			.writerId(userId)
-			.likeCount(0L)
-			.build();
+	public CommunityResponse createCommunity(Long userId, CommunityCreateRequest request) {
+		Community community = Community.create(
+			request.getTitle(),
+			request.getContent(),
+			request.getField(),
+			request.getImageUrls(),
+			userId
+		);
 
 		return CommunityResponse.of(communityRepository.save(community));
 	}
@@ -95,15 +96,21 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 	}
 
 	@Override
-	public List<MyCommunityResponse> getMyCommunities(Long userId) {
-		return communityRepository.findByWriterId(userId)
-			.stream()
+	public List<MyCommunityResponse> getMyCommunities(Long userId, CommunityField field, String sort, int page, int size) {
+		Pageable pageable = PageRequest.of(page, size);
+
+		Page<Community> pageResult =
+			"popular".equals(sort)
+				? communityRepository.findMyCommunitiesPopular(userId,field, pageable)
+				: communityRepository.findMyCommunitiesLatest(userId,field, pageable);
+
+		return pageResult
 			.map(c -> {
-				long likeCount = likeRepository.countByCommunityIdAndIsLikedTrue(c.getCommunityId());
+				long likeCount = c.getLikeCount();
 				long commentCount = commentRepository.countByCommunityId(c.getCommunityId());
 				return MyCommunityResponse.of(c, likeCount, commentCount);
 			})
-			.toList();
+			.getContent();
 	}
 
 	@Override

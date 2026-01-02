@@ -2,6 +2,7 @@ package tave.crezipsa.crezipsa.presentation.community.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,17 +10,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.application.community.dto.response.MyLikedCommunityResponse;
 import tave.crezipsa.crezipsa.application.community.usecase.LikeUseCase;
+import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
 import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/likes")
+@RequestMapping("/api/likes")
 public class LikeController {
 
 	private final LikeUseCase likeUseCase;
@@ -44,9 +47,14 @@ public class LikeController {
 	@GetMapping("/me")
 	public GlobalResponseDto<List<MyLikedCommunityResponse>> getMyLikedCommunities(
 		@AuthenticationPrincipal User user,
-		Pageable pageable
+		@RequestParam(required = false)CommunityField field,
+		@RequestParam(defaultValue =  "latest") String sort,
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int size
 	) {
-		var slice = likeUseCase.getMyLikedCommunities(user.getUserId(), pageable);
+		Pageable pageable = PageRequest.of(page, size);
+
+		var slice = likeUseCase.getMyLikedCommunities(user.getUserId(), field, sort, pageable);
 		return GlobalResponseDto.success(slice.getContent());
 	}
 

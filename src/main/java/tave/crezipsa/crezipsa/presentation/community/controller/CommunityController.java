@@ -81,9 +81,13 @@ public class CommunityController {
 	//내가 쓴 글 조회
 	@GetMapping("/my")
 	public GlobalResponseDto<List<MyCommunityResponse>> getCommunitiesByUserId(
-		@AuthenticationPrincipal User user) {
+		@AuthenticationPrincipal User user,
+		@RequestParam(required = false) CommunityField field,
+		@RequestParam(defaultValue = "latest") String sort,
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int size){
 
-		List<MyCommunityResponse> responses = communityUseCase.getMyCommunities(user.getUserId());
+		List<MyCommunityResponse> responses = communityUseCase.getMyCommunities(user.getUserId(), field,sort, page, size);
 		return GlobalResponseDto.success(responses);
 	}
 
