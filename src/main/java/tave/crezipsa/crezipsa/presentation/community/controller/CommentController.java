@@ -20,6 +20,7 @@ import tave.crezipsa.crezipsa.application.community.dto.request.CommentUpdateReq
 import tave.crezipsa.crezipsa.application.community.dto.response.CommentResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.MyCommentResponse;
 import tave.crezipsa.crezipsa.application.community.usecase.CommentUsecase;
+import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
 import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
 
@@ -73,10 +74,10 @@ public class CommentController {
 	@GetMapping("/my")
 	public GlobalResponseDto<List<MyCommentResponse>> getMyComments(
 		@AuthenticationPrincipal User user,
-		@RequestParam(defaultValue = "latest") String sort,
+		@RequestParam(defaultValue = "latest") CommunityField field,
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size) {
-		List<MyCommentResponse> responses = commentUsecase.getMyComments(user.getUserId(), sort, page, size);
+		List<MyCommentResponse> responses = commentUsecase.getMyComments(user.getUserId(), field, page, size);
 		return GlobalResponseDto.success(responses);
 	}
 
