@@ -20,6 +20,7 @@ import tave.crezipsa.crezipsa.application.community.dto.response.MyCommentRespon
 import tave.crezipsa.crezipsa.application.community.mapper.CommentMapper;
 import tave.crezipsa.crezipsa.domain.community.domain.Comment;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
+import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 import tave.crezipsa.crezipsa.domain.community.repository.CommentRepository;
 import tave.crezipsa.crezipsa.domain.community.repository.CommunityRepository;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
@@ -120,16 +121,14 @@ public class CommentUseCaseImpl implements  CommentUsecase {
 	}
 
 	@Override
-	public List<MyCommentResponse> getMyComments(Long userId, String sort, int page, int size) {
+	public List<MyCommentResponse> getMyComments(Long userId, CommunityField field, int page, int size) {
 		Pageable pageable = PageRequest.of(page, size);
 
-		Page<Community> pageResult =
-			"popular".equals(sort)
-				? commentRepository.findMyCommentedCommunitiesPopular(userId, pageable)
-				: commentRepository.findMyCommentedCommunitiesLatest(userId, pageable);
 
-		return pageResult.stream()
-			.map(MyCommentResponse::of)
+		return commentRepository
+			.findMyCommentsByCommunityField(userId, field, pageable)
+			.stream()
+			.map(MyCommentResponse::of) // Comment 기준
 			.toList();
 	}
 

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.domain.community.domain.Comment;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
+import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 import tave.crezipsa.crezipsa.domain.community.repository.CommentRepository;
 
 @Repository
@@ -54,12 +55,7 @@ public class CommentRepositoryImpl implements CommentRepository {
 	}
 
 	@Override
-	public Page<Community> findMyCommentedCommunitiesLatest(Long userId, Pageable pageable) {
-		return commentJpaRepository.findMyCommentedCommunitiesLatest(userId, pageable);
-	}
-
-	@Override
-	public Page<Community> findMyCommentedCommunitiesPopular(Long userId, Pageable pageable) {
-		return commentJpaRepository.findMyCommentedCommunitiesPopular(userId, pageable);
+	public Page<Community> findMyCommentsByCommunityField(Long userId, CommunityField field, Pageable pageable) {
+		return commentJpaRepository.findMyCommentsByCommunityField(userId, field, pageable);
 	}
 }
