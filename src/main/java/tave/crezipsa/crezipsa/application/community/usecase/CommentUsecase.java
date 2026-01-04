@@ -6,6 +6,7 @@ import tave.crezipsa.crezipsa.application.community.dto.request.CommentCreateReq
 import tave.crezipsa.crezipsa.application.community.dto.request.CommentUpdateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommentResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.MyCommentResponse;
+import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 
 public interface CommentUsecase {
 
@@ -13,7 +14,7 @@ public interface CommentUsecase {
 	CommentResponse updateComment(Long commentId, Long userId, CommentUpdateRequest request);
 	void deleteComment(Long commentId, Long userId);
 	List<CommentResponse> getComments(Long communityId);
-	List<MyCommentResponse> getMyComments(Long userId, String sort, int page, int size);
+	List<MyCommentResponse> getMyComments(Long userId, CommunityField field , int page, int size);
 
 
 }
