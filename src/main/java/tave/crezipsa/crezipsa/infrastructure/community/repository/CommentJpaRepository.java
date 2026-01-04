@@ -19,12 +19,13 @@ public interface CommentJpaRepository extends JpaRepository<Comment, Long> {
 	List<Comment> findByParentId(Long parentId);
 	long countByCommunityId(Long communityId);
 	@Query("""
-select cm
-from Comment cm
-join Community c on c.communityId = cm.communityId
+select c
+from Community c
+join Comment cm on cm.communityId = c.communityId
 where cm.userId = :userId
   and (:field is null or c.field = :field)
-order by cm.createdAt desc
+group by c.communityId
+order by max(cm.createdAt) desc
 """)
 	Page<Community> findMyCommentsByCommunityField(
 		@Param("userId") Long userId,

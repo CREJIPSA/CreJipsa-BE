@@ -74,7 +74,7 @@ public class CommentController {
 	@GetMapping("/my")
 	public GlobalResponseDto<List<MyCommentResponse>> getMyComments(
 		@AuthenticationPrincipal User user,
-		@RequestParam(defaultValue = "latest") CommunityField field,
+		@RequestParam(required = false) CommunityField field,
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size) {
 		List<MyCommentResponse> responses = commentUsecase.getMyComments(user.getUserId(), field, page, size);
