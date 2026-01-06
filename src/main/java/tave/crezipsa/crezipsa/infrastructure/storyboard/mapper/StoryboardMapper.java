@@ -10,6 +10,7 @@ public class StoryboardMapper {
 			.id(e.getStoryBoardId())
 			.userId(e.getUserId())
 			.title(e.getStoryboardTitle())
+			.sourceChatMessageId(e.getSourceChatMessageId())
 			.createdAt(e.getCreatedAt())
 			.build();
 	}
@@ -19,6 +20,7 @@ public class StoryboardMapper {
 			.storyBoardId(d.getId())
 			.userId(d.getUserId())
 			.storyboardTitle(d.getTitle())
+			.sourceChatMessageId(d.getSourceChatMessageId())
 			.createdAt(d.getCreatedAt())
 			.build();
 	}

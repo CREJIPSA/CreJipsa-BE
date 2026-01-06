@@ -27,5 +27,8 @@ public class StoryboardJpaEntity {
 	private Long storyBoardId;
 	private Long userId;
 	private String storyboardTitle;
+
+	@Column(name = "source_chat_message_id")
+	private Long sourceChatMessageId;
 	private LocalDateTime createdAt;
 }
