@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 
 import tave.crezipsa.crezipsa.domain.community.domain.Comment;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
+import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 
 public interface CommentRepository {
 
@@ -19,8 +20,7 @@ public interface CommentRepository {
 	List<Comment> findByParentId(Long parentId);
 	void delete(Comment comment);
 	long countByCommunityId(Long communityId);
-	Page<Community> findMyCommentedCommunitiesLatest(Long userId, Pageable pageable);
-	Page<Community> findMyCommentedCommunitiesPopular(Long userId, Pageable pageable);
+	Page<Community> findMyCommentsByCommunityField(Long userId, CommunityField field, Pageable pageable);
 
 }
 

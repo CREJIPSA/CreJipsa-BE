@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import tave.crezipsa.crezipsa.domain.community.domain.Comment;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
+import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 
 public interface CommentJpaRepository extends JpaRepository<Comment, Long> {
 
@@ -17,40 +18,20 @@ public interface CommentJpaRepository extends JpaRepository<Comment, Long> {
 	List<Comment> findByUserId(Long userId);
 	List<Comment> findByParentId(Long parentId);
 	long countByCommunityId(Long communityId);
-
 	@Query("""
 select c
 from Community c
-where c.communityId in (
-    select cm.communityId
-    from Comment cm
-    where cm.userId = :userId
-)
-order by (
-    select max(cm2.createdAt)
-    from Comment cm2
-    where cm2.communityId = c.communityId
-      and cm2.userId = :userId
-) desc
+join Comment cm on cm.communityId = c.communityId
+where cm.userId = :userId
+  and (:field is null or c.field = :field)
+group by c.communityId
+order by max(cm.createdAt) desc
 """)
-	Page<Community> findMyCommentedCommunitiesLatest(
+	Page<Community> findMyCommentsByCommunityField(
 		@Param("userId") Long userId,
+		@Param("field") CommunityField field,
 		Pageable pageable
 	);
 
-	@Query("""
-select c
-from Community c
-where c.communityId in (
-    select cm.communityId
-    from Comment cm
-    where cm.userId = :userId
-)
-order by c.likeCount desc, c.createdAt desc
-""")
-	Page<Community> findMyCommentedCommunitiesPopular(
-		@Param("userId") Long userId,
-		Pageable pageable
-	);
 
 }
