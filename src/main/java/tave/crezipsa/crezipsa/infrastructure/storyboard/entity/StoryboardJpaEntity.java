@@ -25,21 +25,7 @@ public class StoryboardJpaEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long storyBoardId;
-
 	private Long userId;
-
 	private String storyboardTitle;
-
-	@Column(columnDefinition = "TEXT")
-	private String cutSummary;
-
-	@Column(columnDefinition = "TEXT")
-	private String script;
-
-	@Column(columnDefinition = "TEXT")
-	private String caption;
-
-	private String time;
-
 	private LocalDateTime createdAt;
 }

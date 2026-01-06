@@ -10,10 +10,6 @@ public class StoryboardMapper {
 			.id(e.getStoryBoardId())
 			.userId(e.getUserId())
 			.title(e.getStoryboardTitle())
-			.cutSummary(e.getCutSummary())
-			.script(e.getScript())
-			.caption(e.getCaption())
-			.time(e.getTime())
 			.createdAt(e.getCreatedAt())
 			.build();
 	}
@@ -23,10 +19,6 @@ public class StoryboardMapper {
 			.storyBoardId(d.getId())
 			.userId(d.getUserId())
 			.storyboardTitle(d.getTitle())
-			.cutSummary(d.getCutSummary())
-			.script(d.getScript())
-			.caption(d.getCaption())
-			.time(d.getTime())
 			.createdAt(d.getCreatedAt())
 			.build();
 	}
