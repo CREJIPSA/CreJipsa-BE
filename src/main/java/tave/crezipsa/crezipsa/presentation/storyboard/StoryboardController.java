@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import tave.crezipsa.crezipsa.application.storyboard.dto.request.SaveStoryboardRequest;
-import tave.crezipsa.crezipsa.application.storyboard.dto.request.UpdateStoryboardRequest;
-import tave.crezipsa.crezipsa.application.storyboard.dto.response.StoryboardStructuredResponse;
+import tave.crezipsa.crezipsa.application.storyboard.dto.request.CreateStoryboardRequest;
+import tave.crezipsa.crezipsa.application.storyboard.dto.request.UpdateStoryboardCutRequest;
+import tave.crezipsa.crezipsa.application.storyboard.dto.request.UpdateStoryboardTitleRequest;
+import tave.crezipsa.crezipsa.application.storyboard.dto.response.StoryboardCutResponse;
+import tave.crezipsa.crezipsa.application.storyboard.dto.response.StoryboardEditorResponse;
 import tave.crezipsa.crezipsa.application.storyboard.dto.response.StoryboardSummaryResponse;
 import tave.crezipsa.crezipsa.application.storyboard.usecase.StoryboardUsecase;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
@@ -29,23 +31,28 @@ public class StoryboardController {
 
 	private final StoryboardUsecase storyboardUsecase;
 
+	/**
+	 * 스토리보드 생성
+	 * - 채팅에서 편집 진입: chatMessageId 포함
+	 * - 사이드 탭 새 스토리보드: chatMessageId null
+	 * 생성 시 기본 컷 1개도 같이 만들어서 내려줌
+	 */
 	@PostMapping("/create")
-	public GlobalResponseDto<StoryboardStructuredResponse> create(
+	public GlobalResponseDto<StoryboardEditorResponse> create(
 		@AuthenticationPrincipal User user,
-		@Validated @RequestBody SaveStoryboardRequest request
+		@RequestBody CreateStoryboardRequest request
 	) {
-		StoryboardStructuredResponse response =
-			storyboardUsecase.createFromChatMessage(
-				user.getUserId(),
-				request.chatMessageId(),
-				request.title()
-			);
-
-		return GlobalResponseDto.success(response);
+		return GlobalResponseDto.success(
+			storyboardUsecase.create(user.getUserId(), request)
+		);
 	}
 
+	/**
+	 * 스토리보드 편집 화면 조회
+	 * - 문서 정보 + 컷 리스트
+	 */
 	@GetMapping("/{storyboardId}")
-	public GlobalResponseDto<StoryboardStructuredResponse> get(
+	public GlobalResponseDto<StoryboardEditorResponse> get(
 		@AuthenticationPrincipal User user,
 		@PathVariable Long storyboardId
 	) {
@@ -54,6 +61,9 @@ public class StoryboardController {
 		);
 	}
 
+	/**
+	 * 내 스토리보드 보관함 리스트
+	 */
 	@GetMapping
 	public GlobalResponseDto<List<StoryboardSummaryResponse>> getMyList(
 		@AuthenticationPrincipal User user
@@ -63,23 +73,65 @@ public class StoryboardController {
 		);
 	}
 
-	@PatchMapping("/{storyboardId}")
-	public GlobalResponseDto<StoryboardStructuredResponse> update(
+	/**
+	 * 스토리보드 제목 수정
+	 */
+	@PatchMapping("/{storyboardId}/title")
+	public GlobalResponseDto<Void> update(
 		@AuthenticationPrincipal User user,
 		@PathVariable Long storyboardId,
-		@Validated @RequestBody UpdateStoryboardRequest request
+		@Validated @RequestBody UpdateStoryboardTitleRequest request
 	) {
-		return GlobalResponseDto.success(
-			storyboardUsecase.update(user.getUserId(), storyboardId, request)
-		);
+		storyboardUsecase.updateTitle(user.getUserId(), storyboardId, request);
+		return GlobalResponseDto.success();
 	}
 
-	@DeleteMapping("/{storyboardId}")
-	public GlobalResponseDto<Void> delete(
+	/**
+	 * 컷 추가 (+ 버튼)
+	 */
+	@PostMapping("/{storyboardId}/cuts")
+	public GlobalResponseDto<StoryboardCutResponse> addCut(
 		@AuthenticationPrincipal User user,
 		@PathVariable Long storyboardId
 	) {
-		storyboardUsecase.delete(user.getUserId(), storyboardId);
+		return GlobalResponseDto.success(
+			storyboardUsecase.addCut(user.getUserId(), storyboardId)
+		);
+	}
+
+	/**
+	 * 컷 수정 (편집 저장)
+	 * cutId만으로 접근 (storyboardId는 cut에 이미 연결되어 있음)
+	 */
+	@PatchMapping("/cuts/{cutId}")
+	public GlobalResponseDto<StoryboardCutResponse> updateCut(
+		@AuthenticationPrincipal User user,
+		@PathVariable Long cutId,
+		@RequestBody UpdateStoryboardCutRequest request
+	) {
+		return GlobalResponseDto.success(
+			storyboardUsecase.updateCut(user.getUserId(), cutId, request)
+		);
+	}
+
+	/**
+	 * 컷 삭제
+	 */
+	@DeleteMapping("/cuts/{cutId}")
+	public GlobalResponseDto<Void> deleteCut(
+		@AuthenticationPrincipal User user,
+		@PathVariable Long cutId
+	) {
+		storyboardUsecase.deleteCut(user.getUserId(), cutId);
+		return GlobalResponseDto.success();
+	}
+
+	@DeleteMapping("/{storyboardId}")
+	public GlobalResponseDto<Void> deleteStoryboard(
+		@AuthenticationPrincipal User user,
+		@PathVariable Long storyboardId
+	) {
+		storyboardUsecase.deleteStoryboard(user.getUserId(), storyboardId);
 		return GlobalResponseDto.success();
 	}
 
