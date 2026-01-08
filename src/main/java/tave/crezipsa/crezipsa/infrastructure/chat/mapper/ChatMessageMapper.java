@@ -11,6 +11,7 @@ public class ChatMessageMapper {
 			.chatRoomId(e.getChatRoomId())
 			.senderType(ChatMessage.SenderType.valueOf(e.getSenderType().name()))
 			.content(e.getContent())
+			.createdAt(e.getCreatedAt())
 			.build();
 	}
 
@@ -20,6 +21,7 @@ public class ChatMessageMapper {
 			.chatRoomId(d.getChatRoomId())
 			.senderType(ChatMessageJpaEntity.SenderType.valueOf(d.getSenderType().name()))
 			.content(d.getContent())
+			.createdAt(d.getCreatedAt())
 			.build();
 	}
 
