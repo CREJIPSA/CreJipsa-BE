@@ -10,4 +10,13 @@ public record ChatDetailResponse(
 	String content,
 	LocalDateTime createdAt
 ) {
+
+	public static ChatDetailResponse from(ChatMessage message) {
+		return new ChatDetailResponse(
+			message.getId(),
+			message.getSenderType(),
+			message.getContent(),
+			message.getCreatedAt()
+		);
+	}
 }
