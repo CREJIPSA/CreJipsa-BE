@@ -23,6 +23,15 @@ public class ChatRoom {
 			.createdAt(LocalDateTime.now())
 			.build();
 	}
+	public  ChatRoom changeTitle(String title) {
+		return ChatRoom.builder()
+			.id(this.id)
+			.userId(this.userId)
+			.title(title)
+			.createdAt(this.createdAt)
+			.build();
+	}
+
 }
 
 
