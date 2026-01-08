@@ -1,5 +1,6 @@
 package tave.crezipsa.crezipsa.infrastructure.chat.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
@@ -25,6 +26,20 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepositoryPort {
 	@Override
 	public Optional<ChatRoom> findById(Long chatRoomId) {
 		return chatRoomJpaRepository.findById(chatRoomId)
+			.map(ChatRoomMapper::toDomain);
+	}
+
+	@Override
+	public List<ChatRoom> findByUserId(Long userId) {
+		return chatRoomJpaRepository.findByUserId(userId).stream()
+			.map(ChatRoomMapper::toDomain)
+			.toList();
+	}
+
+	@Override
+	public Optional<ChatRoom> findByIdAndUserId(Long chatRoomId, Long userId) {
+		return chatRoomJpaRepository
+			.findByIdAndUserId(chatRoomId, userId)
 			.map(ChatRoomMapper::toDomain);
 	}
 }
