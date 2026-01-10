@@ -1,6 +1,8 @@
 package tave.crezipsa.crezipsa.infrastructure.chat.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
@@ -35,5 +37,19 @@ public class ChatMessageRepositoryImpl implements ChatMessageRepositoryPort {
 		return chatMessageJpaRepository.findById(messageId)
 			.map(ChatMessageMapper::toDomain)
 			.orElse(null);
+	}
+
+	@Override
+	public List<ChatMessage> findByChatRoomIdOrderByCreatedAtAsc(Long chatRoomId) {
+		return chatMessageJpaRepository
+			.findByChatRoomIdOrderByCreatedAtAsc(chatRoomId)
+			.stream()
+			.map(ChatMessageMapper::toDomain)
+			.toList();
+	}
+
+	@Override
+	public Optional<LocalDateTime> findLastMessageAt(Long chatRoomId) {
+		return chatMessageJpaRepository.findLastMessageAt(chatRoomId);
 	}
 }

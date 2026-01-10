@@ -27,4 +27,7 @@ public class ChatRoomJpaEntity {
 
 	private String chatTitle;
 
+	public void changeTitle(String title) {
+		this.chatTitle = title;
+	}
 }

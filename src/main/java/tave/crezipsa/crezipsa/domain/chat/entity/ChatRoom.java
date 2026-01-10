@@ -13,7 +13,7 @@ public class ChatRoom {
 
 	private final Long id;
 	private final Long userId;
-	private final String title;
+	private String title;
 	private final LocalDateTime createdAt;
 
 	public static ChatRoom create(Long userId, String title) {
@@ -23,6 +23,7 @@ public class ChatRoom {
 			.createdAt(LocalDateTime.now())
 			.build();
 	}
+
 }
 
 

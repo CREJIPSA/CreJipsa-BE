@@ -1,5 +1,7 @@
 package tave.crezipsa.crezipsa.infrastructure.chat.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -34,6 +36,9 @@ public class ChatMessageJpaEntity {
 
 	@Column(columnDefinition = "TEXT")
 	private String content;
+
+	@Column(nullable = false)
+	private LocalDateTime createdAt;
 
 	public enum SenderType {
 		USER, AI
