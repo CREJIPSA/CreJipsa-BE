@@ -54,4 +54,13 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepositoryPort {
 
 		entity.changeTitle(title);
 	}
+
+	@Override
+	public List<ChatRoom> searchByTitle(Long userId, String keyword) {
+		return chatRoomJpaRepository
+			.findByUserIdAndChatTitleContaining(userId, keyword)
+			.stream()
+			.map(ChatRoomMapper::toDomain)
+			.toList();
+	}
 }
