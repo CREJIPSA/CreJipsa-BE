@@ -12,11 +12,11 @@ public record UnifiedSearchResponse(
 		Long id,
 		String title,
 		SearchType type
-	){}
+	) {
 
-	public enum SearchType {
-		STORYBOARD,
-		CHAT_ROOM
+		public enum SearchType {
+			STORYBOARD,
+			CHAT_ROOM
+		}
 	}
-
 }
