@@ -56,7 +56,7 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token);
 
         }catch (ExpiredJwtException e){
-            throw new JwtAuthenticationException(ErrorCode.ACCESS_TOKEN_EXPIRED);
+            throw new JwtAuthenticationException(ErrorCode.TOKEN_EXPIRED);
         }
         catch (JwtException e) {
             throw new JwtAuthenticationException(ErrorCode.INVALID_TOKEN);

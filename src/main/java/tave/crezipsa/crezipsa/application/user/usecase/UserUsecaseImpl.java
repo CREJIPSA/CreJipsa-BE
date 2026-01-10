@@ -57,13 +57,13 @@ public class UserUsecaseImpl implements UserUsecase {
     }
 
     @Override
-    public UserInterestResponse addUserInterest(Long userId, UserInterestRequest request) {
+    public UserInterestResponse addUserInterest(Long userId,String category) {
 
-        if (userInterestRepository.existsByUserIdAndCategory(userId, request.category())) {
+        if (userInterestRepository.existsByUserIdAndCategory(userId, category)) {
             throw new CommonException(ErrorCode.ALREADY_INTEREST);
         }
 
-        UserInterest newUserInterest = userInterestRepository.save( UserInterest.create(userId, request.category()) );
+        UserInterest newUserInterest = userInterestRepository.save( UserInterest.create(userId, category) );
 
         return UserInterestResponse.from(newUserInterest);
     }
@@ -83,12 +83,12 @@ public class UserUsecaseImpl implements UserUsecase {
     }
 
     @Override
-    public void deleteUserInterest(UserInterestRequest request) {
-        if( !userInterestRepository.existByInterestId(request.interestId()) ){
+    public void deleteUserInterest(Long userId, Long interestId) {
+        if( !userInterestRepository.existByInterestId(interestId)) {
             throw new CommonException( ErrorCode.INVALD_INTEREST );
         }
 
-        userInterestRepository.deleteByInterestId(request.interestId());
+        userInterestRepository.deleteByInterestId(interestId);
     }
 
 }
