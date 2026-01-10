@@ -41,4 +41,13 @@ public class StoryboardRepositoryImpl implements StoryboardRepositoryPort {
 	public void deleteById(Long storyboardId) {
 		storyboardJpaRepository.deleteById(storyboardId);
 	}
+
+	@Override
+	public List<Storyboard> searchByTitle(Long userId, String keyword) {
+		return storyboardJpaRepository
+			.findByUserIdAndStoryboardTitleContaining(userId, keyword)
+			.stream()
+			.map(StoryboardMapper::toDomain)
+			.toList();
+	}
 }
