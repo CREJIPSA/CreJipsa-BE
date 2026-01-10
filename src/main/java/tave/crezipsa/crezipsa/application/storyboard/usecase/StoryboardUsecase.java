@@ -2,16 +2,27 @@ package tave.crezipsa.crezipsa.application.storyboard.usecase;
 
 import java.util.List;
 
-import tave.crezipsa.crezipsa.application.storyboard.dto.request.UpdateStoryboardRequest;
-import tave.crezipsa.crezipsa.application.storyboard.dto.response.StoryboardStructuredResponse;
+import tave.crezipsa.crezipsa.application.storyboard.dto.request.CreateStoryboardRequest;
+import tave.crezipsa.crezipsa.application.storyboard.dto.request.UpdateStoryboardCutRequest;
+import tave.crezipsa.crezipsa.application.storyboard.dto.request.UpdateStoryboardTitleRequest;
+import tave.crezipsa.crezipsa.application.storyboard.dto.response.StoryboardCutResponse;
+import tave.crezipsa.crezipsa.application.storyboard.dto.response.StoryboardEditorResponse;
 import tave.crezipsa.crezipsa.application.storyboard.dto.response.StoryboardSummaryResponse;
 
 public interface StoryboardUsecase {
-	StoryboardStructuredResponse createFromChatMessage(Long userId, Long chatMessageId, String title);
+	StoryboardEditorResponse create(Long userId, CreateStoryboardRequest request);
 
-	StoryboardStructuredResponse get(Long userId, Long storyboardId);
+	StoryboardEditorResponse get(Long userId, Long storyboardId);
+
 	List<StoryboardSummaryResponse> getMyList(Long userId);
 
-	StoryboardStructuredResponse update(Long userId, Long storyboardId, UpdateStoryboardRequest request);
-	void delete(Long userId, Long storyboardId);
+	void updateTitle(Long userId, Long storyboardId, UpdateStoryboardTitleRequest request);
+
+	StoryboardCutResponse addCut(Long userId, Long storyboardId);
+
+	StoryboardCutResponse updateCut(Long userId, Long cutId, UpdateStoryboardCutRequest request);
+
+	void deleteCut(Long userId, Long cutId);
+
+	void deleteStoryboard(Long userId, Long storyboardId);
 }
