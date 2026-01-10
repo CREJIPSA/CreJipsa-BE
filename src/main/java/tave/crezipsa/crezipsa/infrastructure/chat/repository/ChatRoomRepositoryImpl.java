@@ -8,6 +8,9 @@ import org.springframework.stereotype.Repository;
 import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.domain.chat.entity.ChatRoom;
 import tave.crezipsa.crezipsa.domain.chat.port.ChatRoomRepositoryPort;
+import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
+import tave.crezipsa.crezipsa.global.exception.model.CommonException;
+import tave.crezipsa.crezipsa.infrastructure.chat.entity.ChatRoomJpaEntity;
 import tave.crezipsa.crezipsa.infrastructure.chat.mapper.ChatRoomMapper;
 
 @Repository
@@ -41,5 +44,14 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepositoryPort {
 		return chatRoomJpaRepository
 			.findByChatRoomIdAndUserId(chatRoomId, userId)
 			.map(ChatRoomMapper::toDomain);
+	}
+
+	@Override
+	public void changeTitle(Long chatRoomId, Long userId, String title) {
+		ChatRoomJpaEntity entity = chatRoomJpaRepository
+			.findByChatRoomIdAndUserId(chatRoomId,userId)
+			.orElseThrow(() -> new CommonException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+
+		entity.changeTitle(title);
 	}
 }

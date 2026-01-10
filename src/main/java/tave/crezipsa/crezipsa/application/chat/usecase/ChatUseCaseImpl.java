@@ -50,8 +50,7 @@ public class ChatUseCaseImpl implements ChatUseCase {
 
 	@Override
 	public void changeChatRoomTitle(Long userId, Long chatRoomId, String title) {
-		ChatRoom room = getChatRoom(chatRoomId, userId);
-		room.changeTitle(title);
+		chatRoomRepository.changeTitle(chatRoomId, userId, title);
 	}
 
 	@Override

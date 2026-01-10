@@ -11,5 +11,7 @@ public interface ChatRoomRepositoryPort {
 	Optional<ChatRoom> findById(Long chatRoomId);
 	List<ChatRoom> findByUserId(Long userId);
 	Optional<ChatRoom> findByIdAndUserId(Long chatRoomId, Long userId);
-
+	void changeTitle(Long chatRoomId, Long userId, String title);
 }
+
+
