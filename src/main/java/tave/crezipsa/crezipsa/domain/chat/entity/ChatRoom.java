@@ -24,9 +24,6 @@ public class ChatRoom {
 			.build();
 	}
 
-	public void changeTitle(String title) {
-		this.title = title;
-	}
 }
 
 
