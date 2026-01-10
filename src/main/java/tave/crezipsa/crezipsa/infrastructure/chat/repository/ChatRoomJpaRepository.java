@@ -10,5 +10,5 @@ import tave.crezipsa.crezipsa.infrastructure.chat.entity.ChatRoomJpaEntity;
 public interface ChatRoomJpaRepository extends JpaRepository<ChatRoomJpaEntity, Long> {
 
 	List<ChatRoomJpaEntity> findByUserId(Long userId);
-	Optional<ChatRoomJpaEntity> findByIdAndUserId(Long id, Long userId);
+	Optional<ChatRoomJpaEntity> findByChatRoomIdAndUserId(Long chatRoomId, Long userId);
 }

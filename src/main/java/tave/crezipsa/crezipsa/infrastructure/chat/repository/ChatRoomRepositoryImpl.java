@@ -39,7 +39,7 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepositoryPort {
 	@Override
 	public Optional<ChatRoom> findByIdAndUserId(Long chatRoomId, Long userId) {
 		return chatRoomJpaRepository
-			.findByIdAndUserId(chatRoomId, userId)
+			.findByChatRoomIdAndUserId(chatRoomId, userId)
 			.map(ChatRoomMapper::toDomain);
 	}
 }
