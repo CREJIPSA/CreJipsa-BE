@@ -9,7 +9,7 @@ import tave.crezipsa.crezipsa.infrastructure.trend.TrendWithUrls;
 import java.util.List;
 
 public interface TrendQueryPort {
-    List<TrendRow> findTopKeywordsByPlatform(String platform, String category);
+    List<TrendRow> findTopKeywordsByPlatformAndCategory(String platform, String category);
     TrendDetailWithUrls findSelectedKeywordDetailBytrendId(long trendId);
     void saveTrend(long userId, TrendCommand trendCommand);
     TrendWithUrls findKeywordByKeyword(String keyword);

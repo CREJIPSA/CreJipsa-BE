@@ -20,7 +20,7 @@ public class TrendAdapter implements TrendQueryPort {
     private final @Qualifier("mainJdbc") NamedParameterJdbcTemplate mainJdbc;
 
     @Override
-    public List<TrendRow> findTopKeywordsByPlatform(String platform, String category) {
+    public List<TrendRow> findTopKeywordsByPlatformAndCategory(String platform, String category) {
 
         String sql = """
             SELECT id, `rank` AS keyword_rank, keyword, platform, category_tag

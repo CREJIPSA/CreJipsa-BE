@@ -24,7 +24,7 @@ public class TrendUsecaseImpl implements TrendUsecase {
     @Override
     public List<TrendListResponse> getTopTrends(String platform, String category) {
 
-        List<TrendRow> trendRowList = trendQueryPort.findTopKeywordsByPlatform(platform, category);
+        List<TrendRow> trendRowList = trendQueryPort.findTopKeywordsByPlatformAndCategory(platform, category);
         return trendRowList.stream()
                 .map(TrendListResponse::from)
                 .toList();
