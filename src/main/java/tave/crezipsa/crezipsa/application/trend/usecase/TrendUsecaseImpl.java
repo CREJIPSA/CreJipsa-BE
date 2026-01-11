@@ -33,7 +33,7 @@ public class TrendUsecaseImpl implements TrendUsecase {
     @Override
     public TrendDetailResponse getTrendDetail(long trendId) {
 
-        TrendDetailWithUrls trendDetailWithUrls = trendQueryPort.findSelectedKeywordDetialBytrendId(trendId);
+        TrendDetailWithUrls trendDetailWithUrls = trendQueryPort.findSelectedKeywordDetailBytrendId(trendId);
         return TrendDetailResponse.from(trendDetailWithUrls);
     }
 

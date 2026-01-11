@@ -23,12 +23,11 @@ public class TrendController {
     //완료
     @GetMapping
     public GlobalResponseDto<List<TrendListResponse>> getTrendList(@AuthenticationPrincipal User user, @RequestParam(defaultValue = "YOUTUBE") String platform, @RequestParam(required = false) String category){
-        return GlobalResponseDto.success(trendUsecase.execute(platform, category));
+        return GlobalResponseDto.success(trendUsecase.getTopTrends(platform, category));
     }
 
-    //adapter viewCount 수정하기
-    @GetMapping("/detail")
-    public GlobalResponseDto<TrendDetailResponse> getTrendDetail(@AuthenticationPrincipal User user,@RequestParam long trendId){
+    @GetMapping("/detail/{trendID}")
+    public GlobalResponseDto<TrendDetailResponse> getTrendDetail(@AuthenticationPrincipal User user,@PathVariable long trendId){
         return GlobalResponseDto.success(trendUsecase.getTrendDetail(trendId));
     }
 
