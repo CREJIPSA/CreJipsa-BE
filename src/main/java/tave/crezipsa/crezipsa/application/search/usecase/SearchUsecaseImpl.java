@@ -24,11 +24,11 @@ public class SearchUsecaseImpl implements SearchUsecase {
 
 	@Override
 	public UnifiedSearchResponse search(Long userId, String keyword) {
-		String q = normalize(keyword);
-
-		if (q.isBlank()) {
+		if (keyword == null || keyword.isBlank()) {
 			throw new CommonException(ErrorCode.SEARCH_KEYWORD_REQUIRED);
 		}
+
+		String q = keyword.trim();
 
 		var storyboards = storyboardRepository.searchByTitle(userId, q);
 		var chatRooms = chatRoomRepository.searchByTitle(userId, q);
@@ -38,7 +38,5 @@ public class SearchUsecaseImpl implements SearchUsecase {
 		return new UnifiedSearchResponse(q, items.isEmpty(), items);
 	}
 
-	private String normalize(String keyword) {
-		return keyword == null ? "" : keyword.trim();
-	}
+
 }
