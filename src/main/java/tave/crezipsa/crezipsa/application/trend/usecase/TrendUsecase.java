@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface TrendUsecase {
 
-    List<TrendListResponse> execute(String platform, String category);
+    List<TrendListResponse> getTopTrends(String platform, String category);
     TrendDetailResponse getTrendDetail(long trendId);
     void saveTrend(long userId, TrendRequest request);
     TrendSearchResponse searchTrend(String keyword);
