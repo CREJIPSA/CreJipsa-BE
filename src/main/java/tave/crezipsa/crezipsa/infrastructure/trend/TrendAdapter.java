@@ -51,7 +51,7 @@ public class TrendAdapter implements TrendQueryPort {
     }
 
     @Override
-    public TrendDetailWithUrls findSelectedKeywordDetialBytrendId(long trendId) {
+    public TrendDetailWithUrls findSelectedKeywordDetailBytrendId(long trendId) {
 
         String keywordSql = """
             SELECT id, `rank` AS keyword_rank, keyword, platform, frequency

@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface TrendQueryPort {
     List<TrendRow> findTopKeywordsByPlatform(String platform, String category);
-    TrendDetailWithUrls findSelectedKeywordDetialBytrendId(long trendId);
+    TrendDetailWithUrls findSelectedKeywordDetailBytrendId(long trendId);
     void saveTrend(long userId, TrendCommand trendCommand);
     TrendWithUrls findKeywordByKeyword(String keyword);
 
