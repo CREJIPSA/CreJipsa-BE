@@ -10,6 +10,8 @@ import tave.crezipsa.crezipsa.application.search.dto.response.UnifiedSearchRespo
 import tave.crezipsa.crezipsa.application.search.mapper.UnifiedSearchResponseMapper;
 import tave.crezipsa.crezipsa.domain.chat.port.ChatRoomRepositoryPort;
 import tave.crezipsa.crezipsa.domain.storyboard.port.StoryboardRepositoryPort;
+import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
+import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class SearchUsecaseImpl implements SearchUsecase {
 		String q = normalize(keyword);
 
 		if (q.isBlank()) {
-			return new UnifiedSearchResponse(q, true, List.of());
+			throw new CommonException(ErrorCode.SEARCH_KEYWORD_REQUIRED);
 		}
 
 		var storyboards = storyboardRepository.searchByTitle(userId, q);
