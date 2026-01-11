@@ -8,5 +8,6 @@ import tave.crezipsa.crezipsa.infrastructure.storyboard.entity.StoryboardJpaEnti
 
 public interface StoryboardJpaRepository extends JpaRepository<StoryboardJpaEntity, Long> {
 	List<StoryboardJpaEntity> findByUserId(Long userId);
+	List<StoryboardJpaEntity> findByUserIdAndStoryboardTitleContaining(Long userId, String keyword);
 
 }

@@ -51,6 +51,11 @@ public enum ErrorCode implements BaseErrorCode {
 	CHAT_ROOM_NOT_FOUND(404, "CH40401", "채팅방을 찾을 수 없습니다."),
 	CHAT_ROOM_UNAUTHORIZED(403, "CH40301", "채팅방 접근 권한이 없습니다."),
 
+	// 검색 관련
+	// 검색 관련
+	SEARCH_KEYWORD_REQUIRED(400, "SE40001", "검색어는 필수입니다."),
+
+
 	// 서버 오류
 	INTERNAL_SERVER_ERROR(500, "S50001", "서버 내부 오류가 발생했습니다.");
 
