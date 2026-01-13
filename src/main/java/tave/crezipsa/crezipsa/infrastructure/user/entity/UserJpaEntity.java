@@ -10,7 +10,6 @@ import tave.crezipsa.crezipsa.domain.user.enums.Platform;
 
 import java.time.LocalDate;
 
-//DB와 연결되는 실제 객체 - 도메인 분리를 위해
 @Entity
 @Table(name = "user")
 @Getter
