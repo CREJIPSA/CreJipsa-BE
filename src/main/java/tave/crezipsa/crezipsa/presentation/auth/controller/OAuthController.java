@@ -27,7 +27,7 @@ public class OAuthController {
 
     @GetMapping("/kakao")
     public GlobalResponseDto<LoginResponse> kakaoLogin(@RequestParam String code) {
-        LoginResponse response = kakaoLoginUsecase.login(code);
+        LoginResponse response = kakaoLoginUsecase.loginForWeb(code);
 
         return GlobalResponseDto.success(response);
     }

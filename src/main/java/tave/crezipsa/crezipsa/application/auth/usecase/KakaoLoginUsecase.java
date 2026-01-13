@@ -53,7 +53,7 @@ public class KakaoLoginUsecase {
     }
 
     //웹 방식 카카오 로그인
-    public LoginResponse login(String code) {
+    public LoginResponse loginForWeb(String code) {
 
         String kakaoToken = kakaoOAuthClient.getAccessToken(code);
         KakaoUserInfo kakaoUserInfo = kakaoOAuthClient.getUserInfo(kakaoToken);
