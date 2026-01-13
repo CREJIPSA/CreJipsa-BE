@@ -1,8 +1,10 @@
 package tave.crezipsa.crezipsa.application.auth.usecase;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tave.crezipsa.crezipsa.application.auth.dto.request.RefreshTokenRequest;
 import tave.crezipsa.crezipsa.application.auth.dto.response.TokenResponse;
 import tave.crezipsa.crezipsa.domain.auth.entity.Auth;
 import tave.crezipsa.crezipsa.domain.auth.repository.AuthRepository;
@@ -11,23 +13,24 @@ import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 import tave.crezipsa.crezipsa.global.security.JwtTokenProvider;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class AuthUsecaseImpl implements AuthUsecase {
 
     private final AuthRepository authRepository;
-    private JwtTokenProvider tokenProvider;
+    private final JwtTokenProvider tokenProvider;
 
     @Override
-    public TokenResponse reissueAccessToken(Long userId, String refreshToken) {
+    public TokenResponse reissueAccessToken(RefreshTokenRequest refreshTokenRequest) {
 
-        tokenProvider.validateToken(refreshToken);
+        tokenProvider.validateToken(refreshTokenRequest.refreshToken());
 
-        Auth auth = authRepository.findByUserIdAndRefreshToken(userId, refreshToken).
+        Auth auth = authRepository.findByUserIdAndRefreshToken(refreshTokenRequest.userId(), refreshTokenRequest.refreshToken()).
                 orElseThrow(() -> new CommonException(ErrorCode.INVALID_REFRESH_TOKEN));
 
-        auth.updateAccessToken(tokenProvider.generateAccessToken(userId));
+        auth.updateAccessToken(tokenProvider.generateAccessToken(refreshTokenRequest.userId()));
 
         return TokenResponse.from(auth);
     }

@@ -41,19 +41,19 @@ public class UserController {
         return GlobalResponseDto.success();
     }
 
-    @PostMapping("/interest")
+    @PostMapping("/interest/{category}")
     public GlobalResponseDto insertInterest(
-            @AuthenticationPrincipal User user, @Valid @RequestBody UserInterestRequest request){
+            @AuthenticationPrincipal User user,@PathVariable String category){
 
-        UserInterestResponse interestResponse = userUsecase.addUserInterest(user.getUserId(),request);
+        UserInterestResponse interestResponse = userUsecase.addUserInterest(user.getUserId(),category);
         return GlobalResponseDto.success(interestResponse);
     }
 
-    @DeleteMapping("/interest")
+    @DeleteMapping("/interest/{interestId}")
     public GlobalResponseDto deleteInterest(
-            @AuthenticationPrincipal User user, @Valid @RequestBody UserInterestRequest request){
+            @AuthenticationPrincipal User user, @PathVariable Long interestId){
 
-        userUsecase.deleteUserInterest(request);
+        userUsecase.deleteUserInterest(user.getUserId(),interestId);
         return GlobalResponseDto.success();
     }
 

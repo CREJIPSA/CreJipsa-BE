@@ -3,6 +3,7 @@ package tave.crezipsa.crezipsa.presentation.auth.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import tave.crezipsa.crezipsa.application.auth.dto.request.RefreshTokenRequest;
 import tave.crezipsa.crezipsa.application.auth.dto.response.LoginResponse;
 import tave.crezipsa.crezipsa.application.auth.dto.response.TokenResponse;
 import tave.crezipsa.crezipsa.application.auth.usecase.AuthUsecase;
@@ -31,9 +32,9 @@ public class OAuthController {
 
         return GlobalResponseDto.success(response);
     }
-    @GetMapping("/refreshToken")
-    public GlobalResponseDto<TokenResponse> refreshToken(@AuthenticationPrincipal User user, @RequestParam String refreshToken) {
-        TokenResponse response = authUsecase.reissueAccessToken(user.getUserId() , refreshToken);
+    @PostMapping("/refreshToken")
+    public GlobalResponseDto<TokenResponse> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+        TokenResponse response = authUsecase.reissueAccessToken(refreshTokenRequest);
 
         return GlobalResponseDto.success(response);
     }

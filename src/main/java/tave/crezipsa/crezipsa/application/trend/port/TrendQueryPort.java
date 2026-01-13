@@ -1,14 +1,17 @@
 package tave.crezipsa.crezipsa.application.trend.port;
 
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-import tave.crezipsa.crezipsa.application.trend.dto.response.TrendResponse;
-import tave.crezipsa.crezipsa.domain.user.enums.Platform;
+import tave.crezipsa.crezipsa.domain.trend.entity.command.TrendCommand;
+import tave.crezipsa.crezipsa.infrastructure.trend.TrendDetailRow;
+import tave.crezipsa.crezipsa.infrastructure.trend.TrendDetailWithUrls;
 import tave.crezipsa.crezipsa.infrastructure.trend.TrendRow;
+import tave.crezipsa.crezipsa.infrastructure.trend.TrendWithUrls;
 
 import java.util.List;
 
 public interface TrendQueryPort {
-    List<TrendRow> findTopKeywordsByPlatform(String platform);
+    List<TrendRow> findTopKeywordsByPlatformAndCategory(String platform, String category);
+    TrendDetailWithUrls findSelectedKeywordDetailBytrendId(long trendId);
+    void saveTrend(long userId, TrendCommand trendCommand);
+    TrendWithUrls findKeywordByKeyword(String keyword);
+
 }

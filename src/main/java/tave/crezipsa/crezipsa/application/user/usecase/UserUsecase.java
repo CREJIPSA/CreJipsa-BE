@@ -15,7 +15,7 @@ public interface UserUsecase {
     UserSignUpResponse signUp(UserSignUpRequest userSignUpRequest);
     UserUpdateResponse update(Long userId, UserUpdateRequest request);
 
-    UserInterestResponse addUserInterest(Long userId, UserInterestRequest request);
+    UserInterestResponse addUserInterest(Long userId, String category);
     List<UserInterestResponse> getUserInterest(Long userId);
-    void deleteUserInterest(UserInterestRequest request);
+    void deleteUserInterest(Long UserId, Long interestId);
 }
