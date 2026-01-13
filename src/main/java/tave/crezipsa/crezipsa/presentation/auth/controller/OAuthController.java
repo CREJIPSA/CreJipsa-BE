@@ -18,6 +18,13 @@ public class OAuthController {
     private final KakaoLoginUsecase kakaoLoginUsecase;
     private final AuthUsecase authUsecase;
 
+    @GetMapping("/kakaoLogin")
+    public GlobalResponseDto<LoginResponse> kakaoLoginForApp(@RequestParam String kakaoToken) {
+        LoginResponse response = kakaoLoginUsecase.loginForApp(kakaoToken);
+
+        return GlobalResponseDto.success(response);
+    }
+
     @GetMapping("/kakao")
     public GlobalResponseDto<LoginResponse> kakaoLogin(@RequestParam String code) {
         LoginResponse response = kakaoLoginUsecase.login(code);

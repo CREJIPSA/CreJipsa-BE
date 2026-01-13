@@ -22,6 +22,37 @@ public class KakaoLoginUsecase {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthRepository authRepository;
 
+    public LoginResponse loginForApp(String kakaoToken) {
+        KakaoUserInfo kakaoUserInfo = kakaoOAuthClient.getUserInfo(kakaoToken);
+
+        User user = userRepository.findByEmail(kakaoUserInfo.getEmail())
+                .orElse(null);
+
+        if (user == null) {
+            return LoginResponse.needsSignup(kakaoUserInfo);
+        }
+        if(user.isRole()) {
+            throw new CommonException(ErrorCode.USER_INVALID_ROLE);
+        }
+
+        // 이메일도 존재하고//새로운 유저가 아닐때 바로 토큰 발급
+        String jwt = jwtTokenProvider.generateAccessToken(user.getUserId());
+        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUserId());
+
+        Auth auth = authRepository.findByUserId(user.getUserId())
+                .orElseGet(() -> Auth.builder()
+                        .userId(user.getUserId())
+                        .providerUserId(String.valueOf(kakaoUserInfo.getId()))
+                        .build()
+                );
+
+        auth.updateTokens(kakaoToken, refreshToken);
+        authRepository.save(auth);
+
+        return LoginResponse.success(jwt, refreshToken, kakaoUserInfo);
+    }
+
+    //웹 방식 카카오 로그인
     public LoginResponse login(String code) {
 
         String kakaoToken = kakaoOAuthClient.getAccessToken(code);
