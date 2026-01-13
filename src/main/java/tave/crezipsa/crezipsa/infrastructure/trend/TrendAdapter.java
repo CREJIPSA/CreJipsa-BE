@@ -22,30 +22,51 @@ public class TrendAdapter implements TrendQueryPort {
     @Override
     public List<TrendRow> findTopKeywordsByPlatformAndCategory(String platform, String category) {
 
-        String sql = """
-            SELECT id, `rank` AS keyword_rank, keyword, platform, category_tag
-            FROM analytics_top_keywords
-            WHERE platform = :platform 
-        """;
-
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("platform", platform)
-                .addValue("limit", 4);
+        String sql;
+        List<TrendRow> rows;
 
         if (category != null && !category.isBlank()) {
-            sql += " AND category = :category";
-            params.addValue("category", category);
+
+            sql = """
+                SELECT id, category_rank, keyword, platform, category_name
+                FROM analytics_keyword_virality
+                WHERE platform = :platform AND category_name = :category
+                ORDER BY category_rank ASC LIMIT :limit
+            """;
+
+            MapSqlParameterSource params = new MapSqlParameterSource()
+                    .addValue("platform", platform)
+                    .addValue("limit",10)
+                    .addValue("category", category);
+
+            rows = analyticsJdbc.query(sql, params, (rs, rowNum) -> new TrendRow(
+                    rs.getLong("id"),
+                    rs.getInt("category_rank"),
+                    rs.getString("keyword"),
+                    rs.getString("platform"),
+                    rs.getString("category_name")
+            ));
         }
+        else {
+            sql = """
+                SELECT id, overall_rank, keyword, platform, category_name
+                FROM analytics_keyword_virality
+                WHERE platform = :platform 
+                ORDER BY overall_rank ASC LIMIT :limit
+            """;
 
-        sql += " ORDER BY keyword_rank DESC LIMIT :limit";
+            MapSqlParameterSource params = new MapSqlParameterSource()
+                    .addValue("platform", platform)
+                    .addValue("limit", 10);
 
-        List<TrendRow> rows = analyticsJdbc.query(sql, params, (rs, rowNum) -> new TrendRow(
-                rs.getLong("id"),
-                rs.getInt("keyword_rank"),
-                rs.getString("keyword"),
-                rs.getString("platform"),
-                rs.getString("category_tag")
-        ));
+            rows = analyticsJdbc.query(sql, params, (rs, rowNum) -> new TrendRow(
+                    rs.getLong("id"),
+                    rs.getInt("overall_rank"),
+                    rs.getString("keyword"),
+                    rs.getString("platform"),
+                    rs.getString("category_name")
+            ));
+        }
 
         return rows;
     }
@@ -54,8 +75,8 @@ public class TrendAdapter implements TrendQueryPort {
     public TrendDetailWithUrls findSelectedKeywordDetailBytrendId(long trendId) {
 
         String keywordSql = """
-            SELECT id, `rank` AS keyword_rank, keyword, platform, frequency
-            FROM analytics_top_keywords
+            SELECT id, overall_rank, category_rank, keyword, platform, category_name, keyword_frequency
+            FROM analytics_keyword_virality
             WHERE id = :id
         """;
 
@@ -67,16 +88,17 @@ public class TrendAdapter implements TrendQueryPort {
                 (rs, rowNum) -> new TrendDetailRow(
                         rs.getLong("id"),
                         rs.getString("platform"),
-                        rs.getInt("keyword_rank"),
+                        rs.getInt("overall_rank"),
+                        rs.getInt("category_rank"),
                         rs.getString("keyword"),
-                        rs.getInt("frequency")
+                        rs.getInt("keyword_frequency")
                 )
         );
 
         params.addValue("keyword", "%" + detailRow.keyword() + "%");
 
         String urlSql = """
-            SELECT video_url, title
+            SELECT video_url, title, view_count
             FROM URLTABLE
             WHERE title LIKE :keyword
             ORDER BY created_at DESC
@@ -87,7 +109,7 @@ public class TrendAdapter implements TrendQueryPort {
         List<TrendUrlRow> urlRows = analyticsJdbc.query(urlSql, params, (rs, rowNum) -> new TrendUrlRow(
                 rs.getString(1),
                 rs.getString(2),
-              0  // rs.getInt(3) 아직 db에 카운트 필드가 없어 임의 값 설정
+                rs.getInt(3)
         ));
 
         return new TrendDetailWithUrls(detailRow, urlRows);
@@ -147,7 +169,7 @@ public class TrendAdapter implements TrendQueryPort {
         """;
 
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("keyword", "%" + keyword + "%")
+                .addValue("keyword", "%" + keyword.trim() + "%")
                 .addValue("limit",50);
 
         List<TrendRow> trends = analyticsJdbc.query(keywordSql, params, (rs, rowNum) -> new TrendRow(

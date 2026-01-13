@@ -5,7 +5,8 @@ import java.util.List;
 public record TrendDetailRow(
             Long id,
             String platform,
-            int rank,
+            int overall_rank,
+            int category_rank,
             String keyword,
             int frequency
     ) {

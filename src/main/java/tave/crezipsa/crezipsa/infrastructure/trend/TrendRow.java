@@ -1,8 +1,8 @@
 package tave.crezipsa.crezipsa.infrastructure.trend;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.domain.user.enums.Platform;
-
 
 public record TrendRow(
         Long id,

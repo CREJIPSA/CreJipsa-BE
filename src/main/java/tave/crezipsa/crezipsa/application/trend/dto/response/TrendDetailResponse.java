@@ -10,7 +10,8 @@ import java.util.List;
 public record TrendDetailResponse(
         Long id,
         Platform platform,
-        int rank,
+        int overall_rank,
+        int category_rank,
         String keyword,
         int frequency,
         List<TrendUrlResponse> urls
@@ -29,7 +30,8 @@ public record TrendDetailResponse(
         return new TrendDetailResponse(
                 trendDetailWithUrls.detailRow().id(),
                 Platform.valueOf(trendDetailWithUrls.detailRow().platform()),
-                trendDetailWithUrls.detailRow().rank(),
+                trendDetailWithUrls.detailRow().overall_rank(),
+                trendDetailWithUrls.detailRow().category_rank(),
                 trendDetailWithUrls.detailRow().keyword(),
                 trendDetailWithUrls.detailRow().frequency(),
                 urls

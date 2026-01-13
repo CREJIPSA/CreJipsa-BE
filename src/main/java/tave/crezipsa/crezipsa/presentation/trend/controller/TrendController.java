@@ -26,7 +26,7 @@ public class TrendController {
         return GlobalResponseDto.success(trendUsecase.getTopTrends(platform, category));
     }
 
-    @GetMapping("/detail/{trendID}")
+    @GetMapping("/detail/{trendId}")
     public GlobalResponseDto<TrendDetailResponse> getTrendDetail(@AuthenticationPrincipal User user,@PathVariable long trendId){
         return GlobalResponseDto.success(trendUsecase.getTrendDetail(trendId));
     }
