@@ -20,6 +20,11 @@ public class UserInterestRepositoryImpl implements UserInterestRepository {
     }
 
     @Override
+    public List<UserInterest> saveAll(List<UserInterest> userInterests) {
+        return userInterestJpaRepository.saveAll(userInterests);
+    }
+
+    @Override
     public void deleteByInterestId(Long interestId) {
         userInterestJpaRepository.deleteByInterestId(interestId);
     }
