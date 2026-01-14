@@ -9,7 +9,6 @@ import java.util.Optional;
 public interface UserRepository {
 
     User save(User user);
-    //리턴 값이 null일 수도
     Optional<User> findByEmail(String email);
     Optional<User> findById(Long userId);
     Optional<User> findByNickName(String NickName);
