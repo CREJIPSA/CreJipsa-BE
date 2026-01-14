@@ -29,7 +29,7 @@ public class User {
                 .nickName(cmd.nickName())
                 .email(cmd.email())
                 .gender(cmd.gender())
-                .role(true)
+                .role(false)
                 .birth(cmd.birth())
                 .activeYoutube(cmd.activeYoutube())
                 .activeInsta(cmd.activeInsta())
