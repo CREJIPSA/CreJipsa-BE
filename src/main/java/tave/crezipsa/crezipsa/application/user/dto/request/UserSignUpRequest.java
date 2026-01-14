@@ -5,6 +5,7 @@ import tave.crezipsa.crezipsa.domain.user.enums.Gender;
 import tave.crezipsa.crezipsa.domain.user.enums.Platform;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public record UserSignUpRequest(
 
@@ -21,6 +22,7 @@ public record UserSignUpRequest(
         String activeYoutube,
         String activeTiktok,
         String activeInsta,
-        Platform mainPlatform
+        Platform mainPlatform,
+        List<String> userInterest
 ) {
 }

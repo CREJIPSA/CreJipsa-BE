@@ -40,8 +40,15 @@ public class UserUsecaseImpl implements UserUsecase {
         }
 
         User user = User.createFromUser(UserSignUpCommand.from(request));
+        User savedUser = userRepository.save(user);
 
-        return UserSignUpResponse.from(userRepository.save(user));
+        List<String> interests = request.userInterest() == null ? List.of() : request.userInterest();
+
+        for (String category : interests) {
+            addUserInterest(savedUser.getUserId(), category);
+        }
+
+        return UserSignUpResponse.from(savedUser);
     }
 
     @Override

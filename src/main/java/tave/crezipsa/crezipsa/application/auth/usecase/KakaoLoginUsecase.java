@@ -22,6 +22,7 @@ public class KakaoLoginUsecase {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthRepository authRepository;
 
+    //앱방식 로그인
     public LoginResponse loginForApp(String kakaoToken) {
         KakaoUserInfo kakaoUserInfo = kakaoOAuthClient.getUserInfo(kakaoToken);
 

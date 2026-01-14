@@ -14,7 +14,6 @@ import java.util.List;
 public interface UserUsecase {
     UserSignUpResponse signUp(UserSignUpRequest userSignUpRequest);
     UserUpdateResponse update(Long userId, UserUpdateRequest request);
-
     UserInterestResponse addUserInterest(Long userId, String category);
     List<UserInterestResponse> getUserInterest(Long userId);
     void deleteUserInterest(Long UserId, Long interestId);

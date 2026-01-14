@@ -16,5 +16,4 @@ public interface CommentUsecase {
 	List<CommentResponse> getComments(Long communityId);
 	List<MyCommentResponse> getMyComments(Long userId, CommunityField field , int page, int size);
 
-
 }
