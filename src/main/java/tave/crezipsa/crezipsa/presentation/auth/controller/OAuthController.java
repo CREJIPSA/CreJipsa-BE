@@ -10,6 +10,8 @@ import tave.crezipsa.crezipsa.application.auth.usecase.AuthUsecase;
 import tave.crezipsa.crezipsa.application.auth.usecase.KakaoLoginUsecase;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
 import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
+import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
+import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,9 +21,19 @@ public class OAuthController {
     private final KakaoLoginUsecase kakaoLoginUsecase;
     private final AuthUsecase authUsecase;
 
+    @GetMapping("/kakaoLogin")
+    public GlobalResponseDto<LoginResponse> kakaoLoginForApp(@RequestHeader(value = "Kakao-Authorization", required=true)  String kakaoToken) {
+        if (kakaoToken == null || kakaoToken.isBlank()) {
+            throw new CommonException(ErrorCode.KAKAO_HEADER_NOT_FOUND);
+        }
+        LoginResponse response = kakaoLoginUsecase.loginForApp(kakaoToken);
+
+        return GlobalResponseDto.success(response);
+    }
+
     @GetMapping("/kakao")
     public GlobalResponseDto<LoginResponse> kakaoLogin(@RequestParam String code) {
-        LoginResponse response = kakaoLoginUsecase.login(code);
+        LoginResponse response = kakaoLoginUsecase.loginForWeb(code);
 
         return GlobalResponseDto.success(response);
     }
