@@ -10,6 +10,7 @@ import tave.crezipsa.crezipsa.application.trend.port.TrendQueryPort;
 import tave.crezipsa.crezipsa.domain.trend.entity.command.TrendCommand;
 import tave.crezipsa.crezipsa.domain.user.enums.Platform;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -69,6 +70,36 @@ public class TrendAdapter implements TrendQueryPort {
         }
 
         return rows;
+    }
+
+    @Override
+    public List<TrendRow> findTopKeywordsByCategory(List<String> categories) {
+
+        String sql = """
+        SELECT id, keyword,category_name
+        FROM analytics_keyword_virality
+        WHERE category_name = :category
+        ORDER BY category_rank ASC
+        LIMIT :limit
+    """;
+
+        List<TrendRow> result = new ArrayList<>();
+
+        for (String category : categories) {
+            MapSqlParameterSource params = new MapSqlParameterSource()
+                    .addValue("category", category)
+                    .addValue("limit", 10);
+
+            List<TrendRow> rows = analyticsJdbc.query(sql, params, (rs, rowNum) -> new TrendRow(
+                    rs.getLong("id"),
+                    rs.getString("keyword"),
+                    rs.getString("category_name")
+            ));
+
+            result.addAll(rows);
+        }
+
+        return result;
     }
 
     @Override

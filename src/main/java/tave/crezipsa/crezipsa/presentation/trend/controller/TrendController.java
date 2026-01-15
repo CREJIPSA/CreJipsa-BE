@@ -46,4 +46,8 @@ public class TrendController {
         return GlobalResponseDto.success(trendUsecase.getTopTrends(user.getMainPlatform().toString(), null));
     }
 
+    @GetMapping("recommendations/by-interests")
+    public GlobalResponseDto<List<TrendResponse>> recommendationsByInterests(@AuthenticationPrincipal User user){
+        return GlobalResponseDto.success(trendUsecase.recommendTrendsByInterests(user.getUserId()));
+    }
 }

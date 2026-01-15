@@ -8,6 +8,10 @@ import tave.crezipsa.crezipsa.application.trend.dto.response.TrendResponse;
 import tave.crezipsa.crezipsa.application.trend.dto.response.TrendSearchResponse;
 import tave.crezipsa.crezipsa.application.trend.dto.response.request.TrendRequest;
 import tave.crezipsa.crezipsa.application.trend.port.TrendQueryPort;
+import tave.crezipsa.crezipsa.application.user.port.UserInterestPort;
+import tave.crezipsa.crezipsa.domain.user.entity.User;
+import tave.crezipsa.crezipsa.domain.user.entity.UserInterest;
+import tave.crezipsa.crezipsa.domain.user.repository.UserInterestRepository;
 import tave.crezipsa.crezipsa.infrastructure.trend.TrendDetailWithUrls;
 import tave.crezipsa.crezipsa.infrastructure.trend.TrendRow;
 
@@ -19,6 +23,7 @@ import java.util.List;
 public class TrendUsecaseImpl implements TrendUsecase {
 
     private final TrendQueryPort trendQueryPort;
+    private final UserInterestPort userInterestPort;
 
     @Override
     public List<TrendResponse> getTopTrends(String platform, String category) {
@@ -46,6 +51,14 @@ public class TrendUsecaseImpl implements TrendUsecase {
         return TrendSearchResponse.from(trendQueryPort.findKeywordByKeyword(keyword));
     }
 
+    @Override
+    public List<TrendResponse> recommendTrendsByInterests(long userId) {
+        List<String> userInterests = userInterestPort.getInterests(userId);
+        List<TrendRow> trendRowList = trendQueryPort.findTopKeywordsByCategory(userInterests);
 
+        return trendRowList.stream()
+                .map(TrendResponse::from)
+                .toList();
+    }
 
 }
