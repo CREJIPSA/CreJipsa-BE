@@ -10,8 +10,9 @@ public enum ErrorCode implements BaseErrorCode {
 
 	//카테고리 관련
 	INVALD_INTEREST(404,"I40401", "존재하지 않은 사용자 관심 카테고리입니다."),
-	ALREADY_INTEREST(400,"I40001","이미 선택한 사용자 관심 카테고리입니다."),
-
+	ALREADY_INTEREST(400,"I40002","이미 선택한 사용자 관심 카테고리입니다."),
+	USER_INTEREST_NOT_SET (400,"I40003", "관심 카테고리가 설정되지 않았습니다."),
+	USER_INTEREST_NOT_FOUND(404,"I4004","사용자 관심 카테고리를 찾을 수 없습니다."),
 	// 인증 관련
 	MISSING_AUTH_HEADER(400, "A40101", "Authorization 헤더가 누락되었습니다."),
 	INVALID_TOKEN(401, "A40102", "토큰이 유효하지 않습니다."),
@@ -53,9 +54,7 @@ public enum ErrorCode implements BaseErrorCode {
 	CHAT_ROOM_UNAUTHORIZED(403, "CH40301", "채팅방 접근 권한이 없습니다."),
 
 	// 검색 관련
-	// 검색 관련
 	SEARCH_KEYWORD_REQUIRED(400, "SE40001", "검색어는 필수입니다."),
-
 
 	// 서버 오류
 	INTERNAL_SERVER_ERROR(500, "S50001", "서버 내부 오류가 발생했습니다.");
