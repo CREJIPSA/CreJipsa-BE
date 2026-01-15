@@ -5,10 +5,11 @@ import java.util.List;
 public record TrendDetailRow(
             Long id,
             String platform,
+            String category,
             int overall_rank,
             int category_rank,
             String keyword,
-            int frequency
+            double viralityScore
     ) {
     }
 

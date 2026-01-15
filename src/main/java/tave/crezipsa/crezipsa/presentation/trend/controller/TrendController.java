@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import tave.crezipsa.crezipsa.application.trend.dto.response.TrendDetailResponse;
-import tave.crezipsa.crezipsa.application.trend.dto.response.TrendListResponse;
+import tave.crezipsa.crezipsa.application.trend.dto.response.TrendResponse;
 import tave.crezipsa.crezipsa.application.trend.dto.response.TrendSearchResponse;
 import tave.crezipsa.crezipsa.application.trend.dto.response.request.TrendRequest;
 import tave.crezipsa.crezipsa.application.trend.usecase.TrendUsecase;
@@ -20,9 +20,8 @@ public class TrendController {
 
     private final TrendUsecase trendUsecase;
 
-    //완료
     @GetMapping
-    public GlobalResponseDto<List<TrendListResponse>> getTrendList(@AuthenticationPrincipal User user, @RequestParam(defaultValue = "YOUTUBE") String platform, @RequestParam(required = false) String category){
+    public GlobalResponseDto<List<TrendResponse>> getTrendList(@AuthenticationPrincipal User user, @RequestParam(defaultValue = "YOUTUBE") String platform, @RequestParam(required = false) String category){
         return GlobalResponseDto.success(trendUsecase.getTopTrends(platform, category));
     }
 
@@ -40,6 +39,11 @@ public class TrendController {
     @GetMapping("/search/{trend}")
     public GlobalResponseDto<TrendSearchResponse> searchTrend(@AuthenticationPrincipal User user, @PathVariable String trend){
         return GlobalResponseDto.success(trendUsecase.searchTrend(trend));
+    }
+
+    @GetMapping("recommendations/by-platform")
+    public GlobalResponseDto<List<TrendResponse>> recommendationsByPlatform(@AuthenticationPrincipal User user){
+        return GlobalResponseDto.success(trendUsecase.getTopTrends(user.getMainPlatform().toString(), null));
     }
 
 }

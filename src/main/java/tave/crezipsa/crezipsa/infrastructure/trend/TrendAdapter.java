@@ -75,7 +75,7 @@ public class TrendAdapter implements TrendQueryPort {
     public TrendDetailWithUrls findSelectedKeywordDetailBytrendId(long trendId) {
 
         String keywordSql = """
-            SELECT id, overall_rank, category_rank, keyword, platform, category_name, keyword_frequency
+            SELECT id, overall_rank, category_rank, keyword, platform, category_name, virality_score
             FROM analytics_keyword_virality
             WHERE id = :id
         """;
@@ -88,10 +88,11 @@ public class TrendAdapter implements TrendQueryPort {
                 (rs, rowNum) -> new TrendDetailRow(
                         rs.getLong("id"),
                         rs.getString("platform"),
+                        rs.getString("category_name"),
                         rs.getInt("overall_rank"),
                         rs.getInt("category_rank"),
                         rs.getString("keyword"),
-                        rs.getInt("keyword_frequency")
+                        rs.getInt("virality_score")
                 )
         );
 
