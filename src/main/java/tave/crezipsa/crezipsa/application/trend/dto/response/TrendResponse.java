@@ -4,7 +4,6 @@ import tave.crezipsa.crezipsa.domain.user.enums.Platform;
 import tave.crezipsa.crezipsa.infrastructure.trend.TrendRow;
 
 public record TrendResponse(
-
         Long id,
         String keyword,
         int rank,
