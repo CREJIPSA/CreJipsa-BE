@@ -23,6 +23,8 @@ public record UserSignUpRequest(
         String activeTiktok,
         String activeInsta,
         Platform mainPlatform,
+
+        @NotEmpty(message = "하나 이상의 관심 분야 설정이 필요합니다.")
         List<String> userInterest
 ) {
 }
