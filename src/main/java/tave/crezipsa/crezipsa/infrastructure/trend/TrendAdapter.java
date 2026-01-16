@@ -10,6 +10,7 @@ import tave.crezipsa.crezipsa.application.trend.port.TrendQueryPort;
 import tave.crezipsa.crezipsa.domain.trend.entity.command.TrendCommand;
 import tave.crezipsa.crezipsa.domain.user.enums.Platform;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -72,10 +73,40 @@ public class TrendAdapter implements TrendQueryPort {
     }
 
     @Override
+    public List<TrendRow> findTopKeywordsByCategory(List<String> categories) {
+
+        String sql = """
+        SELECT id, keyword,category_name
+        FROM analytics_keyword_virality
+        WHERE category_name = :category
+        ORDER BY category_rank ASC
+        LIMIT :limit
+    """;
+
+        List<TrendRow> result = new ArrayList<>();
+
+        for (String category : categories) {
+            MapSqlParameterSource params = new MapSqlParameterSource()
+                    .addValue("category", category)
+                    .addValue("limit", 10);
+
+            List<TrendRow> rows = analyticsJdbc.query(sql, params, (rs, rowNum) -> new TrendRow(
+                    rs.getLong("id"),
+                    rs.getString("keyword"),
+                    rs.getString("category_name")
+            ));
+
+            result.addAll(rows);
+        }
+
+        return result;
+    }
+
+    @Override
     public TrendDetailWithUrls findSelectedKeywordDetailBytrendId(long trendId) {
 
         String keywordSql = """
-            SELECT id, overall_rank, category_rank, keyword, platform, category_name, keyword_frequency
+            SELECT id, overall_rank, category_rank, keyword, platform, category_name, virality_score
             FROM analytics_keyword_virality
             WHERE id = :id
         """;
@@ -88,10 +119,11 @@ public class TrendAdapter implements TrendQueryPort {
                 (rs, rowNum) -> new TrendDetailRow(
                         rs.getLong("id"),
                         rs.getString("platform"),
+                        rs.getString("category_name"),
                         rs.getInt("overall_rank"),
                         rs.getInt("category_rank"),
                         rs.getString("keyword"),
-                        rs.getInt("keyword_frequency")
+                        rs.getInt("virality_score")
                 )
         );
 

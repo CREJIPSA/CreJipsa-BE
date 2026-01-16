@@ -11,6 +11,5 @@ public interface UserInterestJpaRepository extends JpaRepository<UserInterest, L
     List<UserInterest> findAllByUserId(Long userId);
     UserInterest save(UserInterest userInterest);
     boolean existsByUserIdAndCategory(Long userId, String category);
-    Optional<UserInterest> findByUserIdAndCategory(Long userId, String category);
     void deleteByInterestId(Long interestId);
 }
