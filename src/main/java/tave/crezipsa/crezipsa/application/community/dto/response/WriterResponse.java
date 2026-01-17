@@ -17,3 +17,4 @@ public record WriterResponse(
 			user.getMainPlatform()
 		);
 }
+}
