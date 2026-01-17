@@ -7,14 +7,17 @@ public record WriterResponse(
 	Long userId,
 	String nickName,
 	String profileImageUrl,
-	Platform mainPlatform
+	Platform mainPlatform,
+	String mainPlatformId
 ) {
 	public static WriterResponse from(User user) {
 		return new WriterResponse(
 			user.getUserId(),
 			user.getNickName(),
 			user.getProfileImageUrl(),
-			user.getMainPlatform()
+			user.getMainPlatform(),
+			user.getMainPlatformAccount()
 		);
 }
+
 }
