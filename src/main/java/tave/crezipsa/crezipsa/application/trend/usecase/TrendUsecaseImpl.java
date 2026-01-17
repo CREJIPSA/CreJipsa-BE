@@ -47,7 +47,7 @@ public class TrendUsecaseImpl implements TrendUsecase {
     }
 
     @Override
-    public TrendSearchResponse searchTrend(String keyword) {
+    public TrendSearchResponse searchTrend(long userId, String keyword) {
         return TrendSearchResponse.from(trendQueryPort.findKeywordByKeyword(keyword));
     }
 

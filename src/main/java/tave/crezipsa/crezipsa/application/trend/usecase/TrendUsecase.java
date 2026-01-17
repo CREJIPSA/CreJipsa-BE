@@ -14,7 +14,7 @@ public interface TrendUsecase {
     List<TrendResponse> getTopTrends(String platform, String category);
     TrendDetailResponse getTrendDetail(long trendId);
     void saveTrend(long userId, TrendRequest request);
-    TrendSearchResponse searchTrend(String keyword);
+    TrendSearchResponse searchTrend(long userId, String keyword);
     List<TrendResponse> recommendTrendsByInterests(long userId);
 
 }
