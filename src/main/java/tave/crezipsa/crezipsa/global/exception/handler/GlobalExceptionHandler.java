@@ -9,10 +9,12 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import lombok.extern.slf4j.Slf4j;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -20,6 +22,12 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(CommonException.class)
 	public ResponseEntity<GlobalResponseDto<?>> handleCommonException(CommonException e) {
 		var code = e.getErrorCode();
+		log.warn("CommonException code={} status={} message={}",
+			code.getCode(),
+			code.getStatus(),
+			code.getMessage()
+		);
+
 		return ResponseEntity
 			.status(code.getStatus())
 			.body(GlobalResponseDto.fail(code));

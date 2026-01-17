@@ -9,11 +9,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 import tave.crezipsa.crezipsa.domain.storyboard.port.StoryboardGeneratorPort;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class GeminiStoryboardGenerator implements StoryboardGeneratorPort {
@@ -45,11 +47,15 @@ public class GeminiStoryboardGenerator implements StoryboardGeneratorPort {
 			.retrieve()
 			.onStatus(
 				status -> status.is4xxClientError(),
-				response -> Mono.error(new CommonException(ErrorCode.GEMINI_CLIENT_ERROR))
+				response -> response.bodyToMono(String.class)
+					.doOnNext(errorBody -> log.error("Gemini 4xx response body={}", body))
+					.then(Mono.error(new CommonException(ErrorCode.GEMINI_CLIENT_ERROR)))
 			)
 			.onStatus(
 				status -> status.is5xxServerError(),
-				response -> Mono.error(new CommonException(ErrorCode.GEMINI_SERVER_ERROR))
+				response -> response.bodyToMono(String.class)
+					.doOnNext(errorBody -> log.error("Gemini 5xx response body={}", body))
+					.then(Mono.error(new CommonException(ErrorCode.GEMINI_SERVER_ERROR)))
 			)
 			.bodyToMono(Map.class)
 			.map(response -> {
