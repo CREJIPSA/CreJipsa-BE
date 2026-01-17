@@ -5,14 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import tave.crezipsa.crezipsa.application.user.dto.request.UserInterestRequest;
 import tave.crezipsa.crezipsa.application.user.dto.request.UserSignUpRequest;
 import tave.crezipsa.crezipsa.application.user.dto.request.UserUpdateRequest;
 import tave.crezipsa.crezipsa.application.user.dto.response.UserInterestResponse;
-import tave.crezipsa.crezipsa.application.user.dto.response.UserSignUpResponse;
+import tave.crezipsa.crezipsa.application.user.dto.response.UserResponse;
 import tave.crezipsa.crezipsa.application.user.usecase.UserUsecase;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
-import tave.crezipsa.crezipsa.domain.user.entity.UserInterest;
 import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
 
 import java.util.List;
@@ -26,9 +24,9 @@ public class UserController {
     private final UserUsecase userUsecase;
 
     @PostMapping("/signUp")
-    public GlobalResponseDto<UserSignUpResponse> signUp(
+    public GlobalResponseDto<UserResponse> signUp(
             @Valid @RequestBody UserSignUpRequest request){
-        UserSignUpResponse response  = userUsecase.signUp(request);
+        UserResponse response  = userUsecase.signUp(request);
 
         return GlobalResponseDto.success(response);
     }
@@ -63,4 +61,12 @@ public class UserController {
         List<UserInterestResponse> userInterest =  userUsecase.getUserInterest(user.getUserId());
         return GlobalResponseDto.success(userInterest);
     }
+
+    @DeleteMapping("/me")
+    public GlobalResponseDto deleteUser(@AuthenticationPrincipal User user){
+        userUsecase.deleteUser(user.getUserId());
+
+        return GlobalResponseDto.success();
+    }
 }
+
