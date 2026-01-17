@@ -17,11 +17,14 @@ import tave.crezipsa.crezipsa.application.community.dto.response.CommunityDetail
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunityResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunitySummaryResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.MyCommunityResponse;
+import tave.crezipsa.crezipsa.application.community.dto.response.WriterResponse;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
 import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 import tave.crezipsa.crezipsa.domain.community.repository.CommentRepository;
 import tave.crezipsa.crezipsa.domain.community.repository.CommunityRepository;
 import tave.crezipsa.crezipsa.domain.community.repository.LikeRepository;
+import tave.crezipsa.crezipsa.domain.user.entity.User;
+import tave.crezipsa.crezipsa.domain.user.repository.UserRepository;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 
@@ -34,6 +37,7 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 	private final CommunityRepository communityRepository;
 	private final LikeRepository likeRepository;
 	private final CommentRepository commentRepository;
+	private final UserRepository userRepository;
 	private final CommentUsecase commentUsecase;
 
 	@Override
@@ -66,11 +70,15 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 		Community community = communityRepository.findById(communityId)
 			.orElseThrow(() -> new CommonException(ErrorCode.COMMUNITY_NOT_FOUND));
 
+		User writerUser = userRepository.findById(community.getWriterId())
+			.orElseThrow(() -> new CommonException(ErrorCode.USER_NOT_FOUND));
+
 		long commentCount = commentRepository.countByCommunityId(communityId);
 		List<CommentResponse> comments = commentUsecase.getComments(communityId);
+		WriterResponse writer = WriterResponse.from(writerUser);
 
 
-		return CommunityDetailResponse.from(community, commentCount, comments);
+		return CommunityDetailResponse.from(community,writer, commentCount, comments);
 	}
 
 	@Override
