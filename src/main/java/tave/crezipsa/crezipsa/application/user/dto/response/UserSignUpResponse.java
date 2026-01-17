@@ -2,13 +2,13 @@ package tave.crezipsa.crezipsa.application.user.dto.response;
 
 import tave.crezipsa.crezipsa.domain.user.entity.User;
 
-public record UserSignUpResponse (
+public record UserResponse(
     String nickName,
     String email
 
 ){
-    public static UserSignUpResponse from(User user) {
-        return new UserSignUpResponse(
+    public static UserResponse from(User user) {
+        return new UserResponse(
                 user.getNickName(),
                 user.getEmail()
         );
