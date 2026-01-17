@@ -31,14 +31,16 @@ public class GeminiStoryboardGenerator implements StoryboardGeneratorPort {
 	@Override
 	public String generate(String prompt) {
 
+		if (!org.springframework.util.StringUtils.hasText(prompt)) {
+			throw new CommonException(ErrorCode.GEMINI_EMPTY_RESPONSE);
+		}
+
 		Map<String, Object> body = Map.of(
-			"contents", new Object[]{
-				Map.of(
-					"parts", new Object[]{
-						Map.of("text", prompt)
-					}
-				)
-			}
+			"contents", List.of(
+				Map.of("parts", List.of(
+					Map.of("text", prompt)
+				))
+			)
 		);
 
 		String result = webClient.post()
@@ -48,14 +50,18 @@ public class GeminiStoryboardGenerator implements StoryboardGeneratorPort {
 			.onStatus(
 				status -> status.is4xxClientError(),
 				response -> response.bodyToMono(String.class)
-					.doOnNext(errorBody -> log.error("Gemini 4xx response body={}", body))
-					.then(Mono.error(new CommonException(ErrorCode.GEMINI_CLIENT_ERROR)))
+					.flatMap(errorBody -> {
+						log.error("Gemini 4xx Error Detail: {}", errorBody);
+						return Mono.error(new CommonException(ErrorCode.GEMINI_CLIENT_ERROR));
+					})
 			)
 			.onStatus(
 				status -> status.is5xxServerError(),
 				response -> response.bodyToMono(String.class)
-					.doOnNext(errorBody -> log.error("Gemini 5xx response body={}", body))
-					.then(Mono.error(new CommonException(ErrorCode.GEMINI_SERVER_ERROR)))
+					.flatMap(errorBody -> {
+						log.error("Gemini 5xx Error Detail: {}", errorBody);
+						return Mono.error(new CommonException(ErrorCode.GEMINI_SERVER_ERROR));
+					})
 			)
 			.bodyToMono(Map.class)
 			.map(response -> {
