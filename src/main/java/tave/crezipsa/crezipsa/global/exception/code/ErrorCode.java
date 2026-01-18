@@ -5,14 +5,17 @@ public enum ErrorCode implements BaseErrorCode {
 	USER_NOT_FOUND(404, "U40401", "사용자를 찾을 수 없습니다."),
 	USER_ALREADY_EXISTS_EMAIL(404, "U40402", "이미 가입된 이메일입니다."),
 	USER_ALREADY_EXISTS_NICKNAME(404, "U40403", "이미 존재하는 닉네임입니다. "),
-	USER_INVALID_ROLE(401, "U40101","권한이 없는 사용자입니다."),
-	USER_INVALID_ID(401,"U40102", "존재하지 않는 유저입니다."),
+	USER_INVALID_ROLE(401, "U40104","회원가입이 필요한 사용자입니다."),
+	USER_INVALID_ID(401,"U40105", "존재하지 않는 유저입니다."),
+	USER_PLATFORM_NOT_SET(404,"U40106","사용자 메인 플랫폼이 지정되지 않았습니다."),
+
 
 	//카테고리 관련
 	INVALD_INTEREST(404,"I40401", "존재하지 않은 사용자 관심 카테고리입니다."),
 	ALREADY_INTEREST(400,"I40002","이미 선택한 사용자 관심 카테고리입니다."),
 	USER_INTEREST_NOT_SET (400,"I40003", "관심 카테고리가 설정되지 않았습니다."),
 	USER_INTEREST_NOT_FOUND(404,"I4004","사용자 관심 카테고리를 찾을 수 없습니다."),
+
 	// 인증 관련
 	MISSING_AUTH_HEADER(400, "A40101", "Authorization 헤더가 누락되었습니다."),
 	INVALID_TOKEN(401, "A40102", "토큰이 유효하지 않습니다."),
