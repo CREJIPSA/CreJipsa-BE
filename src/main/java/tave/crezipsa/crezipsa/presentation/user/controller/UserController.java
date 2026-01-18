@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import tave.crezipsa.crezipsa.application.user.dto.request.UserSignUpRequest;
 import tave.crezipsa.crezipsa.application.user.dto.request.UserUpdateRequest;
 import tave.crezipsa.crezipsa.application.user.dto.response.UserInterestResponse;
-import tave.crezipsa.crezipsa.application.user.dto.response.UserResponse;
+import tave.crezipsa.crezipsa.application.user.dto.response.UserSignUpResponse;
 import tave.crezipsa.crezipsa.application.user.usecase.UserUsecase;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
 import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
@@ -24,48 +24,48 @@ public class UserController {
     private final UserUsecase userUsecase;
 
     @PostMapping("/signUp")
-    public GlobalResponseDto<UserResponse> signUp(
-            @Valid @RequestBody UserSignUpRequest request){
-        UserResponse response  = userUsecase.signUp(request);
+    public GlobalResponseDto<UserSignUpResponse> signUp(
+            @Valid @RequestBody UserSignUpRequest request) {
 
+        UserSignUpResponse response = userUsecase.signUp(request);
         return GlobalResponseDto.success(response);
     }
 
     @PatchMapping("/update")
     public GlobalResponseDto update(
-            @AuthenticationPrincipal User user, @Valid @RequestBody UserUpdateRequest request){
+            @AuthenticationPrincipal User user, @Valid @RequestBody UserUpdateRequest request) {
 
-        userUsecase.update(user.getUserId(),request);
+        userUsecase.update(user.getUserId(), request);
         return GlobalResponseDto.success();
     }
 
     @PostMapping("/interest/{category}")
     public GlobalResponseDto insertInterest(
-            @AuthenticationPrincipal User user,@PathVariable String category){
+            @AuthenticationPrincipal User user, @PathVariable String category) {
 
-        UserInterestResponse interestResponse = userUsecase.addUserInterest(user.getUserId(),category);
+        UserInterestResponse interestResponse = userUsecase.addUserInterest(user.getUserId(), category);
         return GlobalResponseDto.success(interestResponse);
     }
 
     @DeleteMapping("/interest/{interestId}")
     public GlobalResponseDto deleteInterest(
-            @AuthenticationPrincipal User user, @PathVariable Long interestId){
+            @AuthenticationPrincipal User user, @PathVariable Long interestId) {
 
-        userUsecase.deleteUserInterest(user.getUserId(),interestId);
+        userUsecase.deleteUserInterest(user.getUserId(), interestId);
         return GlobalResponseDto.success();
     }
 
     @GetMapping("/interest")
-    public GlobalResponseDto getInterest(@AuthenticationPrincipal User user){
+    public GlobalResponseDto getInterest(@AuthenticationPrincipal User user) {
 
-        List<UserInterestResponse> userInterest =  userUsecase.getUserInterest(user.getUserId());
+        List<UserInterestResponse> userInterest = userUsecase.getUserInterest(user.getUserId());
         return GlobalResponseDto.success(userInterest);
     }
 
     @DeleteMapping("/me")
-    public GlobalResponseDto deleteUser(@AuthenticationPrincipal User user){
-        userUsecase.deleteUser(user.getUserId());
+    public GlobalResponseDto deleteUser(@AuthenticationPrincipal User user) {
 
+        userUsecase.deleteUser(user.getUserId());
         return GlobalResponseDto.success();
     }
 }

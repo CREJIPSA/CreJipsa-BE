@@ -38,7 +38,7 @@ public class TrendController {
 
     @GetMapping("/search/{trend}")
     public GlobalResponseDto<TrendSearchResponse> searchTrend(@AuthenticationPrincipal User user, @PathVariable String trend){
-        return GlobalResponseDto.success(trendUsecase.searchTrend(trend));
+        return GlobalResponseDto.success(trendUsecase.searchTrend(user.getUserId(),trend));
     }
 
     @GetMapping("recommendations/by-platform")
@@ -49,5 +49,21 @@ public class TrendController {
     @GetMapping("recommendations/by-interests")
     public GlobalResponseDto<List<TrendResponse>> recommendationsByInterests(@AuthenticationPrincipal User user){
         return GlobalResponseDto.success(trendUsecase.recommendTrendsByInterests(user.getUserId()));
+    }
+    @GetMapping("/search-history")
+    public GlobalResponseDto getUserHistory(@AuthenticationPrincipal User user){
+        return GlobalResponseDto.success(trendUsecase.getUserHistory(user.getUserId()));
+    }
+
+    @DeleteMapping("/search-history/{historyId}")
+    public GlobalResponseDto deleteOneUserHistory(@AuthenticationPrincipal User user, @PathVariable long historyId){
+        trendUsecase.deleteOneUserHistory(historyId);
+        return GlobalResponseDto.success();
+    }
+
+    @DeleteMapping("/all-history")
+    public GlobalResponseDto deleteAllUserHistory(@AuthenticationPrincipal User user){
+        trendUsecase.deleteAllUserHistory(user.getUserId());
+        return GlobalResponseDto.success();
     }
 }
