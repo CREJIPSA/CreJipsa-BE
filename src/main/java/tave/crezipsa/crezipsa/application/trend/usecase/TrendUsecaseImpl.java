@@ -8,15 +8,10 @@ import tave.crezipsa.crezipsa.application.trend.dto.response.TrendResponse;
 import tave.crezipsa.crezipsa.application.trend.dto.response.TrendSearchResponse;
 import tave.crezipsa.crezipsa.application.trend.dto.response.request.TrendRequest;
 import tave.crezipsa.crezipsa.application.trend.port.TrendQueryPort;
+import tave.crezipsa.crezipsa.application.trend.dto.response.UserHistoryResponse;
 import tave.crezipsa.crezipsa.application.user.port.UserHistoryPort;
 import tave.crezipsa.crezipsa.application.user.port.UserInterestPort;
-import tave.crezipsa.crezipsa.domain.user.entity.User;
-import tave.crezipsa.crezipsa.domain.user.entity.UserInterest;
-import tave.crezipsa.crezipsa.domain.user.repository.UserInterestRepository;
-import tave.crezipsa.crezipsa.domain.user.repository.UserRepository;
-import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
-import tave.crezipsa.crezipsa.global.exception.handler.GlobalExceptionHandler;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 import tave.crezipsa.crezipsa.infrastructure.trend.TrendDetailWithUrls;
 import tave.crezipsa.crezipsa.infrastructure.trend.TrendRow;
@@ -74,4 +69,20 @@ public class TrendUsecaseImpl implements TrendUsecase {
                 .toList();
     }
 
+    @Override
+    public List<UserHistoryResponse> getUserHistory(Long userId) {
+        return userHistoryPort.getUserHistory(userId).stream()
+                .map(UserHistoryResponse::from)
+                .toList();
+    }
+
+    @Override
+    public void deleteOneUserHistory(long historyId) {
+        userHistoryPort.deleteHistoryByHistoryId(historyId);
+    }
+
+    @Override
+    public void deleteAllUserHistory(long userId) {
+        userHistoryPort.deleteAllHistoryByUserId(userId);
+    }
 }
