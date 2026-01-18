@@ -1,10 +1,12 @@
 package tave.crezipsa.crezipsa.domain.user.repository;
 
-import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.domain.user.entity.UserHistory;
+
+import java.util.List;
 
 public interface UserHistoryRepository {
     void save(UserHistory userHistory);
+    List<UserHistory> findByUserId(long userId);
+    void deleteByHistoryId(long historyId);
+    void deleteByUserId(long userId);
 }
