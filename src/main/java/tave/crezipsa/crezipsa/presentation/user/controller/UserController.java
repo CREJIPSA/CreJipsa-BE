@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import tave.crezipsa.crezipsa.application.user.dto.request.UserSignUpRequest;
 import tave.crezipsa.crezipsa.application.user.dto.request.UserUpdateRequest;
 import tave.crezipsa.crezipsa.application.user.dto.response.UserInterestResponse;
+import tave.crezipsa.crezipsa.application.user.dto.response.UserResponse;
 import tave.crezipsa.crezipsa.application.user.dto.response.UserSignUpResponse;
 import tave.crezipsa.crezipsa.application.user.usecase.UserUsecase;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
@@ -67,6 +68,10 @@ public class UserController {
 
         userUsecase.deleteUser(user.getUserId());
         return GlobalResponseDto.success();
+    }
+    @GetMapping("/me")
+    public GlobalResponseDto<UserResponse> getUserInfo(@AuthenticationPrincipal User user){
+        return GlobalResponseDto.success(userUsecase.getUser(user));
     }
 }
 

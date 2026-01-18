@@ -3,8 +3,10 @@ package tave.crezipsa.crezipsa.application.user.usecase;
 import tave.crezipsa.crezipsa.application.user.dto.request.UserSignUpRequest;
 import tave.crezipsa.crezipsa.application.user.dto.request.UserUpdateRequest;
 import tave.crezipsa.crezipsa.application.user.dto.response.UserInterestResponse;
+import tave.crezipsa.crezipsa.application.user.dto.response.UserResponse;
 import tave.crezipsa.crezipsa.application.user.dto.response.UserSignUpResponse;
 import tave.crezipsa.crezipsa.application.user.dto.response.UserUpdateResponse;
+import tave.crezipsa.crezipsa.domain.user.entity.User;
 
 import java.util.List;
 
@@ -16,5 +18,5 @@ public interface UserUsecase {
     List<UserInterestResponse> getUserInterest(Long userId);
     void deleteUserInterest(Long UserId, Long interestId);
     void deleteUser(Long userId);
-
+    UserResponse getUser(User user);
 }

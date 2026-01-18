@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tave.crezipsa.crezipsa.application.user.dto.request.UserSignUpRequest;
 import tave.crezipsa.crezipsa.application.user.dto.request.UserUpdateRequest;
 import tave.crezipsa.crezipsa.application.user.dto.response.UserInterestResponse;
+import tave.crezipsa.crezipsa.application.user.dto.response.UserResponse;
 import tave.crezipsa.crezipsa.application.user.dto.response.UserSignUpResponse;
 import tave.crezipsa.crezipsa.application.user.dto.response.UserUpdateResponse;
 import tave.crezipsa.crezipsa.domain.user.command.UserSignUpCommand;
@@ -102,6 +103,11 @@ public class UserUsecaseImpl implements UserUsecase {
     @Override
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
+    }
+
+    @Override
+    public UserResponse getUser(User user) {
+        return UserResponse.from(user);
     }
 
 }
