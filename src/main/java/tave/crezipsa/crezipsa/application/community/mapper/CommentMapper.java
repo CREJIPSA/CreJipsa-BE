@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommentResponse;
+import tave.crezipsa.crezipsa.application.community.dto.response.WriterResponse;
 import tave.crezipsa.crezipsa.domain.community.domain.Comment;
 import tave.crezipsa.crezipsa.domain.community.repository.CommentRepository;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
@@ -26,9 +27,7 @@ public class CommentMapper {
 			comment.getCommentId(),
 			comment.getCommunityId(),
 			comment.getParentId(),
-			writer.getUserId(),
-			writer.getNickName(),
-			writer.getProfileImageUrl(),
+			WriterResponse.from(writer),
 			comment.isDeleted(),
 			comment.getContent(),
 			comment.getCreatedAt(),
