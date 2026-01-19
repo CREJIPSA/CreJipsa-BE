@@ -65,8 +65,9 @@ public class CommentController {
 
 	// 4) 특정 게시글의 전체 댓글 조회
 	@GetMapping("/community/{communityId}")
-	public GlobalResponseDto<List<CommentResponse>> getComments(@PathVariable Long communityId) {
-		List<CommentResponse> responses = commentUsecase.getComments(communityId);
+	public GlobalResponseDto<List<CommentResponse>> getComments(
+		@AuthenticationPrincipal User user, @PathVariable Long communityId) {
+		List<CommentResponse> responses = commentUsecase.getComments(communityId,user.getUserId());
 		return GlobalResponseDto.success(responses);
 	}
 

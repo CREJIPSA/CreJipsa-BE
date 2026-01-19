@@ -76,7 +76,7 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 			.orElseThrow(() -> new CommonException(ErrorCode.USER_NOT_FOUND));
 
 		long commentCount = commentRepository.countByCommunityId(communityId);
-		List<CommentResponse> comments = commentUsecase.getComments(communityId);
+		List<CommentResponse> comments = commentUsecase.getComments(communityId, userId);
 		WriterResponse writer = WriterResponse.from(writerUser);
 		boolean isWriter = Objects.equals(community.getWriterId(), userId);
 		boolean isLiked = likeRepository.findById(new LikeId(userId, communityId))

@@ -21,13 +21,14 @@ public class CommentMapper {
 	private final UserRepository userRepository;
 	private final CommentRepository commentRepository;
 
-	public CommentResponse toCommentResponse(Comment comment,User writer, String relativeTime, List<CommentResponse> replies) {
+	public CommentResponse toCommentResponse(Comment comment,User writer,boolean isWriter, String relativeTime, List<CommentResponse> replies) {
 
 		return new CommentResponse(
 			comment.getCommentId(),
 			comment.getCommunityId(),
 			comment.getParentId(),
 			WriterResponse.from(writer),
+			isWriter,
 			comment.isDeleted(),
 			comment.getContent(),
 			comment.getCreatedAt(),
