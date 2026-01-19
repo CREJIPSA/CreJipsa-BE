@@ -19,4 +19,7 @@ public interface CommunityRepository {
 	List<Community> findByField(CommunityField field);
 	Page<Community> findMyCommunitiesLatest(Long writerId, CommunityField field, Pageable pageable);
 	Page<Community> findMyCommunitiesPopular(Long writerId, CommunityField field,  Pageable pageable);
+	Page<Community> searchByTitleLatest(String keyword, CommunityField field, Pageable pageable);
+	Page<Community> searchByTitlePopular(String keyword, CommunityField field, Pageable pageable);
+
 }
