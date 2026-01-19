@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface UserHistoryJpaRepository extends JpaRepository<UserHistory, Long> {
     List<UserHistory> findTop20ByUserIdOrderByHistoryIdDesc(Long userId);
-    void deleteByUserId(long userId);
+    void deleteByUserIdAndHistoryId(Long userId, Long historyId);
+    void deleteByUserId(Long userId);
 }

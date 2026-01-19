@@ -40,7 +40,7 @@ public class TrendController {
     @GetMapping("/search/{trend}")
     public GlobalResponseDto<TrendSearchResponse> searchTrend(@AuthenticationPrincipal User user, @PathVariable("trend") @Size(max = 50, message = "검색어는 50자 이하만 가능합니다.") String trend) {
         return GlobalResponseDto.success(trendUsecase.searchTrend(user.getUserId(),trend));
-    }
+    } //PathVariable -> requestParam? 띄어쓰기, 특수 문자 등
 
     @GetMapping("recommendations/by-platform")
     public GlobalResponseDto<List<TrendResponse>> recommendationsByPlatform(@AuthenticationPrincipal User user){
@@ -58,7 +58,7 @@ public class TrendController {
 
     @DeleteMapping("/search-history/{historyId}")
     public GlobalResponseDto deleteOneUserHistory(@AuthenticationPrincipal User user, @PathVariable long historyId){
-        trendUsecase.deleteOneUserHistory(historyId);
+        trendUsecase.deleteOneUserHistory(user.getUserId(), historyId);
         return GlobalResponseDto.success();
     }
 

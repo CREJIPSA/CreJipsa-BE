@@ -17,7 +17,7 @@ public interface TrendUsecase {
     TrendSearchResponse searchTrend(long userId, String keyword);
     List<TrendResponse> recommendTrendsByInterests(long userId);
     List<UserHistoryResponse> getUserHistory(Long userId);
-    void deleteOneUserHistory(long historyId);
+    void deleteOneUserHistory(long userId, long historyId);
     void deleteAllUserHistory(long userId);
 
 }

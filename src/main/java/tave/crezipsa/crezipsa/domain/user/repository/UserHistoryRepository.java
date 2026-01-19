@@ -7,6 +7,6 @@ import java.util.List;
 public interface UserHistoryRepository {
     void save(UserHistory userHistory);
     List<UserHistory> findByUserId(long userId);
-    void deleteByHistoryId(long historyId);
+    void deleteByHistoryIdAndUserId(long userId, long historyId);
     void deleteByUserId(long userId);
 }

@@ -24,8 +24,8 @@ public class UserHistoryRepositoryImpl implements UserHistoryRepository {
     }
 
     @Override
-    public void deleteByHistoryId(long historyId) {
-        userHistoryJpaRepository.deleteById(historyId);
+    public void deleteByHistoryIdAndUserId(long userId, long historyId) {
+        userHistoryJpaRepository.deleteByUserIdAndHistoryId(userId, historyId);
     }
 
     @Override
