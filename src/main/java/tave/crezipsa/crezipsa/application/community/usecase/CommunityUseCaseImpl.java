@@ -33,7 +33,7 @@ import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 @RequiredArgsConstructor
 public class CommunityUseCaseImpl implements CommunityUseCase {
 
-
+	private static final int MAX_KEYWORD_LENGTH = 30;
 	private final CommunityRepository communityRepository;
 	private final LikeRepository likeRepository;
 	private final CommentRepository commentRepository;
@@ -136,11 +136,16 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 	@Override
 	@Transactional(readOnly = true)
 	public List<CommunitySummaryResponse> searchCommunities(String keyword, CommunityField field, String sort, int page, int size) {
-		String q = keyword == null ? "" : keyword.trim();
-
-		if (q.isBlank()) {
-			return List.of();
+		if (keyword == null || keyword.isBlank()) {
+			throw new CommonException(ErrorCode.SEARCH_KEYWORD_REQUIRED);
 		}
+
+		String q = keyword.trim();
+
+		if (q.length() > MAX_KEYWORD_LENGTH) {
+			throw new CommonException(ErrorCode.SEARCH_KEYWORD_TOO_LONG);
+		}
+
 
 		Pageable pageable = PageRequest.of(page, size);
 
@@ -157,6 +162,5 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 			})
 			.getContent();
 	}
-
 
 }
