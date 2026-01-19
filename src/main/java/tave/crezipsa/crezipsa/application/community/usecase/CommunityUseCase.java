@@ -14,7 +14,7 @@ public interface CommunityUseCase {
 
 	CommunityResponse createCommunity(Long userId, CommunityCreateRequest communityCreateRequest);
 	CommunityResponse updateCommunity(Long userId,Long communityId, CommunityUpdateRequest communityUpdateRequest);
-	CommunityDetailResponse getCommunity(Long communityId);
+	CommunityDetailResponse getCommunity(Long communityId, Long viwerId);
 	List<CommunitySummaryResponse> getAllCommunities();
 	List<MyCommunityResponse> getMyCommunities(Long userId,CommunityField field, String sort, int page, int size);
 	List<CommunitySummaryResponse> getCommunitiesByField(CommunityField field);
