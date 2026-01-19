@@ -3,6 +3,7 @@ package tave.crezipsa.crezipsa.presentation.trend.controller;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tave.crezipsa.crezipsa.application.trend.dto.response.TrendDetailResponse;
 import tave.crezipsa.crezipsa.application.trend.dto.response.TrendResponse;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/api/main/trend")
 public class TrendController {
 
@@ -38,7 +40,7 @@ public class TrendController {
     }
 
     @GetMapping("/search/{trend}")
-    public GlobalResponseDto<TrendSearchResponse> searchTrend(@AuthenticationPrincipal User user, @PathVariable("trend") @Size(max = 50, message = "검색어는 50자 이하만 가능합니다.") String trend) {
+    public GlobalResponseDto<TrendSearchResponse> searchTrend(@AuthenticationPrincipal User user, @PathVariable("trend") @Size(max = 20, message = "검색어는 20자 이하만 가능합니다.") String trend) {
         return GlobalResponseDto.success(trendUsecase.searchTrend(user.getUserId(),trend));
     } //PathVariable -> requestParam? 띄어쓰기, 특수 문자 등
 
@@ -56,7 +58,7 @@ public class TrendController {
         return GlobalResponseDto.success(trendUsecase.getUserHistory(user.getUserId()));
     }
 
-    @DeleteMapping("/search-history/{historyId}")
+    @DeleteMapping("/{historyId}")
     public GlobalResponseDto deleteOneUserHistory(@AuthenticationPrincipal User user, @PathVariable long historyId){
         trendUsecase.deleteOneUserHistory(user.getUserId(), historyId);
         return GlobalResponseDto.success();
