@@ -19,6 +19,7 @@ public interface CommunityUseCase {
 	List<MyCommunityResponse> getMyCommunities(Long userId,CommunityField field, String sort, int page, int size);
 	List<CommunitySummaryResponse> getCommunitiesByField(CommunityField field);
 	void deleteCommunity(Long userId,Long communityId);
+	List<CommunitySummaryResponse> searchCommunities(String keyword, CommunityField field, String sort, int page, int size);
 
 
 }
