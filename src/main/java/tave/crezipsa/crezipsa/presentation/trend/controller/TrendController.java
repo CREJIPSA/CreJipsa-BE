@@ -1,5 +1,6 @@
 package tave.crezipsa.crezipsa.presentation.trend.controller;
 
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +38,7 @@ public class TrendController {
     }
 
     @GetMapping("/search/{trend}")
-    public GlobalResponseDto<TrendSearchResponse> searchTrend(@AuthenticationPrincipal User user, @PathVariable String trend){
+    public GlobalResponseDto<TrendSearchResponse> searchTrend(@AuthenticationPrincipal User user, @PathVariable("trend") @Size(max = 50, message = "검색어는 50자 이하만 가능합니다.") String trend) {
         return GlobalResponseDto.success(trendUsecase.searchTrend(user.getUserId(),trend));
     }
 

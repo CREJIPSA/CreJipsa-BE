@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class UserHistoryRespositoryImpl implements UserHistoryRepository {
+public class UserHistoryRepositoryImpl implements UserHistoryRepository {
 
     private final UserHistoryJpaRepository userHistoryJpaRepository;
 
