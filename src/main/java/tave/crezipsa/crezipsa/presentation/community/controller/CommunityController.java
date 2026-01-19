@@ -98,4 +98,18 @@ public class CommunityController {
 		return GlobalResponseDto.success();
 	}
 
+	//글 검색(제목기반)
+	@GetMapping("/search")
+	public GlobalResponseDto<List<CommunitySummaryResponse>> search(
+		@RequestParam String keyword,
+		@RequestParam(required = false) CommunityField field,
+		@RequestParam(defaultValue = "latest") String sort,
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int size) {
+
+		List<CommunitySummaryResponse> responses =
+			communityUseCase.searchCommunities(keyword, field, sort, page, size);
+
+		return GlobalResponseDto.success(responses);
+	}
 }
