@@ -21,7 +21,7 @@ public class CommentMapper {
 	private final UserRepository userRepository;
 	private final CommentRepository commentRepository;
 
-	public CommentResponse toCommentResponse(Comment comment,User writer, List<CommentResponse> replies) {
+	public CommentResponse toCommentResponse(Comment comment,User writer, String relativeTime, List<CommentResponse> replies) {
 
 		return new CommentResponse(
 			comment.getCommentId(),
@@ -31,6 +31,7 @@ public class CommentMapper {
 			comment.isDeleted(),
 			comment.getContent(),
 			comment.getCreatedAt(),
+			relativeTime,
 			replies
 		);
 	}

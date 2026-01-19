@@ -1,5 +1,7 @@
 package tave.crezipsa.crezipsa.application.community.usecase;
 
+import static tave.crezipsa.crezipsa.application.community.usecase.LikeUseCaseImpl.*;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -52,8 +54,9 @@ public class CommentUseCaseImpl implements  CommentUsecase {
 
 		Comment saved = commentRepository.save(Comment.create(communityId, userId, request.content(), parentId));
 		User writer = findUserOrThrow(userId);
+		String relativeTime = convertToRelativeTime(saved.getCreatedAt());
 
-		return commentMapper.toCommentResponse(saved, writer, List.of());
+		return commentMapper.toCommentResponse(saved, writer,relativeTime, List.of());
 	}
 
 	@Override
@@ -67,8 +70,9 @@ public class CommentUseCaseImpl implements  CommentUsecase {
 
 		comment.update(request.content());
 		User writer = findUserOrThrow(userId);
+		String relativeTime = convertToRelativeTime(comment.getCreatedAt());
 
-		return commentMapper.toCommentResponse(comment, writer, List.of());
+		return commentMapper.toCommentResponse(comment, writer,relativeTime, List.of());
 	}
 
 	@Override
@@ -148,8 +152,10 @@ public class CommentUseCaseImpl implements  CommentUsecase {
 			.map(child -> toResponseTree(child, childrenByParentId, writerMap))
 			.toList();
 
+		String relativeTime = convertToRelativeTime(comment.getCreatedAt());
+
 		// Mapper는 변환만
-		return commentMapper.toCommentResponse(comment, writer, replyResponses);
+		return commentMapper.toCommentResponse(comment, writer,relativeTime, replyResponses);
 	}
 
 	// 검증 로직의 반복이 잦아 헬퍼 메소드로 분리

@@ -11,6 +11,7 @@ public record CommentResponse(
 	boolean deleted,
 	String content,
 	LocalDateTime createdAt,
+	String relativeTime,
 	List<CommentResponse> replies
 ) {
 }
