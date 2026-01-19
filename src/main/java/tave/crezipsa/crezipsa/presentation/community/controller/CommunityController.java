@@ -58,8 +58,8 @@ public class CommunityController {
 
 	//상세 글 조회
 	@GetMapping("/{communityId}")
-	public GlobalResponseDto<CommunityDetailResponse> getCommunity(@PathVariable Long communityId) {
-		return GlobalResponseDto.success(communityUseCase.getCommunity(communityId));
+	public GlobalResponseDto<CommunityDetailResponse> getCommunity(@AuthenticationPrincipal User user,@PathVariable Long communityId) {
+		return GlobalResponseDto.success(communityUseCase.getCommunity(communityId,user.getUserId()));
 	}
 
 	//전체 글 조회
