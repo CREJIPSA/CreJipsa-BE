@@ -8,6 +8,7 @@ public record CommentResponse(
 	Long communityId,
 	Long parentId,
 	WriterResponse writer,
+	boolean isWriter,
 	boolean deleted,
 	String content,
 	LocalDateTime createdAt,
