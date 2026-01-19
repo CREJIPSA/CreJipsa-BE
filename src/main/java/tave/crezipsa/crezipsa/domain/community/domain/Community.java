@@ -40,6 +40,7 @@ public class Community extends BaseEntity {
 	private CommunityField field;
 
 	@Convert(converter = StringListConverter.class)
+	@Column(name = "image_urls", columnDefinition = "TEXT")
 	private List<String> imageUrls = new ArrayList<>();
 
 	private Long writerId;
