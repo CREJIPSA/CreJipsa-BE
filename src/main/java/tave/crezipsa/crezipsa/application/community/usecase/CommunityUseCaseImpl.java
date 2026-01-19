@@ -133,4 +133,30 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 			.toList();
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public List<CommunitySummaryResponse> searchCommunities(String keyword, CommunityField field, String sort, int page, int size) {
+		String q = keyword == null ? "" : keyword.trim();
+
+		if (q.isBlank()) {
+			return List.of();
+		}
+
+		Pageable pageable = PageRequest.of(page, size);
+
+		Page<Community> pageResult =
+			"popular".equals(sort)
+				? communityRepository.searchByTitlePopular(q, field, pageable)
+				: communityRepository.searchByTitleLatest(q, field, pageable);
+
+		return pageResult
+			.map(c -> {
+				long likeCount = c.getLikeCount();
+				long commentCount = commentRepository.countByCommunityId(c.getCommunityId());
+				return CommunitySummaryResponse.of(c, likeCount, commentCount);
+			})
+			.getContent();
+	}
+
+
 }
