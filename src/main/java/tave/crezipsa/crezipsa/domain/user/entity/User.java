@@ -9,6 +9,7 @@ import java.time.LocalDate;
 
 @Getter
 @AllArgsConstructor
+@RequiredArgsConstructor
 @Builder
 public class User {
         private Long userId;
@@ -29,6 +30,7 @@ public class User {
                 .nickName(cmd.nickName())
                 .email(cmd.email())
                 .gender(cmd.gender())
+                    .profileImageUrl(cmd.profileImageUrl())
                 .role(false)
                 .birth(cmd.birth())
                 .activeYoutube(cmd.activeYoutube())
