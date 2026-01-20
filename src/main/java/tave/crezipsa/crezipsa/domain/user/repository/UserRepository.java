@@ -16,4 +16,7 @@ public interface UserRepository {
 
     Boolean existsByEmail(String email);
     Boolean existsByNickName(String NickName);
+
+    void deleteById(long userId);
+
 }

@@ -1,7 +1,9 @@
 package tave.crezipsa.crezipsa.presentation.trend.controller;
 
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tave.crezipsa.crezipsa.application.trend.dto.response.TrendDetailResponse;
 import tave.crezipsa.crezipsa.application.trend.dto.response.TrendResponse;
@@ -15,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/api/main/trend")
 public class TrendController {
 
@@ -37,9 +40,9 @@ public class TrendController {
     }
 
     @GetMapping("/search/{trend}")
-    public GlobalResponseDto<TrendSearchResponse> searchTrend(@AuthenticationPrincipal User user, @PathVariable String trend){
-        return GlobalResponseDto.success(trendUsecase.searchTrend(trend));
-    }
+    public GlobalResponseDto<TrendSearchResponse> searchTrend(@AuthenticationPrincipal User user, @PathVariable("trend") @Size(max = 20, message = "검색어는 20자 이하만 가능합니다.") String trend) {
+        return GlobalResponseDto.success(trendUsecase.searchTrend(user.getUserId(),trend));
+    } //PathVariable -> requestParam? 띄어쓰기, 특수 문자 등
 
     @GetMapping("recommendations/by-platform")
     public GlobalResponseDto<List<TrendResponse>> recommendationsByPlatform(@AuthenticationPrincipal User user){
@@ -49,5 +52,21 @@ public class TrendController {
     @GetMapping("recommendations/by-interests")
     public GlobalResponseDto<List<TrendResponse>> recommendationsByInterests(@AuthenticationPrincipal User user){
         return GlobalResponseDto.success(trendUsecase.recommendTrendsByInterests(user.getUserId()));
+    }
+    @GetMapping("/search-history")
+    public GlobalResponseDto getUserHistory(@AuthenticationPrincipal User user){
+        return GlobalResponseDto.success(trendUsecase.getUserHistory(user.getUserId()));
+    }
+
+    @DeleteMapping("/{historyId}")
+    public GlobalResponseDto deleteOneUserHistory(@AuthenticationPrincipal User user, @PathVariable long historyId){
+        trendUsecase.deleteOneUserHistory(user.getUserId(), historyId);
+        return GlobalResponseDto.success();
+    }
+
+    @DeleteMapping("/all-history")
+    public GlobalResponseDto deleteAllUserHistory(@AuthenticationPrincipal User user){
+        trendUsecase.deleteAllUserHistory(user.getUserId());
+        return GlobalResponseDto.success();
     }
 }

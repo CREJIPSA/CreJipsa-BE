@@ -3,16 +3,17 @@ package tave.crezipsa.crezipsa.application.user.usecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tave.crezipsa.crezipsa.application.user.dto.request.UserInterestRequest;
 import tave.crezipsa.crezipsa.application.user.dto.request.UserSignUpRequest;
 import tave.crezipsa.crezipsa.application.user.dto.request.UserUpdateRequest;
 import tave.crezipsa.crezipsa.application.user.dto.response.UserInterestResponse;
+import tave.crezipsa.crezipsa.application.user.dto.response.UserResponse;
 import tave.crezipsa.crezipsa.application.user.dto.response.UserSignUpResponse;
 import tave.crezipsa.crezipsa.application.user.dto.response.UserUpdateResponse;
 import tave.crezipsa.crezipsa.domain.user.command.UserSignUpCommand;
 import tave.crezipsa.crezipsa.domain.user.command.UserUpdateCommand;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
 import tave.crezipsa.crezipsa.domain.user.entity.UserInterest;
+import tave.crezipsa.crezipsa.domain.user.repository.UserHistoryRepository;
 import tave.crezipsa.crezipsa.domain.user.repository.UserInterestRepository;
 import tave.crezipsa.crezipsa.domain.user.repository.UserRepository;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
@@ -28,6 +29,7 @@ public class UserUsecaseImpl implements UserUsecase {
 
     private final UserRepository userRepository;
     private final UserInterestRepository userInterestRepository;
+    private final UserHistoryRepository userHistoryRepository;
 
     @Override
     public UserSignUpResponse signUp(UserSignUpRequest request) {
@@ -96,6 +98,16 @@ public class UserUsecaseImpl implements UserUsecase {
         }
 
         userInterestRepository.deleteByInterestId(interestId);
+    }
+
+    @Override
+    public void deleteUser(Long userId) {
+        userRepository.deleteById(userId);
+    }
+
+    @Override
+    public UserResponse getUser(User user) {
+        return UserResponse.from(user);
     }
 
 }

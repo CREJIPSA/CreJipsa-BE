@@ -8,10 +8,11 @@ import tave.crezipsa.crezipsa.application.trend.dto.response.TrendResponse;
 import tave.crezipsa.crezipsa.application.trend.dto.response.TrendSearchResponse;
 import tave.crezipsa.crezipsa.application.trend.dto.response.request.TrendRequest;
 import tave.crezipsa.crezipsa.application.trend.port.TrendQueryPort;
+import tave.crezipsa.crezipsa.application.trend.dto.response.UserHistoryResponse;
+import tave.crezipsa.crezipsa.application.user.port.UserHistoryPort;
 import tave.crezipsa.crezipsa.application.user.port.UserInterestPort;
-import tave.crezipsa.crezipsa.domain.user.entity.User;
-import tave.crezipsa.crezipsa.domain.user.entity.UserInterest;
-import tave.crezipsa.crezipsa.domain.user.repository.UserInterestRepository;
+import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
+import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 import tave.crezipsa.crezipsa.infrastructure.trend.TrendDetailWithUrls;
 import tave.crezipsa.crezipsa.infrastructure.trend.TrendRow;
 
@@ -24,9 +25,14 @@ public class TrendUsecaseImpl implements TrendUsecase {
 
     private final TrendQueryPort trendQueryPort;
     private final UserInterestPort userInterestPort;
+    private final UserHistoryPort userHistoryPort;
 
     @Override
     public List<TrendResponse> getTopTrends(String platform, String category) {
+
+        if(platform.isEmpty() ||platform.isBlank()){
+            throw new CommonException(ErrorCode.USER_PLATFORM_NOT_SET);
+        }
 
         List<TrendRow> trendRowList = trendQueryPort.findTopKeywordsByPlatformAndCategory(platform, category);
         return trendRowList.stream()
@@ -43,11 +49,13 @@ public class TrendUsecaseImpl implements TrendUsecase {
 
     @Override
     public void saveTrend(long userId, TrendRequest request) {
+
         trendQueryPort.saveTrend(userId, request.from(request));
     }
 
     @Override
-    public TrendSearchResponse searchTrend(String keyword) {
+    public TrendSearchResponse searchTrend(long userId, String keyword) {
+        userHistoryPort.saveHistory(userId,keyword);
         return TrendSearchResponse.from(trendQueryPort.findKeywordByKeyword(keyword));
     }
 
@@ -61,4 +69,20 @@ public class TrendUsecaseImpl implements TrendUsecase {
                 .toList();
     }
 
+    @Override
+    public List<UserHistoryResponse> getUserHistory(Long userId) {
+        return userHistoryPort.getUserHistory(userId).stream()
+                .map(UserHistoryResponse::from)
+                .toList();
+    }
+
+    @Override
+    public void deleteOneUserHistory(long userId, long historyId) {
+        userHistoryPort.deleteHistoryByHistoryId(userId, historyId);
+    }
+
+    @Override
+    public void deleteAllUserHistory(long userId) {
+        userHistoryPort.deleteAllHistoryByUserId(userId);
+    }
 }

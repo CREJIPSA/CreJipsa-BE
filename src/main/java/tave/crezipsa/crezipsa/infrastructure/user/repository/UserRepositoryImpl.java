@@ -60,4 +60,7 @@ public class UserRepositoryImpl implements UserRepository {
         return userJpaRepository.existsByNickName(NickName);
     }
 
+    @Override
+    public void deleteById(long userId) { userJpaRepository.deleteById(userId);}
+
 }

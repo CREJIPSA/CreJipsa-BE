@@ -1,6 +1,8 @@
 package tave.crezipsa.crezipsa.global.exception.handler;
 
 import java.util.stream.Collectors;
+
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -54,6 +56,18 @@ public class GlobalExceptionHandler {
 		return ResponseEntity
 			.status(ErrorCode.MISSING_AUTH_HEADER.getStatus())
 			.body(GlobalResponseDto.fail(ErrorCode.MISSING_AUTH_HEADER));
+	}
+
+	// @PathVariable, @RequestParam 파라미터 검증
+	@ExceptionHandler(ConstraintViolationException.class)
+	public ResponseEntity<GlobalResponseDto<Void>> handleConstraintViolation(ConstraintViolationException ex) {
+
+		String errorMessage = ex.getConstraintViolations().stream()
+				.findFirst()
+				.map(v -> v.getMessage())
+				.orElse("요청 값이 올바르지 않습니다.");
+
+		return ResponseEntity.badRequest().body(GlobalResponseDto.error(errorMessage));
 	}
 
 	//  그 외 모든 예외
