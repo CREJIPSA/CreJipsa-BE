@@ -58,4 +58,15 @@ public class CommunityRepositoryImpl implements CommunityRepository {
 	public Page<Community> findMyCommunitiesPopular(Long writerId, CommunityField field, Pageable pageable) {
 		return communityJpaRepository.findMyCommunitiesPopular(writerId, field, pageable);
 	}
+
+	@Override
+	public Page<Community> searchByTitleLatest(String keyword, CommunityField field, Pageable pageable) {
+		return communityJpaRepository.searchByTitleLatest(keyword, field, pageable);
+	}
+
+	@Override
+	public Page<Community> searchByTitlePopular(String keyword, CommunityField field, Pageable pageable) {
+		return communityJpaRepository.searchByTitlePopular(keyword, field, pageable);
+	}
+
 }

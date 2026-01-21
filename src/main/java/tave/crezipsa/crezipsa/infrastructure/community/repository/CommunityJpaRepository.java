@@ -42,5 +42,31 @@ public interface CommunityJpaRepository extends JpaRepository<Community, Long> {
 		Pageable pageable
 	);
 
+	@Query("""
+    select c
+    from Community c
+    where (:field is null or c.field = :field)
+      and c.title like concat('%', :keyword, '%')
+    order by c.createdAt desc
+""")
+	Page<Community> searchByTitleLatest(
+		@Param("keyword") String keyword,
+		@Param("field") CommunityField field,
+		Pageable pageable
+	);
+
+	@Query("""
+    select c
+    from Community c
+    where (:field is null or c.field = :field)
+      and c.title like concat('%', :keyword, '%')
+    order by c.likeCount desc, c.createdAt desc
+""")
+	Page<Community> searchByTitlePopular(
+		@Param("keyword") String keyword,
+		@Param("field") CommunityField field,
+		Pageable pageable
+	);
+
 
 }

@@ -58,8 +58,8 @@ public class CommunityController {
 
 	//상세 글 조회
 	@GetMapping("/{communityId}")
-	public GlobalResponseDto<CommunityDetailResponse> getCommunity(@PathVariable Long communityId) {
-		return GlobalResponseDto.success(communityUseCase.getCommunity(communityId));
+	public GlobalResponseDto<CommunityDetailResponse> getCommunity(@AuthenticationPrincipal User user,@PathVariable Long communityId) {
+		return GlobalResponseDto.success(communityUseCase.getCommunity(communityId,user.getUserId()));
 	}
 
 	//전체 글 조회
@@ -98,4 +98,18 @@ public class CommunityController {
 		return GlobalResponseDto.success();
 	}
 
+	//글 검색(제목기반)
+	@GetMapping("/search")
+	public GlobalResponseDto<List<CommunitySummaryResponse>> search(
+		@RequestParam String keyword,
+		@RequestParam(required = false) CommunityField field,
+		@RequestParam(defaultValue = "latest") String sort,
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int size) {
+
+		List<CommunitySummaryResponse> responses =
+			communityUseCase.searchCommunities(keyword, field, sort, page, size);
+
+		return GlobalResponseDto.success(responses);
+	}
 }

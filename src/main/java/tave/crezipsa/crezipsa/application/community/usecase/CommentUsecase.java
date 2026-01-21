@@ -13,7 +13,7 @@ public interface CommentUsecase {
 	CommentResponse createComment(Long communityId, Long userId, CommentCreateRequest request);
 	CommentResponse updateComment(Long commentId, Long userId, CommentUpdateRequest request);
 	void deleteComment(Long commentId, Long userId);
-	List<CommentResponse> getComments(Long communityId);
+	List<CommentResponse> getComments(Long communityId, Long viwerId);
 	List<MyCommentResponse> getMyComments(Long userId, CommunityField field , int page, int size);
 
 }

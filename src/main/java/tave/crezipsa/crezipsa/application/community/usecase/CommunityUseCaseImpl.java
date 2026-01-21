@@ -20,6 +20,8 @@ import tave.crezipsa.crezipsa.application.community.dto.response.MyCommunityResp
 import tave.crezipsa.crezipsa.application.community.dto.response.WriterResponse;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
 import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
+import tave.crezipsa.crezipsa.domain.community.domain.LikeId;
+import tave.crezipsa.crezipsa.domain.community.domain.Like;
 import tave.crezipsa.crezipsa.domain.community.repository.CommentRepository;
 import tave.crezipsa.crezipsa.domain.community.repository.CommunityRepository;
 import tave.crezipsa.crezipsa.domain.community.repository.LikeRepository;
@@ -33,7 +35,7 @@ import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 @RequiredArgsConstructor
 public class CommunityUseCaseImpl implements CommunityUseCase {
 
-
+	private static final int MAX_KEYWORD_LENGTH = 30;
 	private final CommunityRepository communityRepository;
 	private final LikeRepository likeRepository;
 	private final CommentRepository commentRepository;
@@ -66,7 +68,7 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 	}
 
 	@Override
-	public CommunityDetailResponse getCommunity(Long communityId) {
+	public CommunityDetailResponse getCommunity(Long communityId, Long userId) {
 		Community community = communityRepository.findById(communityId)
 			.orElseThrow(() -> new CommonException(ErrorCode.COMMUNITY_NOT_FOUND));
 
@@ -74,11 +76,14 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 			.orElseThrow(() -> new CommonException(ErrorCode.USER_NOT_FOUND));
 
 		long commentCount = commentRepository.countByCommunityId(communityId);
-		List<CommentResponse> comments = commentUsecase.getComments(communityId);
+		List<CommentResponse> comments = commentUsecase.getComments(communityId, userId);
 		WriterResponse writer = WriterResponse.from(writerUser);
+		boolean isWriter = Objects.equals(community.getWriterId(), userId);
+		boolean isLiked = likeRepository.findById(new LikeId(userId, communityId))
+			.map(Like::isLiked)
+			.orElse(false);
 
-
-		return CommunityDetailResponse.from(community,writer, commentCount, comments);
+		return CommunityDetailResponse.from(community,writer,isWriter,isLiked, commentCount, comments);
 	}
 
 	@Override
@@ -131,6 +136,36 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 				return CommunitySummaryResponse.of(c, likeCount, commentCount);
 			})
 			.toList();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<CommunitySummaryResponse> searchCommunities(String keyword, CommunityField field, String sort, int page, int size) {
+		if (keyword == null || keyword.isBlank()) {
+			throw new CommonException(ErrorCode.SEARCH_KEYWORD_REQUIRED);
+		}
+
+		String q = keyword.trim();
+
+		if (q.length() > MAX_KEYWORD_LENGTH) {
+			throw new CommonException(ErrorCode.SEARCH_KEYWORD_TOO_LONG);
+		}
+
+
+		Pageable pageable = PageRequest.of(page, size);
+
+		Page<Community> pageResult =
+			"popular".equals(sort)
+				? communityRepository.searchByTitlePopular(q, field, pageable)
+				: communityRepository.searchByTitleLatest(q, field, pageable);
+
+		return pageResult
+			.map(c -> {
+				long likeCount = c.getLikeCount();
+				long commentCount = commentRepository.countByCommunityId(c.getCommunityId());
+				return CommunitySummaryResponse.of(c, likeCount, commentCount);
+			})
+			.getContent();
 	}
 
 }
