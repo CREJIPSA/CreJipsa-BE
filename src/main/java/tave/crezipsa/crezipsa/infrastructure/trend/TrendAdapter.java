@@ -38,7 +38,7 @@ public class TrendAdapter implements TrendQueryPort {
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("platform", platform)
                     .addValue("limit",10)
-                    .addValue("categoqry", category);
+                    .addValue("category", category);
 
             rows = analyticsJdbc.query(sql, params, (rs, rowNum) -> new TrendRow(
                     rs.getLong("id"),
