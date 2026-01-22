@@ -13,6 +13,7 @@ import tave.crezipsa.crezipsa.domain.user.command.UserSignUpCommand;
 import tave.crezipsa.crezipsa.domain.user.command.UserUpdateCommand;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
 import tave.crezipsa.crezipsa.domain.user.entity.UserInterest;
+import tave.crezipsa.crezipsa.domain.user.enums.Platform;
 import tave.crezipsa.crezipsa.domain.user.repository.UserHistoryRepository;
 import tave.crezipsa.crezipsa.domain.user.repository.UserInterestRepository;
 import tave.crezipsa.crezipsa.domain.user.repository.UserRepository;
@@ -108,6 +109,20 @@ public class UserUsecaseImpl implements UserUsecase {
     @Override
     public UserResponse getUser(User user) {
         return UserResponse.from(user);
+    }
+
+    @Override
+    public void deletePlatform(long userId, Platform platform) {
+        User user =  userRepository.findById(userId).
+                orElseThrow(() -> new CommonException(ErrorCode.USER_INVALID_ID));
+
+        switch (platform) {
+            case INSTAGRAM -> user.setActiveInsta(null);
+            case YOUTUBE   -> user.setActiveYoutube(null);
+            case TIKTOK    -> user.setActiveTiktok(null);
+        }
+
+        UserUpdateResponse.from(userRepository.save(user));
     }
 
 }

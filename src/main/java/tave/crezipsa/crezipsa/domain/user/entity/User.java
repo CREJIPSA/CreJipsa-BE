@@ -8,6 +8,7 @@ import tave.crezipsa.crezipsa.domain.user.enums.Platform;
 import java.time.LocalDate;
 
 @Getter
+@Setter
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Builder

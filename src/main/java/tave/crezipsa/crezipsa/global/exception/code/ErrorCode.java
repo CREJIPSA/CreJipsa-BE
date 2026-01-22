@@ -9,7 +9,6 @@ public enum ErrorCode implements BaseErrorCode {
 	USER_INVALID_ID(401,"U40105", "존재하지 않는 유저입니다."),
 	USER_PLATFORM_NOT_SET(404,"U40106","사용자 메인 플랫폼이 지정되지 않았습니다."),
 
-
 	//카테고리 관련
 	INVALD_INTEREST(404,"I40401", "존재하지 않은 사용자 관심 카테고리입니다."),
 	ALREADY_INTEREST(400,"I40002","이미 선택한 사용자 관심 카테고리입니다."),

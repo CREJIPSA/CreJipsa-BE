@@ -7,6 +7,7 @@ import tave.crezipsa.crezipsa.application.user.dto.response.UserResponse;
 import tave.crezipsa.crezipsa.application.user.dto.response.UserSignUpResponse;
 import tave.crezipsa.crezipsa.application.user.dto.response.UserUpdateResponse;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
+import tave.crezipsa.crezipsa.domain.user.enums.Platform;
 
 import java.util.List;
 
@@ -19,4 +20,5 @@ public interface UserUsecase {
     void deleteUserInterest(Long UserId, Long interestId);
     void deleteUser(Long userId);
     UserResponse getUser(User user);
+    void deletePlatform(long userId, Platform platform);
 }

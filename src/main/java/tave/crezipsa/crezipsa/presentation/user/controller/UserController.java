@@ -12,6 +12,7 @@ import tave.crezipsa.crezipsa.application.user.dto.response.UserResponse;
 import tave.crezipsa.crezipsa.application.user.dto.response.UserSignUpResponse;
 import tave.crezipsa.crezipsa.application.user.usecase.UserUsecase;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
+import tave.crezipsa.crezipsa.domain.user.enums.Platform;
 import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
 
 import java.util.List;
@@ -37,6 +38,15 @@ public class UserController {
             @AuthenticationPrincipal User user, @Valid @RequestBody UserUpdateRequest request) {
 
         return GlobalResponseDto.success(userUsecase.update(user.getUserId(), request));
+    }
+
+    @DeleteMapping("/update")
+    public GlobalResponseDto<Void> deletePlatform(
+            @AuthenticationPrincipal User user,
+            @RequestParam Platform platform
+    ) {
+        userUsecase.deletePlatform(user.getUserId(), platform);
+        return GlobalResponseDto.success(null);
     }
 
     @PostMapping("/interest/{category}")
