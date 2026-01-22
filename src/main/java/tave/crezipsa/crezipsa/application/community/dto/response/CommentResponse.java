@@ -7,12 +7,12 @@ public record CommentResponse(
 	Long commentId,
 	Long communityId,
 	Long parentId,
-	Long writerId,
-	String writerNickname,
-	String profileImageUrl,
+	WriterResponse writer,
+	boolean isWriter,
 	boolean deleted,
 	String content,
 	LocalDateTime createdAt,
+	String relativeTime,
 	List<CommentResponse> replies
 ) {
 }

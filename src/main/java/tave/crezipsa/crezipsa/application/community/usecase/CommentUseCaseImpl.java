@@ -1,8 +1,11 @@
 package tave.crezipsa.crezipsa.application.community.usecase;
 
+import static tave.crezipsa.crezipsa.application.community.usecase.LikeUseCaseImpl.*;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -52,8 +55,10 @@ public class CommentUseCaseImpl implements  CommentUsecase {
 
 		Comment saved = commentRepository.save(Comment.create(communityId, userId, request.content(), parentId));
 		User writer = findUserOrThrow(userId);
+		boolean isWriter = true;
+		String relativeTime = convertToRelativeTime(saved.getCreatedAt());
 
-		return commentMapper.toCommentResponse(saved, writer, List.of());
+		return commentMapper.toCommentResponse(saved, writer,isWriter, relativeTime, List.of());
 	}
 
 	@Override
@@ -67,8 +72,10 @@ public class CommentUseCaseImpl implements  CommentUsecase {
 
 		comment.update(request.content());
 		User writer = findUserOrThrow(userId);
+		boolean isWriter = true;
+		String relativeTime = convertToRelativeTime(comment.getCreatedAt());
 
-		return commentMapper.toCommentResponse(comment, writer, List.of());
+		return commentMapper.toCommentResponse(comment, writer,isWriter, relativeTime, List.of());
 	}
 
 	@Override
@@ -88,7 +95,7 @@ public class CommentUseCaseImpl implements  CommentUsecase {
 	}
 
 	@Override
-	public List<CommentResponse> getComments(Long communityId) {
+	public List<CommentResponse> getComments(Long communityId, Long userId) {
 		findCommunityOrThrow(communityId);
 
 		List<Comment> allComments = commentRepository.findByCommunityId(communityId);
@@ -115,7 +122,7 @@ public class CommentUseCaseImpl implements  CommentUsecase {
 			.toList();
 
 		return rootComments.stream()
-			.map(root -> toResponseTree(root, childrenByParentId, writerMap))
+			.map(root -> toResponseTree(root, childrenByParentId, writerMap, userId))
 			.toList();
 
 	}
@@ -133,7 +140,7 @@ public class CommentUseCaseImpl implements  CommentUsecase {
 	}
 
 	private CommentResponse toResponseTree(Comment comment, Map<Long, List<Comment>> childrenByParentId,
-		Map<Long, User> writerMap) {
+		Map<Long, User> writerMap, Long viewerId) {
 		User writer = writerMap.get(comment.getUserId());
 		if (writer == null) {
 			throw new CommonException(ErrorCode.USER_NOT_FOUND);
@@ -145,11 +152,14 @@ public class CommentUseCaseImpl implements  CommentUsecase {
 		// 자식들도 재귀적으로 CommentResponse로 변환
 		List<CommentResponse> replyResponses = children.stream()
 			.sorted(Comparator.comparing(Comment::getCreatedAt)) // 대댓글도 정렬(선택)
-			.map(child -> toResponseTree(child, childrenByParentId, writerMap))
+			.map(child -> toResponseTree(child, childrenByParentId, writerMap, viewerId))
 			.toList();
 
+		boolean isWriter = viewerId != null && Objects.equals(comment.getUserId(), viewerId);
+		String relativeTime = convertToRelativeTime(comment.getCreatedAt());
+
 		// Mapper는 변환만
-		return commentMapper.toCommentResponse(comment, writer, replyResponses);
+		return commentMapper.toCommentResponse(comment, writer,isWriter, relativeTime, replyResponses);
 	}
 
 	// 검증 로직의 반복이 잦아 헬퍼 메소드로 분리

@@ -48,5 +48,18 @@ public class User {
 
         }
 
+       public String getMainPlatformAccount() {
+           if (mainPlatform == null) {
+            return null;
+          }
+
+           return switch (mainPlatform) {
+            case YOUTUBE -> activeYoutube;
+            case INSTAGRAM -> activeInsta;
+            case TIKTOK -> activeTiktok;
+           };
+    }
+
+
 }
 

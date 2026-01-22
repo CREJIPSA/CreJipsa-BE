@@ -58,6 +58,7 @@ public enum ErrorCode implements BaseErrorCode {
 
 	// 검색 관련
 	SEARCH_KEYWORD_REQUIRED(400, "SE40001", "검색어는 필수입니다."),
+	SEARCH_KEYWORD_TOO_LONG(400, "SE40002", "검색어는 최대 30자까지 입니다.."),
 
 	// 서버 오류
 	INTERNAL_SERVER_ERROR(500, "S50001", "서버 내부 오류가 발생했습니다.");

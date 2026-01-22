@@ -14,7 +14,9 @@ public record CommunityDetailResponse(
 	String content,
 	CommunityField field,
 	List<String> imageUrls,
-	Long writerId,
+	WriterResponse writer,
+	boolean isWriter,
+	boolean isLiked,
 	long likeCount,
 	long commentCount,
 	String relativeTime,
@@ -23,6 +25,9 @@ public record CommunityDetailResponse(
 
 	public static CommunityDetailResponse from(
 		Community community,
+		WriterResponse writer,
+		boolean isWriter,
+		boolean isLiked,
 		long commentCount,
 		List<CommentResponse> comments
 	) {
@@ -32,7 +37,9 @@ public record CommunityDetailResponse(
 			community.getContent(),
 			community.getField(),
 			community.getImageUrls(),
-			community.getWriterId(),
+			writer,
+			isWriter,
+			isLiked,
 			community.getLikeCount(),
 			commentCount,
 			convertToRelativeTime(community.getCreatedAt()),
