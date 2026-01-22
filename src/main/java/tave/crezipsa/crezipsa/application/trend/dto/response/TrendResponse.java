@@ -8,7 +8,8 @@ public record TrendResponse(
         String keyword,
         int rank,
         Platform platform,
-        String category
+        String category,
+        String trendDirection
 ) {
     public static TrendResponse from(TrendRow row) {
         Platform platform = row.platform() == null ? null : Platform.valueOf(row.platform());
@@ -18,7 +19,8 @@ public record TrendResponse(
                 row.keyword(),
                 row.rank(),
                 platform,
-                row.category()
+                row.category(),
+                row.trendDirection()
         );
     }
 }
