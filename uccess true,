@@ -1,0 +1,14 @@
+  #29/트렌드상세페이지개발[m
+  develop[m
+  feat/#1/카카오로그인구현[m
+  feat/#12/회원가입구현[m
+  feat/#19/마이페이지개발[m
+  feat/#26/실시간트렌드조회개발[m
+  feat/#3/커뮤니티-구현[m
+  feat/#39/앱방식로그인구현[m
+  feat/#44/사용자기반트렌드추천[m
+* [32mfeat/#46/검색기록관련기능개발[m
+  main[m
+  refactor/#16/토큰검증파일수정[m
+  refactor/#21/refreshToken인증로직추가[m
+  refactor/#42/회원가입request수정[m

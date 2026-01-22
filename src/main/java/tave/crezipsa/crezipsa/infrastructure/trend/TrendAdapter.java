@@ -50,7 +50,7 @@ public class TrendAdapter implements TrendQueryPort {
         }
         else {
             sql = """
-                SELECT id, overall_rank, keyword, platform, category_name
+                SELECT id, overall_rank, keyword, platform, category_name, trend_direction
                 FROM analytics_keyword_virality
                 WHERE platform = :platform 
                 ORDER BY overall_rank ASC LIMIT :limit
@@ -65,7 +65,8 @@ public class TrendAdapter implements TrendQueryPort {
                     rs.getInt("overall_rank"),
                     rs.getString("keyword"),
                     rs.getString("platform"),
-                    rs.getString("category_name")
+                    rs.getString("category_name"),
+                    rs.getString("trend_direction")
             ));
         }
 

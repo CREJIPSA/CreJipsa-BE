@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface UserInterestJpaRepository extends JpaRepository<UserInterest, Long> {
     List<UserInterest> findAllByUserId(Long userId);
+
     UserInterest save(UserInterest userInterest);
     boolean existsByUserIdAndCategory(Long userId, String category);
     void deleteByInterestId(Long interestId);
