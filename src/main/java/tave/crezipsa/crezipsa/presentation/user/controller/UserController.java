@@ -36,8 +36,7 @@ public class UserController {
     public GlobalResponseDto update(
             @AuthenticationPrincipal User user, @Valid @RequestBody UserUpdateRequest request) {
 
-        userUsecase.update(user.getUserId(), request);
-        return GlobalResponseDto.success();
+        return GlobalResponseDto.success(userUsecase.update(user.getUserId(), request));
     }
 
     @PostMapping("/interest/{category}")
