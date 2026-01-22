@@ -9,6 +9,8 @@ public record UserUpdateRequest(
         String activeYoutube,
         String activeTiktok,
         String activeInsta,
-        Platform mainPlatform
+        Platform mainPlatform,
+        String profileImageUrl
+
 ) {
 }

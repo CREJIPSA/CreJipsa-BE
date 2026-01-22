@@ -45,7 +45,7 @@ public class User {
             if(cmd.getActiveInsta() != null) { this.activeInsta = cmd.getActiveInsta() ;}
             if(cmd.getActiveTiktok() != null) { this.activeTiktok = cmd.getActiveTiktok(); }
             if(cmd.getMainPlatform() != null) { this.mainPlatform = cmd.getMainPlatform(); }
-
+            if(cmd.getProfileImageUrl() != null) { this.profileImageUrl = cmd.getProfileImageUrl(); }
         }
 
        public String getMainPlatformAccount() {

@@ -11,12 +11,9 @@ public interface UserRepository {
     User save(User user);
     Optional<User> findByEmail(String email);
     Optional<User> findById(Long userId);
-    Optional<User> findByNickName(String NickName);
     List<User> findAllById(Collection<Long> userIds);
-
     Boolean existsByEmail(String email);
     Boolean existsByNickName(String NickName);
-
     void deleteById(long userId);
 
 }

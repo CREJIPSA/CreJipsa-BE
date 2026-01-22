@@ -8,7 +8,8 @@ public record UserUpdateResponse(
         String activeYoutube,
         String activeTiktok,
         String activeInsta,
-        Platform mainPlatform
+        Platform mainPlatform,
+        String profileImageUrl
 
 ) {
     public static UserUpdateResponse from(User user) {
@@ -17,7 +18,8 @@ public record UserUpdateResponse(
                 user.getActiveYoutube(),
                 user.getActiveTiktok(),
                 user.getActiveInsta(),
-                user.getMainPlatform()
+                user.getMainPlatform(),
+                user.getProfileImageUrl()
         );
     }
 }

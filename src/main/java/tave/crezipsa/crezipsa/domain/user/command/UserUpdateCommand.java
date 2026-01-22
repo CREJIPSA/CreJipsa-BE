@@ -15,13 +15,16 @@ public class UserUpdateCommand {
     private final String activeYoutube;
     private final String activeTiktok;
     private final Platform mainPlatform;
+    private final String profileImageUrl;
 
     public static UserUpdateCommand from(UserUpdateRequest request) {
         return new UserUpdateCommand(
                 request.activeInsta(),
                 request.activeYoutube(),
                 request.activeTiktok(),
-                request.mainPlatform()
+                request.mainPlatform(),
+                request.profileImageUrl()
+
         );
     }
 
