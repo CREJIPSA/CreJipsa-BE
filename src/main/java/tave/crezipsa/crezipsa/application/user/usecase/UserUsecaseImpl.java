@@ -116,6 +116,10 @@ public class UserUsecaseImpl implements UserUsecase {
         User user =  userRepository.findById(userId).
                 orElseThrow(() -> new CommonException(ErrorCode.USER_INVALID_ID));
 
+        if (user.getMainPlatform() == platform) {
+            user.setMainPlatform(null);
+        }
+
         switch (platform) {
             case INSTAGRAM -> user.setActiveInsta(null);
             case YOUTUBE   -> user.setActiveYoutube(null);

@@ -1,10 +1,7 @@
 package tave.crezipsa.crezipsa.application.trend.usecase;
 
-import tave.crezipsa.crezipsa.application.trend.dto.response.TrendDetailResponse;
-import tave.crezipsa.crezipsa.application.trend.dto.response.TrendResponse;
-import tave.crezipsa.crezipsa.application.trend.dto.response.TrendSearchResponse;
+import tave.crezipsa.crezipsa.application.trend.dto.response.*;
 import tave.crezipsa.crezipsa.application.trend.dto.response.request.TrendRequest;
-import tave.crezipsa.crezipsa.application.trend.dto.response.UserHistoryResponse;
 
 import java.util.List;
 
@@ -15,6 +12,7 @@ public interface TrendUsecase {
     TrendDetailResponse getTrendDetail(long trendId);
     void saveTrend(long userId, TrendRequest request);
     TrendSearchResponse searchTrend(long userId, String keyword);
+    List<KeywordResponse> getKeywordStoraged(long userId);
     List<TrendResponse> recommendTrendsByInterests(long userId);
     List<UserHistoryResponse> getUserHistory(Long userId);
     void deleteOneUserHistory(long userId, long historyId);

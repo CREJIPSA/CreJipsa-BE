@@ -3,12 +3,9 @@ package tave.crezipsa.crezipsa.application.trend.usecase;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tave.crezipsa.crezipsa.application.trend.dto.response.TrendDetailResponse;
-import tave.crezipsa.crezipsa.application.trend.dto.response.TrendResponse;
-import tave.crezipsa.crezipsa.application.trend.dto.response.TrendSearchResponse;
+import tave.crezipsa.crezipsa.application.trend.dto.response.*;
 import tave.crezipsa.crezipsa.application.trend.dto.response.request.TrendRequest;
 import tave.crezipsa.crezipsa.application.trend.port.TrendQueryPort;
-import tave.crezipsa.crezipsa.application.trend.dto.response.UserHistoryResponse;
 import tave.crezipsa.crezipsa.application.user.port.UserHistoryPort;
 import tave.crezipsa.crezipsa.application.user.port.UserInterestPort;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
@@ -57,6 +54,13 @@ public class TrendUsecaseImpl implements TrendUsecase {
     public TrendSearchResponse searchTrend(long userId, String keyword) {
         userHistoryPort.saveHistory(userId,keyword);
         return TrendSearchResponse.from(trendQueryPort.findKeywordByKeyword(keyword));
+    }
+
+    @Override
+    public List<KeywordResponse> getKeywordStoraged(long userId) {
+        return trendQueryPort.findStoredKeywordsByUserId(userId).stream()
+                .map(KeywordResponse::from)
+                .toList();
     }
 
     @Override

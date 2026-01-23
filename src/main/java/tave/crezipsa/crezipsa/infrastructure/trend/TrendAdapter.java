@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
 import tave.crezipsa.crezipsa.application.trend.port.TrendQueryPort;
+import tave.crezipsa.crezipsa.domain.trend.entity.KeywordStoraged;
 import tave.crezipsa.crezipsa.domain.trend.entity.command.TrendCommand;
 import tave.crezipsa.crezipsa.domain.user.enums.Platform;
 
@@ -163,6 +164,28 @@ public class TrendAdapter implements TrendQueryPort {
                 .addValue("category",trendCommand.category());
 
         mainJdbc.update(Sql, params);
+    }
+
+    @Override
+    public List<KeywordStoraged> findStoredKeywordsByUserId(long userId) {
+
+        String sql = """
+        SELECT keyword_storage_id, keyword, category,created_at
+        FROM keyword_storaged
+        WHERE user_id = :userId
+        ORDER BY created_at DESC
+    """;
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("userId", userId);
+
+        return mainJdbc.query(sql, params, (rs, rowNum) -> KeywordStoraged.builder()
+                .keywordStoragedId(rs.getLong("keyword_storage_id"))
+                .keyword(rs.getString("keyword"))
+                .category(rs.getString("category"))
+                .createdAt(rs.getTimestamp("created_at").toLocalDateTime().toLocalDate())
+                .build()
+        );
     }
 
     @Override

@@ -39,6 +39,11 @@ public class TrendController {
         return GlobalResponseDto.success();
     }
 
+    @GetMapping("/getUserTrend")
+    public GlobalResponseDto getUserTrend(@AuthenticationPrincipal User user){
+        return GlobalResponseDto.success(trendUsecase.getKeywordStoraged(user.getUserId()));
+    }
+
     @GetMapping("/search/{trend}")
     public GlobalResponseDto<TrendSearchResponse> searchTrend(@AuthenticationPrincipal User user, @PathVariable("trend") @Size(max = 20, message = "검색어는 20자 이하만 가능합니다.") String trend) {
         return GlobalResponseDto.success(trendUsecase.searchTrend(user.getUserId(),trend));
