@@ -81,7 +81,7 @@ public class TrendUsecaseImpl implements TrendUsecase {
     }
 
     @Override
-    public void deleteOneUserHistory(long userId, long historyId) {
+    public void deleteOneUserHistory(long userId, int historyId) {
         userHistoryPort.deleteHistoryByHistoryId(userId, historyId);
     }
 

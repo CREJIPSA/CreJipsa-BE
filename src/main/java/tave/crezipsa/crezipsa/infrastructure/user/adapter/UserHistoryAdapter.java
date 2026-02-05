@@ -26,8 +26,8 @@ public class UserHistoryAdapter implements UserHistoryPort {
     }
 
     @Override
-    public void deleteHistoryByHistoryId(long userId, long historyId) {
-        userHistoryRepository.deleteByHistoryIdAndUserId(userId,historyId);
+    public void deleteHistoryByHistoryId(long userId, int historyId) {
+        userHistoryRepository.deleteByHistoryIdAndUserId(userId, historyId);
     }
 
     @Override

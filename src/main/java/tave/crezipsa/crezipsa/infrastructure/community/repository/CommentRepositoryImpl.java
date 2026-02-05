@@ -1,7 +1,10 @@
 package tave.crezipsa.crezipsa.infrastructure.community.repository;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -52,6 +55,18 @@ public class CommentRepositoryImpl implements CommentRepository {
 	@Override
 	public long countByCommunityId(Long communityId) {
 		return commentJpaRepository.countByCommunityId(communityId);
+	}
+
+	@Override
+	public Map<Long, Long> countByCommunityIds(List<Long> communityIds) {
+		if (communityIds == null || communityIds.isEmpty()) {
+			return Collections.emptyMap();
+		}
+		return commentJpaRepository.countByCommunityIds(communityIds).stream()
+			.collect(Collectors.toMap(
+				CommentJpaRepository.CommunityCommentCount::getCommunityId,
+				CommentJpaRepository.CommunityCommentCount::getCount
+			));
 	}
 
 	@Override

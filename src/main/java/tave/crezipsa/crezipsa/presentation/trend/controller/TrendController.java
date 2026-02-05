@@ -64,7 +64,7 @@ public class TrendController {
     }
 
     @DeleteMapping("/{historyId}")
-    public GlobalResponseDto deleteOneUserHistory(@AuthenticationPrincipal User user, @PathVariable long historyId){
+    public GlobalResponseDto deleteOneUserHistory(@AuthenticationPrincipal User user, @PathVariable int historyId){
         trendUsecase.deleteOneUserHistory(user.getUserId(), historyId);
         return GlobalResponseDto.success();
     }

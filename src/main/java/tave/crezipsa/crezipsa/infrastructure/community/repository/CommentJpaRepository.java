@@ -14,10 +14,22 @@ import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 
 public interface CommentJpaRepository extends JpaRepository<Comment, Long> {
 
+	interface CommunityCommentCount {
+		Long getCommunityId();
+		Long getCount();
+	}
+
 	List<Comment> findByCommunityId(Long CommunityId);
 	List<Comment> findByUserId(Long userId);
 	List<Comment> findByParentId(Long parentId);
 	long countByCommunityId(Long communityId);
+	@Query("""
+	select cm.communityId as communityId, count(cm) as count
+	from Comment cm
+	where cm.communityId in :communityIds
+	group by cm.communityId
+""")
+	List<CommunityCommentCount> countByCommunityIds(@Param("communityIds") List<Long> communityIds);
 	@Query("""
 select c
 from Community c
