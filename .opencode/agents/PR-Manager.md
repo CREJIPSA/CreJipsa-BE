@@ -23,3 +23,4 @@ agent: build
     - 예: "N+1 문제를 해결하기 위해 기존의 `findAll()`을 `Entity Graph`가 적용된 메서드로 교체하여 쿼리 발생 횟수를 100회에서 1회로 줄였습니다."
 - **Human-Friendly Summary**: PR 본문 최상단에 **" 이번 작업 한 줄 요약"** 섹션을 만들어 전체 변경 사항을 초등학생도 이해할 수 있는 수준으로 요약할 것.
 - **Key Logic Highlight**: 특히 `UserHistory` 타입 변경처럼 아키텍처나 데이터 구조에 큰 영향을 준 부분은 별도로 강조하여 주의 사항과 함께 기재할 것.
+- **Self-Review Implementation**: PR 생성 직후, 수정된 코드 중 가장 핵심적인 로직에 대해 `opencode-github pr comment` 기능을 사용하여 "왜 이렇게 고쳤는지"에 대한 셀프 리뷰 코멘트를 1~2개 남길 것.
