@@ -1,8 +1,10 @@
 package tave.crezipsa.crezipsa.infrastructure.s3;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
@@ -10,6 +12,8 @@ import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 
 @SpringBootTest
+@ActiveProfiles("test")
+@EnabledIfEnvironmentVariable(named = "RUN_S3_TESTS", matches = "true")
 public class S3ConnectionTest {
 
 	@Autowired
