@@ -1,8 +1,8 @@
 package tave.crezipsa.crezipsa.domain.community.repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +20,7 @@ public interface CommentRepository {
 	List<Comment> findByParentId(Long parentId);
 	void delete(Comment comment);
 	long countByCommunityId(Long communityId);
+	Map<Long, Long> countByCommunityIds(List<Long> communityIds);
 	Page<Community> findMyCommentsByCommunityField(Long userId, CommunityField field, Pageable pageable);
 
 }
-

@@ -49,3 +49,15 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# OpenCode / oh-my-opencode
+.opencode/
+!.opencode/oh-my-opencode.json
+!.opencode/README.md
+
+# JetBrains
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+
+# Gradle local
+*.log

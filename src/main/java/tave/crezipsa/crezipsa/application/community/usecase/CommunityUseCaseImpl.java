@@ -1,7 +1,9 @@
 package tave.crezipsa.crezipsa.application.community.usecase;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -68,6 +70,7 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public CommunityDetailResponse getCommunity(Long communityId, Long userId) {
 		Community community = communityRepository.findById(communityId)
 			.orElseThrow(() -> new CommonException(ErrorCode.COMMUNITY_NOT_FOUND));
@@ -87,13 +90,17 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<CommunitySummaryResponse> getAllCommunities() {
-		return communityRepository.findAll().stream()
-			.map(c -> {
-				long likeCount = likeRepository.countByCommunityIdAndIsLikedTrue(c.getCommunityId());
-				long commentCount = commentRepository.countByCommunityId(c.getCommunityId());
-				return CommunitySummaryResponse.of(c, likeCount, commentCount);
-			})
+		List<Community> communities = communityRepository.findAll();
+		Map<Long, Long> commentCounts = loadCommentCounts(communities);
+
+		return communities.stream()
+			.map(c -> CommunitySummaryResponse.of(
+				c,
+				c.getLikeCount(),
+				commentCounts.getOrDefault(c.getCommunityId(), 0L)
+			))
 			.toList();
 	}
 
@@ -109,6 +116,7 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<MyCommunityResponse> getMyCommunities(Long userId, CommunityField field, String sort, int page, int size) {
 		Pageable pageable = PageRequest.of(page, size);
 
@@ -116,25 +124,29 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 			"popular".equals(sort)
 				? communityRepository.findMyCommunitiesPopular(userId,field, pageable)
 				: communityRepository.findMyCommunitiesLatest(userId,field, pageable);
+		Map<Long, Long> commentCounts = loadCommentCounts(pageResult.getContent());
 
 		return pageResult
 			.map(c -> {
 				long likeCount = c.getLikeCount();
-				long commentCount = commentRepository.countByCommunityId(c.getCommunityId());
+				long commentCount = commentCounts.getOrDefault(c.getCommunityId(), 0L);
 				return MyCommunityResponse.of(c, likeCount, commentCount);
 			})
 			.getContent();
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<CommunitySummaryResponse> getCommunitiesByField(CommunityField field) {
-		return communityRepository.findByField(field)
-			.stream()
-			.map(c -> {
-				long likeCount = likeRepository.countByCommunityIdAndIsLikedTrue(c.getCommunityId());
-				long commentCount = commentRepository.countByCommunityId(c.getCommunityId());
-				return CommunitySummaryResponse.of(c, likeCount, commentCount);
-			})
+		List<Community> communities = communityRepository.findByField(field);
+		Map<Long, Long> commentCounts = loadCommentCounts(communities);
+
+		return communities.stream()
+			.map(c -> CommunitySummaryResponse.of(
+				c,
+				c.getLikeCount(),
+				commentCounts.getOrDefault(c.getCommunityId(), 0L)
+			))
 			.toList();
 	}
 
@@ -158,14 +170,25 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 			"popular".equals(sort)
 				? communityRepository.searchByTitlePopular(q, field, pageable)
 				: communityRepository.searchByTitleLatest(q, field, pageable);
+		Map<Long, Long> commentCounts = loadCommentCounts(pageResult.getContent());
 
 		return pageResult
 			.map(c -> {
 				long likeCount = c.getLikeCount();
-				long commentCount = commentRepository.countByCommunityId(c.getCommunityId());
+				long commentCount = commentCounts.getOrDefault(c.getCommunityId(), 0L);
 				return CommunitySummaryResponse.of(c, likeCount, commentCount);
 			})
 			.getContent();
+	}
+
+	private Map<Long, Long> loadCommentCounts(List<Community> communities) {
+		if (communities == null || communities.isEmpty()) {
+			return Collections.emptyMap();
+		}
+		List<Long> communityIds = communities.stream()
+			.map(Community::getCommunityId)
+			.toList();
+		return commentRepository.countByCommunityIds(communityIds);
 	}
 
 }

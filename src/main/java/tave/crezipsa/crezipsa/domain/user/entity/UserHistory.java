@@ -9,9 +9,9 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserHistory {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long historyId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer historyId;
 
     @Column(name = "user_id")
     private Long userId;
