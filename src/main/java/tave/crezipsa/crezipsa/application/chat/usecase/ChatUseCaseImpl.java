@@ -1,6 +1,7 @@
 package tave.crezipsa.crezipsa.application.chat.usecase;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,13 +56,22 @@ public class ChatUseCaseImpl implements ChatUseCase {
 
 	@Override
 	public List<ChatRoomListResponse> getMyChatRooms(Long userId) {
-		return chatRoomRepository.findByUserId(userId).stream()
+		List<ChatRoom> rooms = chatRoomRepository.findByUserId(userId);
+		if (rooms.isEmpty()) {
+			return List.of();
+		}
+
+		List<Long> roomIds = rooms.stream()
+			.map(ChatRoom::getId)
+			.toList();
+		Map<Long, java.time.LocalDateTime> lastMessageAtByRoomId =
+			chatMessageRepository.findLastMessageAtByChatRoomIds(roomIds);
+
+		return rooms.stream()
 			.map(room -> new ChatRoomListResponse(
 				room.getId(),
 				room.getTitle(),
-				chatMessageRepository
-					.findLastMessageAt(room.getId())
-					.orElse(null)
+				lastMessageAtByRoomId.get(room.getId())
 			))
 			.toList();
 	}
