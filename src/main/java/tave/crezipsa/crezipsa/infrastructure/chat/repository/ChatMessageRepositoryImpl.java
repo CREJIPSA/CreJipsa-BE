@@ -1,7 +1,9 @@
 package tave.crezipsa.crezipsa.infrastructure.chat.repository;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -51,5 +53,18 @@ public class ChatMessageRepositoryImpl implements ChatMessageRepositoryPort {
 	@Override
 	public Optional<LocalDateTime> findLastMessageAt(Long chatRoomId) {
 		return chatMessageJpaRepository.findLastMessageAt(chatRoomId);
+	}
+
+	@Override
+	public Map<Long, LocalDateTime> findLastMessageAtByChatRoomIds(List<Long> chatRoomIds) {
+		if (chatRoomIds == null || chatRoomIds.isEmpty()) {
+			return Collections.emptyMap();
+		}
+
+		return chatMessageJpaRepository.findLastMessageAtByChatRoomIds(chatRoomIds).stream()
+			.collect(Collectors.toMap(
+				ChatMessageJpaRepository.ChatRoomLastMessageAtProjection::getChatRoomId,
+				ChatMessageJpaRepository.ChatRoomLastMessageAtProjection::getLastMessageAt
+			));
 	}
 }
