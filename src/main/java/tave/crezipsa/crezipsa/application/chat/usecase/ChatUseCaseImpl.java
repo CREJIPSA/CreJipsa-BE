@@ -1,6 +1,7 @@
 package tave.crezipsa.crezipsa.application.chat.usecase;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +32,7 @@ public class ChatUseCaseImpl implements ChatUseCase {
 
 	@Override
 	public Long createChatRoom(Long userId, String title) {
-		String checkTitle = resolveChatRooomTitle(title);
+		String checkTitle = resolveChatRoomTitle(title);
 		ChatRoom room = ChatRoom.create(userId, checkTitle);
 		return chatRoomRepository.save(room).getId();
 	}
@@ -55,13 +56,22 @@ public class ChatUseCaseImpl implements ChatUseCase {
 
 	@Override
 	public List<ChatRoomListResponse> getMyChatRooms(Long userId) {
-		return chatRoomRepository.findByUserId(userId).stream()
+		List<ChatRoom> rooms = chatRoomRepository.findByUserId(userId);
+		if (rooms.isEmpty()) {
+			return List.of();
+		}
+
+		List<Long> roomIds = rooms.stream()
+			.map(ChatRoom::getId)
+			.toList();
+		Map<Long, java.time.LocalDateTime> lastMessageAtByRoomId =
+			chatMessageRepository.findLastMessageAtByChatRoomIds(roomIds);
+
+		return rooms.stream()
 			.map(room -> new ChatRoomListResponse(
 				room.getId(),
 				room.getTitle(),
-				chatMessageRepository
-					.findLastMessageAt(room.getId())
-					.orElse(null)
+				lastMessageAtByRoomId.get(room.getId())
 			))
 			.toList();
 	}
@@ -84,12 +94,6 @@ public class ChatUseCaseImpl implements ChatUseCase {
 		);
 	}
 
-	private String resolveChatRooomTitle(String title) {
-		return (title == null || title.isBlank())
-			? "새 채팅"
-			: title;
-	}
-
 	private ChatRoom getChatRoom(Long chatRoomId, Long userId) {
 		return chatRoomRepository.findByIdAndUserId(chatRoomId, userId)
 			.orElseThrow(() ->
@@ -97,13 +101,6 @@ public class ChatUseCaseImpl implements ChatUseCase {
 			);
 	}
 
-	private void validateChatRoomOwner(Long chatRoomId, Long userId) {
-		if (!chatRoomRepository
-			.findByIdAndUserId(chatRoomId, userId)
-			.isPresent()) {
-			throw new CommonException(ErrorCode.CHAT_ROOM_NOT_FOUND);
-		}
-	}
 	private String resolveChatRoomTitle(String title) {
 		return (title == null || title.isBlank())
 			? "새 채팅"
