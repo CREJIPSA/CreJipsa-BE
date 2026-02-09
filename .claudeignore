@@ -1,0 +1,41 @@
+
+# Gradle caches and build outputs
+.gradle/
+**/build/
+**/out/
+buildSrc/.gradle/
+buildSrc/build/
+
+# IntelliJ / IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Logs and runtime artifacts
+logs/
+*.log
+*.hprof
+hs_err_pid*
+replay_pid*
+*.pid
+
+# Env / secrets / credentials
+.env
+.env.*
+.secrets/
+secrets/
+*.jks
+*.p12
+*.pfx
+*.pem
+*.key
+*.crt
+
+# Large data / dumps (optional)
+data/
+datasets/
+dump/
+tmp/
+*.mp4
+*.pdf
