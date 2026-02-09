@@ -1,16 +1,26 @@
-
-# Gradle caches and build outputs
+# Gradle caches
 .gradle/
-**/build/
-**/out/
 buildSrc/.gradle/
-buildSrc/build/
 
 # IntelliJ / IDE
 .idea/
 *.iml
 *.ipr
 *.iws
+
+# Build outputs (ignore most, keep reports for tests/coverage)
+**/build/classes/
+**/build/kotlin/
+**/build/java/
+**/build/resources/
+**/build/generated/
+**/build/tmp/
+**/build/libs/
+**/build/distributions/
+**/build/bootRun/
+**/build/spring-boot-loader/
+**/out/
+buildSrc/build/
 
 # Logs and runtime artifacts
 logs/
