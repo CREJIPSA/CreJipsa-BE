@@ -3,8 +3,9 @@ package tave.crezipsa.crezipsa.application.community.usecase;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static tave.crezipsa.crezipsa.fixture.CommunityFixture.*;
+import static tave.crezipsa.crezipsa.fixture.UserFixture.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,14 +23,12 @@ import tave.crezipsa.crezipsa.application.community.dto.request.CommunityUpdateR
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunityDetailResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunitySummaryResponse;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
-import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 import tave.crezipsa.crezipsa.domain.community.domain.Like;
 import tave.crezipsa.crezipsa.domain.community.domain.LikeId;
 import tave.crezipsa.crezipsa.domain.community.repository.CommentRepository;
 import tave.crezipsa.crezipsa.domain.community.repository.CommunityRepository;
 import tave.crezipsa.crezipsa.domain.community.repository.LikeRepository;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
-import tave.crezipsa.crezipsa.domain.user.enums.Platform;
 import tave.crezipsa.crezipsa.domain.user.repository.UserRepository;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
@@ -58,9 +57,11 @@ class CommunityUseCaseImplTest {
 		@Test
 		@DisplayName("작성자가 아니면 UNAUTHORIZED_COMMUNITY 예외")
 		void nonWriter_throwsUnauthorized() {
+			// given
 			Community community = createCommunity(1L, 100L);
 			when(communityRepository.findById(1L)).thenReturn(Optional.of(community));
 
+			// when & then
 			assertThatThrownBy(() -> sut.updateCommunity(1L, 999L, new CommunityUpdateRequest()))
 				.isInstanceOf(CommonException.class)
 				.extracting("errorCode")
@@ -70,8 +71,10 @@ class CommunityUseCaseImplTest {
 		@Test
 		@DisplayName("존재하지 않는 게시글이면 COMMUNITY_NOT_FOUND 예외")
 		void notFound_throwsCommunityNotFound() {
+			// given
 			when(communityRepository.findById(1L)).thenReturn(Optional.empty());
 
+			// when & then
 			assertThatThrownBy(() -> sut.updateCommunity(1L, 1L, new CommunityUpdateRequest()))
 				.isInstanceOf(CommonException.class)
 				.extracting("errorCode")
@@ -81,14 +84,17 @@ class CommunityUseCaseImplTest {
 		@Test
 		@DisplayName("작성자가 맞으면 정상 업데이트")
 		void writer_updatesSuccessfully() {
+			// given
 			Community community = createCommunity(1L, 100L);
 			when(communityRepository.findById(1L)).thenReturn(Optional.of(community));
 
 			CommunityUpdateRequest request = new CommunityUpdateRequest();
 			ReflectionTestUtils.setField(request, "title", "updated title");
 
+			// when
 			var result = sut.updateCommunity(1L, 100L, request);
 
+			// then
 			assertThat(result.title()).isEqualTo("updated title");
 			assertThat(result.content()).isEqualTo("테스트 내용입니다. 충분히 긴 내용으로 preview 테스트도 가능합니다.");
 		}
@@ -101,9 +107,11 @@ class CommunityUseCaseImplTest {
 		@Test
 		@DisplayName("작성자가 아니면 UNAUTHORIZED_COMMUNITY 예외")
 		void nonWriter_throwsUnauthorized() {
+			// given
 			Community community = createCommunity(1L, 100L);
 			when(communityRepository.findById(1L)).thenReturn(Optional.of(community));
 
+			// when & then
 			assertThatThrownBy(() -> sut.deleteCommunity(999L, 1L))
 				.isInstanceOf(CommonException.class)
 				.extracting("errorCode")
@@ -113,11 +121,14 @@ class CommunityUseCaseImplTest {
 		@Test
 		@DisplayName("작성자가 맞으면 정상 삭제")
 		void writer_deletesSuccessfully() {
+			// given
 			Community community = createCommunity(1L, 100L);
 			when(communityRepository.findById(1L)).thenReturn(Optional.of(community));
 
+			// when
 			sut.deleteCommunity(100L, 1L);
 
+			// then
 			verify(communityRepository).delete(community);
 		}
 	}
@@ -129,6 +140,7 @@ class CommunityUseCaseImplTest {
 		@Test
 		@DisplayName("상세 정보를 올바르게 조합 - 다른 사용자가 좋아요한 게시글")
 		void assembliesDetailCorrectly() {
+			// given
 			Long communityId = 1L;
 			Long writerId = 10L;
 			Long viewerId = 20L;
@@ -143,8 +155,10 @@ class CommunityUseCaseImplTest {
 			when(commentUsecase.getComments(communityId, viewerId)).thenReturn(List.of());
 			when(likeRepository.findById(new LikeId(viewerId, communityId))).thenReturn(Optional.of(like));
 
+			// when
 			CommunityDetailResponse result = sut.getCommunity(communityId, viewerId);
 
+			// then
 			assertThat(result.communityId()).isEqualTo(communityId);
 			assertThat(result.isWriter()).isFalse();
 			assertThat(result.isLiked()).isTrue();
@@ -155,6 +169,7 @@ class CommunityUseCaseImplTest {
 		@Test
 		@DisplayName("좋아요 기록 없으면 isLiked=false, 본인 게시글이면 isWriter=true")
 		void noLike_isLikedFalse_ownPost_isWriterTrue() {
+			// given
 			Long communityId = 1L;
 			Long writerId = 10L;
 
@@ -167,8 +182,10 @@ class CommunityUseCaseImplTest {
 			when(commentUsecase.getComments(communityId, writerId)).thenReturn(List.of());
 			when(likeRepository.findById(any(LikeId.class))).thenReturn(Optional.empty());
 
+			// when
 			CommunityDetailResponse result = sut.getCommunity(communityId, writerId);
 
+			// then
 			assertThat(result.isLiked()).isFalse();
 			assertThat(result.isWriter()).isTrue();
 		}
@@ -181,6 +198,7 @@ class CommunityUseCaseImplTest {
 		@Test
 		@DisplayName("null 키워드면 SEARCH_KEYWORD_REQUIRED 예외")
 		void nullKeyword_throws() {
+			// when & then
 			assertThatThrownBy(() -> sut.searchCommunities(null, null, "latest", 0, 10))
 				.isInstanceOf(CommonException.class)
 				.extracting("errorCode")
@@ -190,6 +208,7 @@ class CommunityUseCaseImplTest {
 		@Test
 		@DisplayName("빈 키워드면 SEARCH_KEYWORD_REQUIRED 예외")
 		void blankKeyword_throws() {
+			// when & then
 			assertThatThrownBy(() -> sut.searchCommunities("   ", null, "latest", 0, 10))
 				.isInstanceOf(CommonException.class)
 				.extracting("errorCode")
@@ -199,8 +218,10 @@ class CommunityUseCaseImplTest {
 		@Test
 		@DisplayName("30자 초과 키워드면 SEARCH_KEYWORD_TOO_LONG 예외")
 		void tooLongKeyword_throws() {
+			// given
 			String longKeyword = "a".repeat(31);
 
+			// when & then
 			assertThatThrownBy(() -> sut.searchCommunities(longKeyword, null, "latest", 0, 10))
 				.isInstanceOf(CommonException.class)
 				.extracting("errorCode")
@@ -215,6 +236,7 @@ class CommunityUseCaseImplTest {
 		@Test
 		@DisplayName("댓글 수를 배치로 로드하여 N+1 방지")
 		void batchLoadsCommentCounts() {
+			// given
 			Community c1 = createCommunity(1L, 10L);
 			Community c2 = createCommunity(2L, 10L);
 
@@ -222,8 +244,10 @@ class CommunityUseCaseImplTest {
 			when(commentRepository.countByCommunityIds(List.of(1L, 2L)))
 				.thenReturn(Map.of(1L, 3L, 2L, 7L));
 
+			// when
 			List<CommunitySummaryResponse> result = sut.getAllCommunities();
 
+			// then
 			assertThat(result).hasSize(2);
 			assertThat(result.get(0).commentCount()).isEqualTo(3L);
 			assertThat(result.get(1).commentCount()).isEqualTo(7L);
@@ -233,39 +257,15 @@ class CommunityUseCaseImplTest {
 		@Test
 		@DisplayName("빈 목록이면 배치 호출하지 않음")
 		void emptyList_noBatchCall() {
+			// given
 			when(communityRepository.findAll()).thenReturn(List.of());
 
+			// when
 			List<CommunitySummaryResponse> result = sut.getAllCommunities();
 
+			// then
 			assertThat(result).isEmpty();
 			verify(commentRepository, never()).countByCommunityIds(anyList());
 		}
-	}
-
-	// ── 헬퍼 메서드 ──
-
-	private Community createCommunity(Long id, Long writerId) {
-		Community community = Community.builder()
-			.communityId(id)
-			.title("테스트 제목")
-			.content("테스트 내용입니다. 충분히 긴 내용으로 preview 테스트도 가능합니다.")
-			.field(CommunityField.RECOMMEND)
-			.imageUrls(List.of("img1.jpg"))
-			.writerId(writerId)
-			.likeCount(0L)
-			.build();
-		ReflectionTestUtils.setField(community, "createdAt", LocalDateTime.now());
-		return community;
-	}
-
-	private User createUser(Long userId) {
-		return User.builder()
-			.userId(userId)
-			.nickName("testUser")
-			.email("test@test.com")
-			.profileImageUrl("profile.jpg")
-			.mainPlatform(Platform.YOUTUBE)
-			.activeYoutube("youtube_channel")
-			.build();
 	}
 }
