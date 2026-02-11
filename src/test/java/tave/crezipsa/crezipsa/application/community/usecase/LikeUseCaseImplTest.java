@@ -3,9 +3,8 @@ package tave.crezipsa.crezipsa.application.community.usecase;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static tave.crezipsa.crezipsa.fixture.CommunityFixture.*;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -15,10 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
-import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 import tave.crezipsa.crezipsa.domain.community.domain.Like;
 import tave.crezipsa.crezipsa.domain.community.domain.LikeId;
 import tave.crezipsa.crezipsa.domain.community.repository.CommentRepository;
@@ -47,6 +44,7 @@ class LikeUseCaseImplTest {
 		@Test
 		@DisplayName("새로운 좋아요 - Like 생성 후 커뮤니티 likeCount 증가")
 		void newLike_createsAndIncrements() {
+			// given
 			Long userId = 1L;
 			Long communityId = 10L;
 			Community community = createCommunity(communityId);
@@ -54,8 +52,10 @@ class LikeUseCaseImplTest {
 			when(communityRepository.findById(communityId)).thenReturn(Optional.of(community));
 			when(likeRepository.findById(new LikeId(userId, communityId))).thenReturn(Optional.empty());
 
+			// when
 			sut.like(userId, communityId);
 
+			// then
 			verify(likeRepository).save(any(Like.class));
 			assertThat(community.getLikeCount()).isEqualTo(1L);
 		}
@@ -63,6 +63,7 @@ class LikeUseCaseImplTest {
 		@Test
 		@DisplayName("이미 좋아요 상태 - unlike으로 토글, likeCount 감소")
 		void existingLiked_togglesOff() {
+			// given
 			Long userId = 1L;
 			Long communityId = 10L;
 			Community community = createCommunity(communityId);
@@ -73,8 +74,10 @@ class LikeUseCaseImplTest {
 			when(communityRepository.findById(communityId)).thenReturn(Optional.of(community));
 			when(likeRepository.findById(new LikeId(userId, communityId))).thenReturn(Optional.of(existingLike));
 
+			// when
 			sut.like(userId, communityId);
 
+			// then
 			assertThat(existingLike.isLiked()).isFalse();
 			assertThat(community.getLikeCount()).isZero();
 			verify(likeRepository, never()).save(any());
@@ -83,6 +86,7 @@ class LikeUseCaseImplTest {
 		@Test
 		@DisplayName("좋아요 취소 상태에서 다시 좋아요 - like으로 토글, likeCount 증가")
 		void existingUnliked_togglesOn() {
+			// given
 			Long userId = 1L;
 			Long communityId = 10L;
 			Community community = createCommunity(communityId);
@@ -93,8 +97,10 @@ class LikeUseCaseImplTest {
 			when(communityRepository.findById(communityId)).thenReturn(Optional.of(community));
 			when(likeRepository.findById(new LikeId(userId, communityId))).thenReturn(Optional.of(existingLike));
 
+			// when
 			sut.like(userId, communityId);
 
+			// then
 			assertThat(existingLike.isLiked()).isTrue();
 			assertThat(community.getLikeCount()).isEqualTo(1L);
 		}
@@ -102,8 +108,10 @@ class LikeUseCaseImplTest {
 		@Test
 		@DisplayName("존재하지 않는 게시글이면 COMMUNITY_NOT_FOUND 예외")
 		void communityNotFound_throws() {
+			// given
 			when(communityRepository.findById(999L)).thenReturn(Optional.empty());
 
+			// when & then
 			assertThatThrownBy(() -> sut.like(1L, 999L))
 				.isInstanceOf(CommonException.class)
 				.extracting("errorCode")
@@ -118,6 +126,7 @@ class LikeUseCaseImplTest {
 		@Test
 		@DisplayName("좋아요 기록이 없으면 NOT_LIKED 예외")
 		void noLikeRecord_throwsNotLiked() {
+			// given
 			Long userId = 1L;
 			Long communityId = 10L;
 			Community community = createCommunity(communityId);
@@ -125,6 +134,7 @@ class LikeUseCaseImplTest {
 			when(communityRepository.findById(communityId)).thenReturn(Optional.of(community));
 			when(likeRepository.findById(new LikeId(userId, communityId))).thenReturn(Optional.empty());
 
+			// when & then
 			assertThatThrownBy(() -> sut.unlike(userId, communityId))
 				.isInstanceOf(CommonException.class)
 				.extracting("errorCode")
@@ -134,6 +144,7 @@ class LikeUseCaseImplTest {
 		@Test
 		@DisplayName("이미 unlike 상태면 NOT_LIKED 예외")
 		void alreadyUnliked_throwsNotLiked() {
+			// given
 			Long userId = 1L;
 			Long communityId = 10L;
 			Community community = createCommunity(communityId);
@@ -144,6 +155,7 @@ class LikeUseCaseImplTest {
 			when(communityRepository.findById(communityId)).thenReturn(Optional.of(community));
 			when(likeRepository.findById(new LikeId(userId, communityId))).thenReturn(Optional.of(existingLike));
 
+			// when & then
 			assertThatThrownBy(() -> sut.unlike(userId, communityId))
 				.isInstanceOf(CommonException.class)
 				.extracting("errorCode")
@@ -153,6 +165,7 @@ class LikeUseCaseImplTest {
 		@Test
 		@DisplayName("정상 unlike - isLiked=false로 변경, likeCount 감소")
 		void liked_decrementsCount() {
+			// given
 			Long userId = 1L;
 			Long communityId = 10L;
 			Community community = createCommunity(communityId);
@@ -163,8 +176,10 @@ class LikeUseCaseImplTest {
 			when(communityRepository.findById(communityId)).thenReturn(Optional.of(community));
 			when(likeRepository.findById(new LikeId(userId, communityId))).thenReturn(Optional.of(existingLike));
 
+			// when
 			sut.unlike(userId, communityId);
 
+			// then
 			assertThat(existingLike.isLiked()).isFalse();
 			assertThat(community.getLikeCount()).isZero();
 		}
@@ -177,27 +192,14 @@ class LikeUseCaseImplTest {
 		@Test
 		@DisplayName("리포지토리에서 조회한 좋아요 수 반환")
 		void returnsCountFromRepository() {
+			// given
 			when(likeRepository.countByCommunityIdAndIsLikedTrue(10L)).thenReturn(42L);
 
+			// when
 			long result = sut.getLikeCount(10L);
 
+			// then
 			assertThat(result).isEqualTo(42L);
 		}
-	}
-
-	// ── 헬퍼 메서드 ──
-
-	private Community createCommunity(Long id) {
-		Community community = Community.builder()
-			.communityId(id)
-			.title("test")
-			.content("content content content content content content content")
-			.field(CommunityField.RECOMMEND)
-			.imageUrls(List.of())
-			.writerId(1L)
-			.likeCount(0L)
-			.build();
-		ReflectionTestUtils.setField(community, "createdAt", LocalDateTime.now());
-		return community;
 	}
 }
