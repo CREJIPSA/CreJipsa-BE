@@ -8,6 +8,7 @@ import static tave.crezipsa.crezipsa.fixture.ChatFixture.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import tave.crezipsa.crezipsa.application.chat.dto.response.ChatMessageResponse;
 import tave.crezipsa.crezipsa.application.chat.dto.response.ChatRoomListResponse;
 import tave.crezipsa.crezipsa.application.chat.dto.response.GeminiChatResponse;
 import tave.crezipsa.crezipsa.domain.chat.entity.ChatMessage;
@@ -24,6 +26,8 @@ import tave.crezipsa.crezipsa.domain.chat.entity.ChatRoom;
 import tave.crezipsa.crezipsa.domain.chat.port.ChatMessageRepositoryPort;
 import tave.crezipsa.crezipsa.domain.chat.port.ChatRoomRepositoryPort;
 import tave.crezipsa.crezipsa.domain.storyboard.port.StoryboardGeneratorPort;
+import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
+import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 
 @ExtendWith(MockitoExtension.class)
 class ChatUseCaseImplTest {
@@ -166,6 +170,48 @@ class ChatUseCaseImplTest {
 			assertThat(result.get(0).chatRoomId()).isEqualTo(10L);
 			assertThat(result.get(0).lastMessageAt()).isEqualTo(now);
 			assertThat(result.get(1).chatRoomId()).isEqualTo(11L);
+		}
+	}
+
+	@Nested
+	@DisplayName("getChatDetail")
+	class GetChatDetail {
+
+		@Test
+		@DisplayName("채팅방이 없거나 본인 것이 아니면 CHAT_ROOM_NOT_FOUND 예외")
+		void notFound_throws() {
+			// given
+			when(chatRoomRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.empty());
+
+			// when & then
+			assertThatThrownBy(() -> sut.getChatDetail(1L, 1L))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.CHAT_ROOM_NOT_FOUND);
+		}
+
+		@Test
+		@DisplayName("본인 채팅방이면 메시지 목록과 함께 반환")
+		void owner_returnsWithMessages() {
+			// given
+			Long userId = 1L;
+			Long chatRoomId = 10L;
+			ChatRoom room = createChatRoom(chatRoomId, userId);
+			ChatMessage userMsg = createUserMessage(100L, chatRoomId);
+			ChatMessage aiMsg = createAiMessage(101L, chatRoomId);
+
+			when(chatRoomRepository.findByIdAndUserId(chatRoomId, userId)).thenReturn(Optional.of(room));
+			when(chatMessageRepository.findByChatRoomIdOrderByCreatedAtAsc(chatRoomId))
+				.thenReturn(List.of(userMsg, aiMsg));
+
+			// when
+			ChatMessageResponse result = sut.getChatDetail(userId, chatRoomId);
+
+			// then
+			assertThat(result.chatRoomId()).isEqualTo(chatRoomId);
+			assertThat(result.messages()).hasSize(2);
+			assertThat(result.messages().get(0).senderType()).isEqualTo(ChatMessage.SenderType.USER);
+			assertThat(result.messages().get(1).senderType()).isEqualTo(ChatMessage.SenderType.AI);
 		}
 	}
 }
