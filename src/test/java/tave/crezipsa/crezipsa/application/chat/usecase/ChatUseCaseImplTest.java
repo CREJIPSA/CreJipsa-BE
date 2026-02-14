@@ -13,6 +13,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import tave.crezipsa.crezipsa.application.chat.dto.response.GeminiChatResponse;
+import tave.crezipsa.crezipsa.domain.chat.entity.ChatMessage;
 import tave.crezipsa.crezipsa.domain.chat.entity.ChatRoom;
 import tave.crezipsa.crezipsa.domain.chat.port.ChatMessageRepositoryPort;
 import tave.crezipsa.crezipsa.domain.chat.port.ChatRoomRepositoryPort;
@@ -75,6 +77,33 @@ class ChatUseCaseImplTest {
 
 			// then
 			assertThat(result).isEqualTo(1L);
+		}
+	}
+
+	@Nested
+	@DisplayName("sendUserMessage")
+	class SendUserMessage {
+
+		@Test
+		@DisplayName("사용자 메시지 저장 후 AI 응답 저장 및 반환")
+		void savesUserAndAiMessages() {
+			// given
+			Long chatRoomId = 1L;
+			Long userId = 1L;
+			String userMsg = "스토리보드 만들어줘";
+			String aiReply = "AI 응답입니다";
+
+			when(chatMessageRepository.save(any(ChatMessage.class)))
+				.thenAnswer(invocation -> invocation.getArgument(0));
+			when(storyboardGeneratorPort.generate(userMsg)).thenReturn(aiReply);
+
+			// when
+			GeminiChatResponse result = sut.sendUserMessage(chatRoomId, userId, userMsg);
+
+			// then
+			assertThat(result.content()).isEqualTo(aiReply);
+			verify(chatMessageRepository, times(2)).save(any(ChatMessage.class));
+			verify(storyboardGeneratorPort).generate(userMsg);
 		}
 	}
 }
