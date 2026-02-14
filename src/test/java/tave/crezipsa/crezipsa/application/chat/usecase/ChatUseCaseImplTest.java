@@ -5,6 +5,10 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static tave.crezipsa.crezipsa.fixture.ChatFixture.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import tave.crezipsa.crezipsa.application.chat.dto.response.ChatRoomListResponse;
 import tave.crezipsa.crezipsa.application.chat.dto.response.GeminiChatResponse;
 import tave.crezipsa.crezipsa.domain.chat.entity.ChatMessage;
 import tave.crezipsa.crezipsa.domain.chat.entity.ChatRoom;
@@ -119,6 +124,48 @@ class ChatUseCaseImplTest {
 
 			// then
 			verify(chatRoomRepository).changeTitle(10L, 1L, "새 제목");
+		}
+	}
+
+	@Nested
+	@DisplayName("getMyChatRooms")
+	class GetMyChatRooms {
+
+		@Test
+		@DisplayName("채팅방이 없으면 빈 목록 반환")
+		void noRooms_returnsEmpty() {
+			// given
+			when(chatRoomRepository.findByUserId(1L)).thenReturn(List.of());
+
+			// when
+			List<ChatRoomListResponse> result = sut.getMyChatRooms(1L);
+
+			// then
+			assertThat(result).isEmpty();
+			verify(chatMessageRepository, never()).findLastMessageAtByChatRoomIds(anyList());
+		}
+
+		@Test
+		@DisplayName("채팅방 목록과 마지막 메시지 시간 조합하여 반환")
+		void hasRooms_returnsWithLastMessageAt() {
+			// given
+			Long userId = 1L;
+			ChatRoom room1 = createChatRoom(10L, userId);
+			ChatRoom room2 = createChatRoom(11L, userId);
+			LocalDateTime now = LocalDateTime.now();
+
+			when(chatRoomRepository.findByUserId(userId)).thenReturn(List.of(room1, room2));
+			when(chatMessageRepository.findLastMessageAtByChatRoomIds(List.of(10L, 11L)))
+				.thenReturn(Map.of(10L, now, 11L, now.minusHours(1)));
+
+			// when
+			List<ChatRoomListResponse> result = sut.getMyChatRooms(userId);
+
+			// then
+			assertThat(result).hasSize(2);
+			assertThat(result.get(0).chatRoomId()).isEqualTo(10L);
+			assertThat(result.get(0).lastMessageAt()).isEqualTo(now);
+			assertThat(result.get(1).chatRoomId()).isEqualTo(11L);
 		}
 	}
 }
