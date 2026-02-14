@@ -6,6 +6,8 @@ import static org.mockito.Mockito.*;
 import static tave.crezipsa.crezipsa.fixture.ChatFixture.*;
 import static tave.crezipsa.crezipsa.fixture.StoryboardFixture.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -121,6 +123,61 @@ class StoryboardUsecaseImplTest {
 			assertThat(result.storyboardId()).isEqualTo(10L);
 			assertThat(result.sourceChatMessageId()).isEqualTo(50L);
 			assertThat(result.cuts()).hasSize(1);
+		}
+	}
+
+	@Nested
+	@DisplayName("get")
+	class Get {
+
+		@Test
+		@DisplayName("스토리보드가 없으면 STORYBOARD_NOT_FOUND 예외")
+		void notFound_throws() {
+			// given
+			when(storyboardRepository.findById(1L)).thenReturn(null);
+
+			// when & then
+			assertThatThrownBy(() -> sut.get(1L, 1L))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.STORYBOARD_NOT_FOUND);
+		}
+
+		@Test
+		@DisplayName("다른 사용자의 스토리보드면 STORYBOARD_NOT_FOUND 예외")
+		void otherUser_throws() {
+			// given
+			Storyboard sb = createStoryboard(1L, 100L);
+			when(storyboardRepository.findById(1L)).thenReturn(sb);
+
+			// when & then
+			assertThatThrownBy(() -> sut.get(999L, 1L))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.STORYBOARD_NOT_FOUND);
+		}
+
+		@Test
+		@DisplayName("본인 스토리보드면 컷 목록과 함께 정상 반환")
+		void owner_returnsWithCuts() {
+			// given
+			Long userId = 1L;
+			Long storyboardId = 10L;
+			Storyboard sb = createStoryboard(storyboardId, userId);
+			StoryboardCut cut1 = createStoryboardCut(100L, storyboardId, 0);
+			StoryboardCut cut2 = createStoryboardCut(101L, storyboardId, 1);
+
+			when(storyboardRepository.findById(storyboardId)).thenReturn(sb);
+			when(storyboardCutRepository.findByStoryboardId(storyboardId)).thenReturn(List.of(cut1, cut2));
+
+			// when
+			StoryboardEditorResponse result = sut.get(userId, storyboardId);
+
+			// then
+			assertThat(result.storyboardId()).isEqualTo(storyboardId);
+			assertThat(result.cuts()).hasSize(2);
+			assertThat(result.cuts().get(0).cutId()).isEqualTo(100L);
+			assertThat(result.cuts().get(1).cutId()).isEqualTo(101L);
 		}
 	}
 }
