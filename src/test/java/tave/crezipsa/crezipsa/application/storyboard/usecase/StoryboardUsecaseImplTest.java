@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import tave.crezipsa.crezipsa.application.storyboard.dto.request.CreateStoryboardRequest;
 import tave.crezipsa.crezipsa.application.storyboard.dto.request.UpdateStoryboardTitleRequest;
+import tave.crezipsa.crezipsa.application.storyboard.dto.response.StoryboardCutResponse;
 import tave.crezipsa.crezipsa.application.storyboard.dto.response.StoryboardEditorResponse;
 import tave.crezipsa.crezipsa.application.storyboard.dto.response.StoryboardSummaryResponse;
 import tave.crezipsa.crezipsa.domain.chat.entity.ChatMessage;
@@ -291,6 +292,59 @@ class StoryboardUsecaseImplTest {
 
 			// then
 			verify(storyboardRepository).save(any(Storyboard.class));
+		}
+	}
+
+	@Nested
+	@DisplayName("addCut")
+	class AddCut {
+
+		@Test
+		@DisplayName("스토리보드가 없으면 STORYBOARD_NOT_FOUND 예외")
+		void notFound_throws() {
+			// given
+			when(storyboardRepository.findById(1L)).thenReturn(null);
+
+			// when & then
+			assertThatThrownBy(() -> sut.addCut(1L, 1L))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.STORYBOARD_NOT_FOUND);
+		}
+
+		@Test
+		@DisplayName("다른 사용자면 STORYBOARD_NOT_FOUND 예외")
+		void otherUser_throws() {
+			// given
+			Storyboard sb = createStoryboard(1L, 100L);
+			when(storyboardRepository.findById(1L)).thenReturn(sb);
+
+			// when & then
+			assertThatThrownBy(() -> sut.addCut(999L, 1L))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.STORYBOARD_NOT_FOUND);
+		}
+
+		@Test
+		@DisplayName("본인 스토리보드면 컷 추가 성공")
+		void owner_addsCut() {
+			// given
+			Long userId = 1L;
+			Long storyboardId = 10L;
+			Storyboard sb = createStoryboard(storyboardId, userId);
+			StoryboardCut newCut = createStoryboardCut(200L, storyboardId, 2);
+
+			when(storyboardRepository.findById(storyboardId)).thenReturn(sb);
+			when(storyboardCutRepository.findNextOrder(storyboardId)).thenReturn(2);
+			when(storyboardCutRepository.save(any(StoryboardCut.class))).thenReturn(newCut);
+
+			// when
+			StoryboardCutResponse result = sut.addCut(userId, storyboardId);
+
+			// then
+			assertThat(result.cutId()).isEqualTo(200L);
+			assertThat(result.order()).isEqualTo(2);
 		}
 	}
 }
