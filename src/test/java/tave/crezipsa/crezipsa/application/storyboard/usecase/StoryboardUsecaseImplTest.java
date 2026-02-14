@@ -433,4 +433,72 @@ class StoryboardUsecaseImplTest {
 			assertThat(result.etc()).isEqualTo("새 기타");
 		}
 	}
+
+	@Nested
+	@DisplayName("deleteCut")
+	class DeleteCut {
+
+		@Test
+		@DisplayName("컷이 없으면 STORYBOARD_CUT_NOT_FOUND 예외")
+		void cutNotFound_throws() {
+			// given
+			when(storyboardCutRepository.findById(1L)).thenReturn(null);
+
+			// when & then
+			assertThatThrownBy(() -> sut.deleteCut(1L, 1L))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.STORYBOARD_CUT_NOT_FOUND);
+		}
+
+		@Test
+		@DisplayName("스토리보드가 없으면 STORYBOARD_NOT_FOUND 예외")
+		void storyboardNotFound_throws() {
+			// given
+			StoryboardCut cut = createStoryboardCut(1L, 10L, 0);
+			when(storyboardCutRepository.findById(1L)).thenReturn(cut);
+			when(storyboardRepository.findById(10L)).thenReturn(null);
+
+			// when & then
+			assertThatThrownBy(() -> sut.deleteCut(1L, 1L))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.STORYBOARD_NOT_FOUND);
+		}
+
+		@Test
+		@DisplayName("다른 사용자면 STORYBOARD_NOT_FOUND 예외")
+		void otherUser_throws() {
+			// given
+			StoryboardCut cut = createStoryboardCut(1L, 10L, 0);
+			Storyboard sb = createStoryboard(10L, 100L);
+
+			when(storyboardCutRepository.findById(1L)).thenReturn(cut);
+			when(storyboardRepository.findById(10L)).thenReturn(sb);
+
+			// when & then
+			assertThatThrownBy(() -> sut.deleteCut(999L, 1L))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.STORYBOARD_NOT_FOUND);
+		}
+
+		@Test
+		@DisplayName("본인 컷이면 삭제 성공")
+		void owner_deletesCut() {
+			// given
+			Long userId = 1L;
+			StoryboardCut cut = createStoryboardCut(1L, 10L, 0);
+			Storyboard sb = createStoryboard(10L, userId);
+
+			when(storyboardCutRepository.findById(1L)).thenReturn(cut);
+			when(storyboardRepository.findById(10L)).thenReturn(sb);
+
+			// when
+			sut.deleteCut(userId, 1L);
+
+			// then
+			verify(storyboardCutRepository).deleteById(1L);
+		}
+	}
 }
