@@ -384,6 +384,22 @@ class StoryboardUsecaseImplTest {
 		}
 
 		@Test
+		@DisplayName("컷의 스토리보드가 존재하지 않으면 STORYBOARD_NOT_FOUND 예외")
+		void storyboardNull_throws() {
+			// given
+			StoryboardCut cut = createStoryboardCut(1L, 10L, 0);
+
+			when(storyboardCutRepository.findById(1L)).thenReturn(cut);
+			when(storyboardRepository.findById(10L)).thenReturn(null);
+
+			// when & then
+			assertThatThrownBy(() -> sut.updateCut(1L, 1L, new UpdateStoryboardCutRequest(null, null, null, null)))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.STORYBOARD_NOT_FOUND);
+		}
+
+		@Test
 		@DisplayName("null 필드는 기존 값 유지, 제공된 필드만 업데이트")
 		void partialUpdate_keepsExisting() {
 			// given
@@ -396,13 +412,13 @@ class StoryboardUsecaseImplTest {
 			when(storyboardCutRepository.save(any(StoryboardCut.class)))
 				.thenAnswer(invocation -> invocation.getArgument(0));
 
-			UpdateStoryboardCutRequest request = new UpdateStoryboardCutRequest("새 구도", null, null, null);
+			UpdateStoryboardCutRequest request = new UpdateStoryboardCutRequest(null, null, null, null);
 
 			// when
 			StoryboardCutResponse result = sut.updateCut(userId, 1L, request);
 
 			// then
-			assertThat(result.cutComposition()).isEqualTo("새 구도");
+			assertThat(result.cutComposition()).isEqualTo("컷 구도");
 			assertThat(result.script()).isEqualTo("스크립트");
 			assertThat(result.caption()).isEqualTo("캡션");
 			assertThat(result.etc()).isEqualTo("기타");
