@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import tave.crezipsa.crezipsa.application.storyboard.dto.request.CreateStoryboardRequest;
+import tave.crezipsa.crezipsa.application.storyboard.dto.request.UpdateStoryboardTitleRequest;
 import tave.crezipsa.crezipsa.application.storyboard.dto.response.StoryboardEditorResponse;
 import tave.crezipsa.crezipsa.application.storyboard.dto.response.StoryboardSummaryResponse;
 import tave.crezipsa.crezipsa.domain.chat.entity.ChatMessage;
@@ -216,6 +217,80 @@ class StoryboardUsecaseImplTest {
 			assertThat(result).hasSize(2);
 			assertThat(result.get(0).storyboardId()).isEqualTo(10L);
 			assertThat(result.get(1).storyboardId()).isEqualTo(11L);
+		}
+	}
+
+	@Nested
+	@DisplayName("updateTitle")
+	class UpdateTitle {
+
+		@Test
+		@DisplayName("스토리보드가 없으면 STORYBOARD_NOT_FOUND 예외")
+		void notFound_throws() {
+			// given
+			when(storyboardRepository.findById(1L)).thenReturn(null);
+
+			// when & then
+			assertThatThrownBy(() -> sut.updateTitle(1L, 1L, new UpdateStoryboardTitleRequest("새 제목")))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.STORYBOARD_NOT_FOUND);
+		}
+
+		@Test
+		@DisplayName("다른 사용자면 STORYBOARD_NOT_FOUND 예외")
+		void otherUser_throws() {
+			// given
+			Storyboard sb = createStoryboard(1L, 100L);
+			when(storyboardRepository.findById(1L)).thenReturn(sb);
+
+			// when & then
+			assertThatThrownBy(() -> sut.updateTitle(999L, 1L, new UpdateStoryboardTitleRequest("새 제목")))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.STORYBOARD_NOT_FOUND);
+		}
+
+		@Test
+		@DisplayName("제목이 null이면 INVALID_INPUT_VALUE 예외")
+		void nullTitle_throws() {
+			// given
+			Storyboard sb = createStoryboard(1L, 1L);
+			when(storyboardRepository.findById(1L)).thenReturn(sb);
+
+			// when & then
+			assertThatThrownBy(() -> sut.updateTitle(1L, 1L, new UpdateStoryboardTitleRequest(null)))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.INVALID_INPUT_VALUE);
+		}
+
+		@Test
+		@DisplayName("제목이 빈 문자열이면 INVALID_INPUT_VALUE 예외")
+		void blankTitle_throws() {
+			// given
+			Storyboard sb = createStoryboard(1L, 1L);
+			when(storyboardRepository.findById(1L)).thenReturn(sb);
+
+			// when & then
+			assertThatThrownBy(() -> sut.updateTitle(1L, 1L, new UpdateStoryboardTitleRequest("   ")))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.INVALID_INPUT_VALUE);
+		}
+
+		@Test
+		@DisplayName("정상 제목이면 업데이트 성공")
+		void validTitle_updates() {
+			// given
+			Storyboard sb = createStoryboard(1L, 1L);
+			when(storyboardRepository.findById(1L)).thenReturn(sb);
+
+			// when
+			sut.updateTitle(1L, 1L, new UpdateStoryboardTitleRequest("새 제목"));
+
+			// then
+			verify(storyboardRepository).save(any(Storyboard.class));
 		}
 	}
 }
