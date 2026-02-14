@@ -501,4 +501,51 @@ class StoryboardUsecaseImplTest {
 			verify(storyboardCutRepository).deleteById(1L);
 		}
 	}
+
+	@Nested
+	@DisplayName("deleteStoryboard")
+	class DeleteStoryboard {
+
+		@Test
+		@DisplayName("스토리보드가 없으면 STORYBOARD_NOT_FOUND 예외")
+		void notFound_throws() {
+			// given
+			when(storyboardRepository.findById(1L)).thenReturn(null);
+
+			// when & then
+			assertThatThrownBy(() -> sut.deleteStoryboard(1L, 1L))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.STORYBOARD_NOT_FOUND);
+		}
+
+		@Test
+		@DisplayName("다른 사용자면 STORYBOARD_NOT_FOUND 예외")
+		void otherUser_throws() {
+			// given
+			Storyboard sb = createStoryboard(1L, 100L);
+			when(storyboardRepository.findById(1L)).thenReturn(sb);
+
+			// when & then
+			assertThatThrownBy(() -> sut.deleteStoryboard(999L, 1L))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.STORYBOARD_NOT_FOUND);
+		}
+
+		@Test
+		@DisplayName("본인 스토리보드면 삭제 성공")
+		void owner_deletes() {
+			// given
+			Long userId = 1L;
+			Storyboard sb = createStoryboard(1L, userId);
+			when(storyboardRepository.findById(1L)).thenReturn(sb);
+
+			// when
+			sut.deleteStoryboard(userId, 1L);
+
+			// then
+			verify(storyboardRepository).deleteById(1L);
+		}
+	}
 }
