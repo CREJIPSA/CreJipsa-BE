@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import tave.crezipsa.crezipsa.application.storyboard.dto.request.CreateStoryboardRequest;
 import tave.crezipsa.crezipsa.application.storyboard.dto.response.StoryboardEditorResponse;
+import tave.crezipsa.crezipsa.application.storyboard.dto.response.StoryboardSummaryResponse;
 import tave.crezipsa.crezipsa.domain.chat.entity.ChatMessage;
 import tave.crezipsa.crezipsa.domain.chat.port.ChatMessageRepositoryPort;
 import tave.crezipsa.crezipsa.domain.storyboard.entity.Storyboard;
@@ -178,6 +179,43 @@ class StoryboardUsecaseImplTest {
 			assertThat(result.cuts()).hasSize(2);
 			assertThat(result.cuts().get(0).cutId()).isEqualTo(100L);
 			assertThat(result.cuts().get(1).cutId()).isEqualTo(101L);
+		}
+	}
+
+	@Nested
+	@DisplayName("getMyList")
+	class GetMyList {
+
+		@Test
+		@DisplayName("스토리보드가 없으면 빈 목록 반환")
+		void noStoryboards_returnsEmpty() {
+			// given
+			when(storyboardRepository.findByUserId(1L)).thenReturn(List.of());
+
+			// when
+			List<StoryboardSummaryResponse> result = sut.getMyList(1L);
+
+			// then
+			assertThat(result).isEmpty();
+		}
+
+		@Test
+		@DisplayName("스토리보드 목록 정상 반환")
+		void hasStoryboards_returnsList() {
+			// given
+			Long userId = 1L;
+			Storyboard sb1 = createStoryboard(10L, userId);
+			Storyboard sb2 = createStoryboard(11L, userId);
+
+			when(storyboardRepository.findByUserId(userId)).thenReturn(List.of(sb1, sb2));
+
+			// when
+			List<StoryboardSummaryResponse> result = sut.getMyList(userId);
+
+			// then
+			assertThat(result).hasSize(2);
+			assertThat(result.get(0).storyboardId()).isEqualTo(10L);
+			assertThat(result.get(1).storyboardId()).isEqualTo(11L);
 		}
 	}
 }
