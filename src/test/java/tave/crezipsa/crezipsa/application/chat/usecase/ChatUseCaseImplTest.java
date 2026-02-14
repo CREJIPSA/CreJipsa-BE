@@ -106,4 +106,19 @@ class ChatUseCaseImplTest {
 			verify(storyboardGeneratorPort).generate(userMsg);
 		}
 	}
+
+	@Nested
+	@DisplayName("changeChatRoomTitle")
+	class ChangeChatRoomTitle {
+
+		@Test
+		@DisplayName("채팅방 제목 변경 위임")
+		void delegatesToRepository() {
+			// when
+			sut.changeChatRoomTitle(1L, 10L, "새 제목");
+
+			// then
+			verify(chatRoomRepository).changeTitle(10L, 1L, "새 제목");
+		}
+	}
 }
