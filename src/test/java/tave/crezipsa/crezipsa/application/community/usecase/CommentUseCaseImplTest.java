@@ -247,6 +247,38 @@ class CommentUseCaseImplTest {
 				.extracting("errorCode")
 				.isEqualTo(ErrorCode.UNAUTHORIZED_COMMENT);
 		}
+
+		@Test
+		@DisplayName("존재하지 않는 댓글이면 COMMENT_NOT_FOUND 예외")
+		void commentNotFound_throws() {
+			// given
+			when(commentRepository.findById(999L)).thenReturn(Optional.empty());
+
+			// when & then
+			assertThatThrownBy(() -> sut.updateComment(999L, 1L, new CommentUpdateRequest("new")))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.COMMENT_NOT_FOUND);
+		}
+
+		@Test
+		@DisplayName("작성자가 맞으면 댓글 정상 수정")
+		void writer_updatesSuccessfully() {
+			// given
+			Comment comment = createComment(1L, 1L, 100L, null);
+			User writer = createUser(100L);
+
+			when(commentRepository.findById(1L)).thenReturn(Optional.of(comment));
+			when(userRepository.findById(100L)).thenReturn(Optional.of(writer));
+			when(commentMapper.toCommentResponse(any(), any(), anyBoolean(), anyString(), anyList()))
+				.thenReturn(new CommentResponse(1L, 1L, null, WriterResponse.from(writer), true, false, "updated", null, "방금 전", List.of()));
+
+			// when
+			CommentResponse result = sut.updateComment(1L, 100L, new CommentUpdateRequest("updated"));
+
+			// then
+			assertThat(result.content()).isEqualTo("updated");
+		}
 	}
 
 	@Nested
