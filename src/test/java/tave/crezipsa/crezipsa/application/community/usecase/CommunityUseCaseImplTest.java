@@ -17,6 +17,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import tave.crezipsa.crezipsa.application.community.dto.request.CommunityCreateRequest;
@@ -24,6 +27,7 @@ import tave.crezipsa.crezipsa.application.community.dto.request.CommunityUpdateR
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunityDetailResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunityResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunitySummaryResponse;
+import tave.crezipsa.crezipsa.application.community.dto.response.MyCommunityResponse;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
 import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 import tave.crezipsa.crezipsa.domain.community.domain.Like;
@@ -252,6 +256,51 @@ class CommunityUseCaseImplTest {
 			// then
 			assertThat(result.isLiked()).isFalse();
 			assertThat(result.isWriter()).isTrue();
+		}
+	}
+
+	@Nested
+	@DisplayName("getMyCommunities")
+	class GetMyCommunities {
+
+		@Test
+		@DisplayName("latest 정렬 시 findMyCommunitiesLatest 호출")
+		void latestSort_callsLatestRepo() {
+			// given
+			Community c1 = createCommunity(1L, 10L);
+			Page<Community> page = new PageImpl<>(List.of(c1), PageRequest.of(0, 10), 1);
+
+			when(communityRepository.findMyCommunitiesLatest(eq(10L), eq(CommunityField.RECOMMEND), any()))
+				.thenReturn(page);
+			when(commentRepository.countByCommunityIds(List.of(1L))).thenReturn(Map.of(1L, 3L));
+
+			// when
+			List<MyCommunityResponse> result = sut.getMyCommunities(10L, CommunityField.RECOMMEND, "latest", 0, 10);
+
+			// then
+			assertThat(result).hasSize(1);
+			verify(communityRepository).findMyCommunitiesLatest(eq(10L), eq(CommunityField.RECOMMEND), any());
+			verify(communityRepository, never()).findMyCommunitiesPopular(any(), any(), any());
+		}
+
+		@Test
+		@DisplayName("popular 정렬 시 findMyCommunitiesPopular 호출")
+		void popularSort_callsPopularRepo() {
+			// given
+			Community c1 = createCommunity(1L, 10L);
+			Page<Community> page = new PageImpl<>(List.of(c1), PageRequest.of(0, 10), 1);
+
+			when(communityRepository.findMyCommunitiesPopular(eq(10L), eq(CommunityField.TIP), any()))
+				.thenReturn(page);
+			when(commentRepository.countByCommunityIds(List.of(1L))).thenReturn(Map.of(1L, 0L));
+
+			// when
+			List<MyCommunityResponse> result = sut.getMyCommunities(10L, CommunityField.TIP, "popular", 0, 10);
+
+			// then
+			assertThat(result).hasSize(1);
+			verify(communityRepository).findMyCommunitiesPopular(eq(10L), eq(CommunityField.TIP), any());
+			verify(communityRepository, never()).findMyCommunitiesLatest(any(), any(), any());
 		}
 	}
 
