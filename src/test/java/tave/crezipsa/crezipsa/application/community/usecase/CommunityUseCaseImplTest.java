@@ -256,6 +256,27 @@ class CommunityUseCaseImplTest {
 	}
 
 	@Nested
+	@DisplayName("getCommunitiesByField")
+	class GetCommunitiesByField {
+
+		@Test
+		@DisplayName("필드별 커뮤니티 조회 시 댓글 수 포함하여 반환")
+		void returnsByFieldWithCommentCounts() {
+			// given
+			Community c1 = createCommunity(1L, 10L);
+			when(communityRepository.findByField(CommunityField.RECOMMEND)).thenReturn(List.of(c1));
+			when(commentRepository.countByCommunityIds(List.of(1L))).thenReturn(Map.of(1L, 2L));
+
+			// when
+			List<CommunitySummaryResponse> result = sut.getCommunitiesByField(CommunityField.RECOMMEND);
+
+			// then
+			assertThat(result).hasSize(1);
+			assertThat(result.get(0).commentCount()).isEqualTo(2L);
+		}
+	}
+
+	@Nested
 	@DisplayName("searchCommunities")
 	class SearchCommunities {
 
