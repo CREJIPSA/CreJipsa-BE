@@ -228,6 +228,19 @@ class CommentUseCaseImplTest {
 				.extracting("errorCode")
 				.isEqualTo(ErrorCode.UNAUTHORIZED_COMMENT);
 		}
+
+		@Test
+		@DisplayName("존재하지 않는 댓글이면 COMMENT_NOT_FOUND 예외")
+		void commentNotFound_throws() {
+			// given
+			when(commentRepository.findById(999L)).thenReturn(Optional.empty());
+
+			// when & then
+			assertThatThrownBy(() -> sut.deleteComment(999L, 1L))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.COMMENT_NOT_FOUND);
+		}
 	}
 
 	@Nested
