@@ -361,6 +361,44 @@ class CommunityUseCaseImplTest {
 				.extracting("errorCode")
 				.isEqualTo(ErrorCode.SEARCH_KEYWORD_TOO_LONG);
 		}
+
+		@Test
+		@DisplayName("latest 정렬 시 searchByTitleLatest 호출")
+		void latestSort_success() {
+			// given
+			Community c1 = createCommunity(1L, 10L);
+			Page<Community> page = new PageImpl<>(List.of(c1), PageRequest.of(0, 10), 1);
+
+			when(communityRepository.searchByTitleLatest(eq("검색어"), isNull(), any()))
+				.thenReturn(page);
+			when(commentRepository.countByCommunityIds(List.of(1L))).thenReturn(Map.of(1L, 1L));
+
+			// when
+			List<CommunitySummaryResponse> result = sut.searchCommunities("검색어", null, "latest", 0, 10);
+
+			// then
+			assertThat(result).hasSize(1);
+			verify(communityRepository).searchByTitleLatest(eq("검색어"), isNull(), any());
+		}
+
+		@Test
+		@DisplayName("popular 정렬 시 searchByTitlePopular 호출")
+		void popularSort_success() {
+			// given
+			Community c1 = createCommunity(1L, 10L);
+			Page<Community> page = new PageImpl<>(List.of(c1), PageRequest.of(0, 10), 1);
+
+			when(communityRepository.searchByTitlePopular(eq("검색어"), isNull(), any()))
+				.thenReturn(page);
+			when(commentRepository.countByCommunityIds(List.of(1L))).thenReturn(Map.of(1L, 0L));
+
+			// when
+			List<CommunitySummaryResponse> result = sut.searchCommunities("검색어", null, "popular", 0, 10);
+
+			// then
+			assertThat(result).hasSize(1);
+			verify(communityRepository).searchByTitlePopular(eq("검색어"), isNull(), any());
+		}
 	}
 
 	@Nested
