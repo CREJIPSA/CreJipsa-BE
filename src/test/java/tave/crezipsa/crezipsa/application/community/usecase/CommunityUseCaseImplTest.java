@@ -201,6 +201,36 @@ class CommunityUseCaseImplTest {
 		}
 
 		@Test
+		@DisplayName("존재하지 않는 게시글이면 COMMUNITY_NOT_FOUND 예외")
+		void communityNotFound_throws() {
+			// given
+			when(communityRepository.findById(999L)).thenReturn(Optional.empty());
+
+			// when & then
+			assertThatThrownBy(() -> sut.getCommunity(999L, 1L))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.COMMUNITY_NOT_FOUND);
+		}
+
+		@Test
+		@DisplayName("작성자가 존재하지 않으면 USER_NOT_FOUND 예외")
+		void writerNotFound_throws() {
+			// given
+			Long communityId = 1L;
+			Community community = createCommunity(communityId, 999L);
+
+			when(communityRepository.findById(communityId)).thenReturn(Optional.of(community));
+			when(userRepository.findById(999L)).thenReturn(Optional.empty());
+
+			// when & then
+			assertThatThrownBy(() -> sut.getCommunity(communityId, 1L))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.USER_NOT_FOUND);
+		}
+
+		@Test
 		@DisplayName("좋아요 기록 없으면 isLiked=false, 본인 게시글이면 isWriter=true")
 		void noLike_isLikedFalse_ownPost_isWriterTrue() {
 			// given
