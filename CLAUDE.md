@@ -66,6 +66,25 @@ Test coverage: JaCoCo reports generated to `build/reports/jacoco/test/` after `.
 - `refactor/#issue/description`
 - `test/#issue/description`
 
-## Deployment
+
+## Development Rules (Token Saving & Efficiency)
 
 Docker-based via GitHub Actions. Configs in `docker/` with dev/prod compose files and `.env` files. CI builds JAR (`-x test`), pushes Docker image, deploys to EC2.
+- **Dependency Flow:** Strictly follow `Presentation -> Application -> Domain <- Infrastructure`. Never let Domain depend on any other layer.
+- **Entity Policy:** Always use `Mapper` classes to convert between `Domain Model` and `JPA Entity`. Direct leak of JPA Entities to UseCases is prohibited.
+- **Import Policy:** Avoid wildcard imports (`import *`). Explicitly import each class.
+- **Validation:** Use `jakarta.validation` annotations in DTOs. Business validation should reside in Domain Services or UseCases.
+
+## Frequent Patterns for Agent
+
+- **Adding a new API:** 1. Define `UseCase` interface and `Impl`.
+    2. Create/Update `Domain Model` and `Repository Port`.
+    3. Implement `JPA Adapter` and `JPA Entity` in infrastructure.
+    4. Register `Controller` and use `GlobalResponseDto`.
+- **Finding Errors:** Check `global/exception/code/ErrorCode.java` first before creating new error codes.
+
+## Implementation Details
+
+- **Lombok:** Use `@Getter`, `@Builder`, and `@RequiredArgsConstructor`. Avoid `@Data` and `@AllArgsConstructor` on Entities.
+- **Database:** Use `SnakeCase` for DB columns/tables and `CamelCase` for Java fields.
+- **Async:** Use `@Async` with a custom task executor defined in `global/config/AsyncConfig`.
