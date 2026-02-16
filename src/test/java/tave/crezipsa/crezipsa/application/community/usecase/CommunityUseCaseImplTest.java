@@ -157,6 +157,19 @@ class CommunityUseCaseImplTest {
 		}
 
 		@Test
+		@DisplayName("존재하지 않는 게시글이면 COMMUNITY_NOT_FOUND 예외")
+		void notFound_throwsCommunityNotFound() {
+			// given
+			when(communityRepository.findById(999L)).thenReturn(Optional.empty());
+
+			// when & then
+			assertThatThrownBy(() -> sut.deleteCommunity(1L, 999L))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.COMMUNITY_NOT_FOUND);
+		}
+
+		@Test
 		@DisplayName("작성자가 맞으면 정상 삭제")
 		void writer_deletesSuccessfully() {
 			// given
