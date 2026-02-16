@@ -97,6 +97,21 @@ class CommunityDomainTest {
 		}
 
 		@Test
+		@DisplayName("좋아요 감소 시 카운트가 1 이상이면 정상 감소")
+		void decrease_whenPositive() {
+			// given
+			Community community = Community.create("t", "c", CommunityField.RECOMMEND, null, 1L);
+			community.increaseLikeCount();
+			community.increaseLikeCount();
+
+			// when
+			community.decreaseLikeCount();
+
+			// then
+			assertThat(community.getLikeCount()).isEqualTo(1L);
+		}
+
+		@Test
 		@DisplayName("좋아요 감소 시 0 이하로 내려가지 않음")
 		void decreaseFloorAtZero() {
 			// given
@@ -126,6 +141,21 @@ class CommunityDomainTest {
 			// then
 			assertThat(community.getTitle()).isEqualTo("new title");
 			assertThat(community.getContent()).isEqualTo("content");
+		}
+
+		@Test
+		@DisplayName("모든 필드를 한번에 업데이트")
+		void fullUpdate() {
+			// given
+			Community community = Community.create("title", "content", CommunityField.RECOMMEND, null, 1L);
+
+			// when
+			community.update("new title", "new content", List.of("new.jpg"));
+
+			// then
+			assertThat(community.getTitle()).isEqualTo("new title");
+			assertThat(community.getContent()).isEqualTo("new content");
+			assertThat(community.getImageUrls()).containsExactly("new.jpg");
 		}
 
 		@Test
