@@ -274,6 +274,53 @@ class CommunityDomainTest {
 	}
 
 	@Nested
+	@DisplayName("StringListConverter")
+	class StringListConverterTest {
+
+		private final StringListConverter converter = new StringListConverter();
+
+		@Test
+		@DisplayName("리스트를 JSON 문자열로 변환")
+		void convertToDatabaseColumn() {
+			// when
+			String result = converter.convertToDatabaseColumn(List.of("a.jpg", "b.jpg"));
+
+			// then
+			assertThat(result).isEqualTo("[\"a.jpg\",\"b.jpg\"]");
+		}
+
+		@Test
+		@DisplayName("null 리스트는 빈 배열 JSON으로 변환")
+		void convertToDatabaseColumn_null() {
+			// when
+			String result = converter.convertToDatabaseColumn(null);
+
+			// then
+			assertThat(result).isEqualTo("[]");
+		}
+
+		@Test
+		@DisplayName("JSON 문자열을 리스트로 변환")
+		void convertToEntityAttribute() {
+			// when
+			List<String> result = converter.convertToEntityAttribute("[\"a.jpg\",\"b.jpg\"]");
+
+			// then
+			assertThat(result).containsExactly("a.jpg", "b.jpg");
+		}
+
+		@Test
+		@DisplayName("잘못된 JSON은 빈 리스트 반환")
+		void convertToEntityAttribute_invalidJson() {
+			// when
+			List<String> result = converter.convertToEntityAttribute("not json");
+
+			// then
+			assertThat(result).isEmpty();
+		}
+	}
+
+	@Nested
 	@DisplayName("Like 도메인")
 	class LikeDomain {
 
