@@ -19,10 +19,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import tave.crezipsa.crezipsa.application.community.dto.request.CommunityCreateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommunityUpdateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunityDetailResponse;
+import tave.crezipsa.crezipsa.application.community.dto.response.CommunityResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunitySummaryResponse;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
+import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 import tave.crezipsa.crezipsa.domain.community.domain.Like;
 import tave.crezipsa.crezipsa.domain.community.domain.LikeId;
 import tave.crezipsa.crezipsa.domain.community.repository.CommentRepository;
@@ -49,6 +52,37 @@ class CommunityUseCaseImplTest {
 
 	@InjectMocks
 	private CommunityUseCaseImpl sut;
+
+	@Nested
+	@DisplayName("createCommunity")
+	class CreateCommunity {
+
+		@Test
+		@DisplayName("정상 요청이면 커뮤니티 생성 후 응답 반환")
+		void success() {
+			// given
+			Long userId = 1L;
+			CommunityCreateRequest request = new CommunityCreateRequest();
+			ReflectionTestUtils.setField(request, "title", "제목");
+			ReflectionTestUtils.setField(request, "content", "내용");
+			ReflectionTestUtils.setField(request, "field", CommunityField.RECOMMEND);
+
+			when(communityRepository.save(any(Community.class))).thenAnswer(invocation -> {
+				Community c = invocation.getArgument(0);
+				ReflectionTestUtils.setField(c, "communityId", 100L);
+				return c;
+			});
+
+			// when
+			CommunityResponse result = sut.createCommunity(userId, request);
+
+			// then
+			assertThat(result.communityId()).isEqualTo(100L);
+			assertThat(result.title()).isEqualTo("제목");
+			assertThat(result.field()).isEqualTo(CommunityField.RECOMMEND);
+			verify(communityRepository).save(any(Community.class));
+		}
+	}
 
 	@Nested
 	@DisplayName("updateCommunity")
