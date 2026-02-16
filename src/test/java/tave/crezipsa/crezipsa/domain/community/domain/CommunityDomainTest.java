@@ -147,6 +147,29 @@ class CommunityDomainTest {
 	class CommentDomain {
 
 		@Test
+		@DisplayName("정상 내용으로 생성하면 Comment 객체 반환")
+		void createWithValidContent_succeeds() {
+			// when
+			Comment comment = Comment.create(1L, 2L, "정상 댓글", null);
+
+			// then
+			assertThat(comment.getCommunityId()).isEqualTo(1L);
+			assertThat(comment.getUserId()).isEqualTo(2L);
+			assertThat(comment.getContent()).isEqualTo("정상 댓글");
+			assertThat(comment.getParentId()).isNull();
+		}
+
+		@Test
+		@DisplayName("대댓글 생성 시 parentId가 설정됨")
+		void createReply_setsParentId() {
+			// when
+			Comment reply = Comment.create(1L, 2L, "대댓글", 10L);
+
+			// then
+			assertThat(reply.getParentId()).isEqualTo(10L);
+		}
+
+		@Test
 		@DisplayName("null 내용으로 생성하면 INVALID_COMMENT_CONTENT 예외")
 		void createWithNullContent_throws() {
 			// when & then
