@@ -299,6 +299,19 @@ class CommentUseCaseImplTest {
 	class GetComments {
 
 		@Test
+		@DisplayName("존재하지 않는 게시글이면 COMMUNITY_NOT_FOUND 예외")
+		void communityNotFound_throws() {
+			// given
+			when(communityRepository.findById(999L)).thenReturn(Optional.empty());
+
+			// when & then
+			assertThatThrownBy(() -> sut.getComments(999L, 1L))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.COMMUNITY_NOT_FOUND);
+		}
+
+		@Test
 		@DisplayName("루트 댓글과 자식 댓글을 트리 구조로 조합")
 		void buildsNestedTree() {
 			// given
