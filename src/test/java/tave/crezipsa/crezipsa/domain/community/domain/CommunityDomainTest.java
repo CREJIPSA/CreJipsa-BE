@@ -337,6 +337,29 @@ class CommunityDomainTest {
 		}
 
 		@Test
+		@DisplayName("LikeId 동일 값이면 equals true")
+		void likeId_equals() {
+			// given
+			LikeId id1 = new LikeId(1L, 10L);
+			LikeId id2 = new LikeId(1L, 10L);
+
+			// then
+			assertThat(id1).isEqualTo(id2);
+			assertThat(id1.hashCode()).isEqualTo(id2.hashCode());
+		}
+
+		@Test
+		@DisplayName("LikeId 다른 값이면 equals false")
+		void likeId_notEquals() {
+			// given
+			LikeId id1 = new LikeId(1L, 10L);
+			LikeId id2 = new LikeId(2L, 10L);
+
+			// then
+			assertThat(id1).isNotEqualTo(id2);
+		}
+
+		@Test
 		@DisplayName("unlike 후 like하면 isLiked 복원")
 		void toggleLikeUnlike() {
 			// given
