@@ -204,6 +204,19 @@ class CommunityDomainTest {
 		}
 
 		@Test
+		@DisplayName("update 시 정상 내용이면 내용 변경")
+		void updateWithValidContent_succeeds() {
+			// given
+			Comment comment = Comment.create(1L, 1L, "original", null);
+
+			// when
+			comment.update("수정된 내용");
+
+			// then
+			assertThat(comment.getContent()).isEqualTo("수정된 내용");
+		}
+
+		@Test
 		@DisplayName("update 시 null 내용이면 INVALID_COMMENT_CONTENT 예외")
 		void updateWithNullContent_throws() {
 			// given
