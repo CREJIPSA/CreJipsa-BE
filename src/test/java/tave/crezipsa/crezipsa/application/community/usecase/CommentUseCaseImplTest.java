@@ -10,6 +10,7 @@ import static tave.crezipsa.crezipsa.fixture.UserFixture.*;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -21,10 +22,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommentCreateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommentUpdateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommentResponse;
+import tave.crezipsa.crezipsa.application.community.dto.response.MyCommentResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.WriterResponse;
 import tave.crezipsa.crezipsa.application.community.mapper.CommentMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+
 import tave.crezipsa.crezipsa.domain.community.domain.Comment;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
+import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 import tave.crezipsa.crezipsa.domain.community.repository.CommentRepository;
 import tave.crezipsa.crezipsa.domain.community.repository.CommunityRepository;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
@@ -396,6 +403,46 @@ class CommentUseCaseImplTest {
 				.isInstanceOf(CommonException.class)
 				.extracting("errorCode")
 				.isEqualTo(ErrorCode.USER_NOT_FOUND);
+		}
+	}
+
+	@Nested
+	@DisplayName("getMyComments")
+	class GetMyComments {
+
+		@Test
+		@DisplayName("내가 댓글 단 게시글 목록 조회")
+		void returnsMyCommentedCommunities() {
+			// given
+			Long userId = 10L;
+			Community c1 = createCommunity(1L, 5L);
+			Page<Community> page = new PageImpl<>(List.of(c1), PageRequest.of(0, 10), 1);
+
+			when(commentRepository.findMyCommentsByCommunityField(eq(userId), eq(CommunityField.RECOMMEND), any()))
+				.thenReturn(page);
+
+			// when
+			List<MyCommentResponse> result = sut.getMyComments(userId, CommunityField.RECOMMEND, 0, 10);
+
+			// then
+			assertThat(result).hasSize(1);
+			assertThat(result.get(0).communityId()).isEqualTo(1L);
+		}
+
+		@Test
+		@DisplayName("댓글 없으면 빈 리스트 반환")
+		void noComments_returnsEmpty() {
+			// given
+			Page<Community> emptyPage = new PageImpl<>(List.of(), PageRequest.of(0, 10), 0);
+
+			when(commentRepository.findMyCommentsByCommunityField(eq(10L), isNull(), any()))
+				.thenReturn(emptyPage);
+
+			// when
+			List<MyCommentResponse> result = sut.getMyComments(10L, null, 0, 10);
+
+			// then
+			assertThat(result).isEmpty();
 		}
 	}
 }
