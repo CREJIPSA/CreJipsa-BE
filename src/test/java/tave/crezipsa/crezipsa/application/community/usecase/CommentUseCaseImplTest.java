@@ -52,6 +52,80 @@ class CommentUseCaseImplTest {
 	class CreateComment {
 
 		@Test
+		@DisplayName("루트 댓글 정상 생성")
+		void rootComment_success() {
+			// given
+			Long communityId = 1L;
+			Long userId = 10L;
+			Community community = createCommunity(communityId);
+			Comment saved = createComment(100L, communityId, userId, null);
+			User writer = createUser(userId);
+
+			when(communityRepository.findById(communityId)).thenReturn(Optional.of(community));
+			when(commentRepository.save(any(Comment.class))).thenReturn(saved);
+			when(userRepository.findById(userId)).thenReturn(Optional.of(writer));
+			when(commentMapper.toCommentResponse(any(), any(), anyBoolean(), anyString(), anyList()))
+				.thenReturn(new CommentResponse(100L, communityId, null, WriterResponse.from(writer), true, false, "test comment", null, "방금 전", List.of()));
+
+			CommentCreateRequest request = new CommentCreateRequest(null, "test comment");
+
+			// when
+			CommentResponse result = sut.createComment(communityId, userId, request);
+
+			// then
+			assertThat(result.commentId()).isEqualTo(100L);
+			assertThat(result.parentId()).isNull();
+			verify(commentRepository).save(any(Comment.class));
+		}
+
+		@Test
+		@DisplayName("대댓글 정상 생성 (루트 댓글에 답글)")
+		void replyToRoot_success() {
+			// given
+			Long communityId = 1L;
+			Long userId = 10L;
+			Comment parentRoot = createComment(1L, communityId, 5L, null);
+			Comment saved = createComment(100L, communityId, userId, 1L);
+			Community community = createCommunity(communityId);
+			User writer = createUser(userId);
+
+			when(communityRepository.findById(communityId)).thenReturn(Optional.of(community));
+			when(commentRepository.findById(1L)).thenReturn(Optional.of(parentRoot));
+			when(commentRepository.save(any(Comment.class))).thenReturn(saved);
+			when(userRepository.findById(userId)).thenReturn(Optional.of(writer));
+			when(commentMapper.toCommentResponse(any(), any(), anyBoolean(), anyString(), anyList()))
+				.thenReturn(new CommentResponse(100L, communityId, 1L, WriterResponse.from(writer), true, false, "reply", null, "방금 전", List.of()));
+
+			CommentCreateRequest request = new CommentCreateRequest(1L, "reply");
+
+			// when
+			CommentResponse result = sut.createComment(communityId, userId, request);
+
+			// then
+			assertThat(result.commentId()).isEqualTo(100L);
+			assertThat(result.parentId()).isEqualTo(1L);
+		}
+
+		@Test
+		@DisplayName("부모 댓글이 존재하지 않으면 COMMENT_NOT_FOUND 예외")
+		void parentNotFound_throws() {
+			// given
+			Long communityId = 1L;
+			Community community = createCommunity(communityId);
+
+			when(communityRepository.findById(communityId)).thenReturn(Optional.of(community));
+			when(commentRepository.findById(999L)).thenReturn(Optional.empty());
+
+			CommentCreateRequest request = new CommentCreateRequest(999L, "content");
+
+			// when & then
+			assertThatThrownBy(() -> sut.createComment(communityId, 1L, request))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.COMMENT_NOT_FOUND);
+		}
+
+		@Test
 		@DisplayName("대댓글의 대댓글 시도 시 INVALID_COMMENT_DEPTH 예외")
 		void replyToReply_throwsInvalidDepth() {
 			// given
