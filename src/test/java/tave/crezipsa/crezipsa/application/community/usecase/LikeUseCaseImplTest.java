@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static tave.crezipsa.crezipsa.fixture.CommunityFixture.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +16,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+
+import tave.crezipsa.crezipsa.application.community.dto.response.MyLikedCommunityResponse;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
+import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 import tave.crezipsa.crezipsa.domain.community.domain.Like;
 import tave.crezipsa.crezipsa.domain.community.domain.LikeId;
 import tave.crezipsa.crezipsa.domain.community.repository.CommentRepository;
@@ -124,6 +132,19 @@ class LikeUseCaseImplTest {
 	class UnlikeAction {
 
 		@Test
+		@DisplayName("존재하지 않는 게시글이면 COMMUNITY_NOT_FOUND 예외")
+		void communityNotFound_throws() {
+			// given
+			when(communityRepository.findById(999L)).thenReturn(Optional.empty());
+
+			// when & then
+			assertThatThrownBy(() -> sut.unlike(1L, 999L))
+				.isInstanceOf(CommonException.class)
+				.extracting("errorCode")
+				.isEqualTo(ErrorCode.COMMUNITY_NOT_FOUND);
+		}
+
+		@Test
 		@DisplayName("좋아요 기록이 없으면 NOT_LIKED 예외")
 		void noLikeRecord_throwsNotLiked() {
 			// given
@@ -200,6 +221,50 @@ class LikeUseCaseImplTest {
 
 			// then
 			assertThat(result).isEqualTo(42L);
+		}
+	}
+
+	@Nested
+	@DisplayName("getMyLikedCommunities")
+	class GetMyLikedCommunities {
+
+		@Test
+		@DisplayName("latest 정렬 시 findMyLikedCommunitiesLatest 호출")
+		void latestSort() {
+			// given
+			Community c1 = createCommunity(1L, 5L);
+			Page<Community> page = new PageImpl<>(List.of(c1), PageRequest.of(0, 10), 1);
+
+			when(likeRepository.findMyLikedCommunitiesLatest(eq(10L), isNull(), any()))
+				.thenReturn(page);
+			when(commentRepository.countByCommunityId(1L)).thenReturn(3L);
+
+			// when
+			Slice<MyLikedCommunityResponse> result = sut.getMyLikedCommunities(10L, null, "latest", PageRequest.of(0, 10));
+
+			// then
+			assertThat(result.getContent()).hasSize(1);
+			assertThat(result.getContent().get(0).commentCount()).isEqualTo(3L);
+			verify(likeRepository).findMyLikedCommunitiesLatest(eq(10L), isNull(), any());
+		}
+
+		@Test
+		@DisplayName("popular 정렬 시 findMyLikedCommunitiesPopular 호출")
+		void popularSort() {
+			// given
+			Community c1 = createCommunity(1L, 5L);
+			Page<Community> page = new PageImpl<>(List.of(c1), PageRequest.of(0, 10), 1);
+
+			when(likeRepository.findMyLikedCommunitiesPopular(eq(10L), eq(CommunityField.TIP), any()))
+				.thenReturn(page);
+			when(commentRepository.countByCommunityId(1L)).thenReturn(0L);
+
+			// when
+			Slice<MyLikedCommunityResponse> result = sut.getMyLikedCommunities(10L, CommunityField.TIP, "popular", PageRequest.of(0, 10));
+
+			// then
+			assertThat(result.getContent()).hasSize(1);
+			verify(likeRepository).findMyLikedCommunitiesPopular(eq(10L), eq(CommunityField.TIP), any());
 		}
 	}
 }
