@@ -39,7 +39,7 @@ Test coverage: JaCoCo reports generated to `build/reports/jacoco/test/` after `.
 
 **Response envelope:** All endpoints return `GlobalResponseDto<T>` with `{ success, status, message, errorCode, result }`. Use `GlobalResponseDto.success(data)` or `GlobalResponseDto.fail(errorCode)`.
 
-**Error handling:** Throw `CommonException(ErrorCode.XXXX)` for business errors. `GlobalExceptionHandler` catches and wraps. Error codes defined in `global/exception/code/ErrorCode.java` — prefixed by domain (U=User, A=Auth, C=Community/Comment, CH=Chat, G=Gemini, SE=Search).
+**Error handling:** Throw `CommonException(ErrorCode.XXXX)` for business errors. `GlobalExceptionHandler` catches and wraps. Error codes defined in `global/exception/code/ErrorCode.java` — prefixed by domain (U=User, A=Auth, I=Interest, S=Storyboard, G=Gemini, C=Community/Comment, CH=Chat, SE=Search).
 
 **Entity auditing:** All JPA entities extend `BaseEntity` which provides `createdAt`/`updatedAt` via `@MappedSuperclass`.
 
@@ -54,11 +54,11 @@ Test coverage: JaCoCo reports generated to `build/reports/jacoco/test/` after `.
 ## Conventions
 
 - **UseCase naming is inconsistent** (`CommunityUseCase` vs `CommentUsecase`) — preserve existing names, don't normalize.
-- **Domain entities** live in `domain/`; **JPA entities** live in `infrastructure/`. Keep them separate with mappers between.
 - Use `@Transactional` on usecases; `@Transactional(readOnly = true)` for queries.
 - Use `Pageable` for list endpoints. Watch for N+1 — use batch/join queries.
 - External HTTP calls use `WebClient` in `infrastructure/**/client`.
-- Tests: JUnit 5 + Mockito, `@ExtendWith(MockitoExtension.class)`, AssertJ assertions, `@DisplayName`/`@Nested` for organization. H2 in-memory DB for test runtime.
+- **Tests:** JUnit 5 + Mockito (`@ExtendWith(MockitoExtension.class)`), AssertJ assertions, H2 in-memory DB for test runtime. Domain-specific fixture classes in `fixture/` package (e.g., `UserFixture`, `ChatFixture`, `StoryboardFixture`) — use `static import` for factory methods. When adding tests for a new domain, create or reuse existing fixtures.
+- **Test structure:** Use GWT (Given-When-Then) comment blocks inside each test method. Group tests with `@Nested` by method name, each test annotated with `@DisplayName`.
 
 ## Branch Naming
 
@@ -82,6 +82,9 @@ Docker-based via GitHub Actions. Configs in `docker/` with dev/prod compose file
     3. Implement `JPA Adapter` and `JPA Entity` in infrastructure.
     4. Register `Controller` and use `GlobalResponseDto`.
 - **Finding Errors:** Check `global/exception/code/ErrorCode.java` first before creating new error codes.
+- **Adding tests:** 1. Create or reuse `Fixture` class in `fixture/` package.
+    2. Use `@Nested` per method, GWT comment blocks, `@DisplayName` for each case.
+    3. Test both success paths and exception paths (verify `CommonException` with correct `ErrorCode`).
 
 ## Implementation Details
 
