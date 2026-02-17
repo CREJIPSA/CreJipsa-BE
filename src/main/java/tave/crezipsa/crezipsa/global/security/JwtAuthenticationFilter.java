@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
+import tave.crezipsa.crezipsa.global.exception.model.JwtAuthenticationException;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -25,6 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Override
     public void doFilterInternal(HttpServletRequest request,
@@ -36,6 +38,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (token != null) {
             jwtTokenProvider.validateToken(token);
+
+            if (tokenBlacklistService.isBlacklisted(token)) {
+                throw new JwtAuthenticationException(ErrorCode.TOKEN_BLACKLISTED);
+            }
+
             Long userId = jwtTokenProvider.getUserIdFromToken(token);
 
             // DB에서 User 엔티티 조회
