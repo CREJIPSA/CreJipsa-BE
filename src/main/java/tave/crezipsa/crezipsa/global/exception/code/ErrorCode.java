@@ -20,6 +20,7 @@ public enum ErrorCode implements BaseErrorCode {
 	INVALID_TOKEN(401, "A40102", "토큰이 유효하지 않습니다."),
 	INVALID_REFRESH_TOKEN(401, "A40103", "일치하지 않는 AccessToken입니다."),
 	TOKEN_EXPIRED(401,"A40104","토큰 유효시간이 만료되었습니다."),
+	TOKEN_BLACKLISTED(401, "A40107", "로그아웃된 토큰입니다."),
 	KAKAO_USERINFO_FAILED(400, "A40105", "카카오 사용자 정보를 가져오지 못했습니다."),
 	KAKAO_HEADER_NOT_FOUND(400, "A40106", "카카오 토큰 헤더가 누락되었습니다."),
 
