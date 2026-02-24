@@ -32,7 +32,9 @@ public class AuthUsecaseImpl implements AuthUsecase {
         Auth auth = authRepository.findByUserIdAndRefreshToken(refreshTokenRequest.userId(), refreshTokenRequest.refreshToken()).
                 orElseThrow(() -> new CommonException(ErrorCode.INVALID_REFRESH_TOKEN));
 
-        auth.updateAccessToken(tokenProvider.generateAccessToken(refreshTokenRequest.userId()));
+        String newAccessToken = tokenProvider.generateAccessToken(refreshTokenRequest.userId());
+        String newRefreshToken = tokenProvider.generateRefreshToken(refreshTokenRequest.userId());
+        auth.updateTokens(newAccessToken, newRefreshToken);
 
         return TokenResponse.from(auth);
     }
