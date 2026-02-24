@@ -63,6 +63,20 @@ public class JwtTokenProvider {
         }
     }
 
+    //토큰 남은 만료 시간(ms) 추출 — 이미 만료된 토큰은 0 반환
+    public long getRemainingExpiration(String token) {
+        try {
+            Date expiration = Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getExpiration();
+            return Math.max(0, expiration.getTime() - System.currentTimeMillis());
+        } catch (ExpiredJwtException e) {
+            return 0;
+        }
+    }
+
     //토큰에서 user 추출
     public Long getUserIdFromToken(String token) {
         return Long.valueOf(Jwts.parser()

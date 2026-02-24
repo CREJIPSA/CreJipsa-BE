@@ -47,7 +47,7 @@ public class KakaoLoginUsecase {
                         .build()
                 );
 
-        auth.updateTokens(kakaoToken, refreshToken);
+        auth.updateTokens(jwt, refreshToken);
         authRepository.save(auth);
 
         return LoginResponse.success(jwt, refreshToken, kakaoUserInfo);
@@ -80,7 +80,7 @@ public class KakaoLoginUsecase {
                         .build()
                 );
 
-        auth.updateTokens(kakaoToken, refreshToken);
+        auth.updateTokens(jwt, refreshToken);
         authRepository.save(auth);
 
         return LoginResponse.success(jwt, refreshToken, kakaoUserInfo);

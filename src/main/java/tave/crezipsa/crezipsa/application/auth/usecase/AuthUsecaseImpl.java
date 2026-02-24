@@ -12,6 +12,7 @@ import tave.crezipsa.crezipsa.global.common.dto.GlobalResponseDto;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 import tave.crezipsa.crezipsa.global.security.JwtTokenProvider;
+import tave.crezipsa.crezipsa.global.security.TokenBlacklistService;
 
 @Slf4j
 @Service
@@ -21,6 +22,7 @@ public class AuthUsecaseImpl implements AuthUsecase {
 
     private final AuthRepository authRepository;
     private final JwtTokenProvider tokenProvider;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Override
     public TokenResponse reissueAccessToken(RefreshTokenRequest refreshTokenRequest) {
@@ -37,6 +39,11 @@ public class AuthUsecaseImpl implements AuthUsecase {
 
     @Override
     public void deleteToken(Long userId) {
+        authRepository.findByUserId(userId).ifPresent(auth -> {
+            String accessToken = auth.getAccessToken();
+            long remainingMs = tokenProvider.getRemainingExpiration(accessToken);
+            tokenBlacklistService.blacklist(accessToken, remainingMs);
+        });
         authRepository.deleteByUserId(userId);
     }
 

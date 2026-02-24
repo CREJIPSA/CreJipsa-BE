@@ -50,6 +50,10 @@ out/
 ### VS Code ###
 .vscode/
 
+# mysql local volume
+docker/mysql/data/
+docker/mysql/data/**
+
 # OpenCode / oh-my-opencode
 .opencode/
 !.opencode/oh-my-opencode.json
