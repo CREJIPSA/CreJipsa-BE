@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  # APP
+  crezipsa-app:
+    image: suckjungod1015/server:latest
+    container_name: crezipsa-dev
+    restart: unless-stopped
+    env_file:
+      - .env.dev
+    ports:
+      - "8081:8080"  # 호스트 8081 → 컨테이너 8080
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    depends_on:
+      - redis
+      - mysql
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: crezipsa-redis-dev
+    ports:
+      - '6380:6379'
+
+  # MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: crezipsa-mysql
+    ports:
+      - '3308:3306'
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}

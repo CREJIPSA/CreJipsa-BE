@@ -34,6 +34,9 @@ out/
 ### GitHub Actions 폴더는 예외 ###
 !/.github/workflows/
 
+### Docker Compose 파일은 예외 ###
+!docker/docker-compose*.yml
+
 ### macOS 자동 생성 파일 ###
 .DS_Store
 

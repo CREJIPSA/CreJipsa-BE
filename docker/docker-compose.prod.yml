@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  # APP
+  crezipsa-app:
+    image: suckjungod1015/server:latest
+    container_name: crezipsa-prod
+    restart: unless-stopped
+    env_file:
+      - .env.prod #추후 설정 필요
+    ports:
+      - "8083:8080"  # 호스트 8083 → 컨테이너 8080
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - backend-bridge
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: crezipsa-redis-prod
+    ports:
+      - '6381:6379'
+    networks:
+      - backend-bridge
+
+  # MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: crezipsa-mysql
+    ports:
+      - '3309:3306'
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    networks:
+      - backend-bridge
+
+networks:
+  backend-bridge:
+    driver: bridge
