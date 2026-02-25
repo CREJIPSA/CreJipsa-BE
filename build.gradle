@@ -46,6 +46,7 @@ dependencies {
 
     //redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
 
     //XML <-> 자바 객체 변환
     implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
