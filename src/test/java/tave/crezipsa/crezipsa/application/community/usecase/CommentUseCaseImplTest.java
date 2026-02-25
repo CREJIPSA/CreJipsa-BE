@@ -7,10 +7,10 @@ import static tave.crezipsa.crezipsa.fixture.CommentFixture.*;
 import static tave.crezipsa.crezipsa.fixture.CommunityFixture.*;
 import static tave.crezipsa.crezipsa.fixture.UserFixture.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,17 +18,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
+import tave.crezipsa.crezipsa.application.community.cache.CommunityCacheService;
+import tave.crezipsa.crezipsa.application.community.dto.cache.CommentCacheDto;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommentCreateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommentUpdateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommentResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.MyCommentResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.WriterResponse;
 import tave.crezipsa.crezipsa.application.community.mapper.CommentMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-
 import tave.crezipsa.crezipsa.domain.community.domain.Comment;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
 import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
@@ -50,6 +51,8 @@ class CommentUseCaseImplTest {
 	private UserRepository userRepository;
 	@Mock
 	private CommentMapper commentMapper;
+	@Mock
+	private CommunityCacheService communityCacheService;
 
 	@InjectMocks
 	private CommentUseCaseImpl sut;
@@ -83,6 +86,7 @@ class CommentUseCaseImplTest {
 			assertThat(result.commentId()).isEqualTo(100L);
 			assertThat(result.parentId()).isNull();
 			verify(commentRepository).save(any(Comment.class));
+			verify(communityCacheService).evictCommentsAndDetail(communityId);
 		}
 
 		@Test
@@ -205,6 +209,7 @@ class CommentUseCaseImplTest {
 			assertThat(rootComment.isDeleted()).isTrue();
 			assertThat(rootComment.getContent()).isEqualTo("삭제된 메시지입니다");
 			verify(commentRepository, never()).delete(any());
+			verify(communityCacheService).evictCommentsAndDetail(1L);
 		}
 
 		@Test
@@ -220,6 +225,7 @@ class CommentUseCaseImplTest {
 			// then
 			assertThat(childComment.isDeleted()).isFalse();
 			verify(commentRepository).delete(childComment);
+			verify(communityCacheService).evictCommentsAndDetail(1L);
 		}
 
 		@Test
@@ -298,6 +304,7 @@ class CommentUseCaseImplTest {
 
 			// then
 			assertThat(result.content()).isEqualTo("updated");
+			verify(communityCacheService).evictCommentsAndDetail(1L);
 		}
 	}
 
@@ -319,38 +326,32 @@ class CommentUseCaseImplTest {
 		}
 
 		@Test
-		@DisplayName("루트 댓글과 자식 댓글을 트리 구조로 조합")
+		@DisplayName("루트 댓글과 자식 댓글을 트리 구조로 반환")
 		void buildsNestedTree() {
 			// given
 			Long communityId = 1L;
 			Long viewerId = 50L;
 			Community community = createCommunity(communityId);
 
-			Comment root1 = createComment(1L, communityId, 10L, null);
-			Comment child1 = createComment(2L, communityId, 20L, 1L);
-			Comment root2 = createComment(3L, communityId, 30L, null);
-
 			User user10 = createUser(10L);
 			User user20 = createUser(20L);
 			User user30 = createUser(30L);
 
-			when(communityRepository.findById(communityId)).thenReturn(Optional.of(community));
-			when(commentRepository.findByCommunityId(communityId)).thenReturn(List.of(root1, child1, root2));
-			when(userRepository.findAllById(any())).thenReturn(List.of(user10, user20, user30));
+			CommentCacheDto child1 = new CommentCacheDto(
+				2L, communityId, 1L, 20L, WriterResponse.from(user20),
+				false, "child comment", LocalDateTime.now(), List.of()
+			);
+			CommentCacheDto root1 = new CommentCacheDto(
+				1L, communityId, null, 10L, WriterResponse.from(user10),
+				false, "root comment 1", LocalDateTime.now(), List.of(child1)
+			);
+			CommentCacheDto root2 = new CommentCacheDto(
+				3L, communityId, null, 30L, WriterResponse.from(user30),
+				false, "root comment 2", LocalDateTime.now(), List.of()
+			);
 
-			when(commentMapper.toCommentResponse(any(), any(), anyBoolean(), anyString(), anyList()))
-				.thenAnswer(invocation -> {
-					Comment c = invocation.getArgument(0);
-					User w = invocation.getArgument(1);
-					boolean isW = invocation.getArgument(2);
-					String rt = invocation.getArgument(3);
-					List<CommentResponse> replies = invocation.getArgument(4);
-					return new CommentResponse(
-						c.getCommentId(), c.getCommunityId(), c.getParentId(),
-						WriterResponse.from(w), isW, c.isDeleted(), c.getContent(),
-						c.getCreatedAt(), rt, replies
-					);
-				});
+			when(communityRepository.findById(communityId)).thenReturn(Optional.of(community));
+			when(communityCacheService.getCommentsCache(communityId)).thenReturn(List.of(root1, root2));
 
 			// when
 			List<CommentResponse> result = sut.getComments(communityId, viewerId);
@@ -369,40 +370,20 @@ class CommentUseCaseImplTest {
 		}
 
 		@Test
-		@DisplayName("빈 댓글 목록이면 빈 리스트 반환하고 User 조회 안 함")
-		void emptyComments_returnsEmptyAndSkipsUserLookup() {
+		@DisplayName("빈 댓글 목록이면 빈 리스트 반환")
+		void emptyComments_returnsEmpty() {
 			// given
 			Long communityId = 1L;
 			Community community = createCommunity(communityId);
 
 			when(communityRepository.findById(communityId)).thenReturn(Optional.of(community));
-			when(commentRepository.findByCommunityId(communityId)).thenReturn(List.of());
+			when(communityCacheService.getCommentsCache(communityId)).thenReturn(List.of());
 
 			// when
 			List<CommentResponse> result = sut.getComments(communityId, 1L);
 
 			// then
 			assertThat(result).isEmpty();
-			verify(userRepository, never()).findAllById(any());
-		}
-
-		@Test
-		@DisplayName("댓글 작성자의 writerMap에 없는 userId가 있으면 USER_NOT_FOUND 예외")
-		void writerNotInMap_throwsUserNotFound() {
-			// given
-			Long communityId = 1L;
-			Community community = createCommunity(communityId);
-			Comment comment = createComment(1L, communityId, 999L, null);
-
-			when(communityRepository.findById(communityId)).thenReturn(Optional.of(community));
-			when(commentRepository.findByCommunityId(communityId)).thenReturn(List.of(comment));
-			when(userRepository.findAllById(any())).thenReturn(List.of());
-
-			// when & then
-			assertThatThrownBy(() -> sut.getComments(communityId, 1L))
-				.isInstanceOf(CommonException.class)
-				.extracting("errorCode")
-				.isEqualTo(ErrorCode.USER_NOT_FOUND);
 		}
 	}
 

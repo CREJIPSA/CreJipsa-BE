@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 
+import tave.crezipsa.crezipsa.application.community.cache.CommunityCacheService;
 import tave.crezipsa.crezipsa.application.community.dto.response.MyLikedCommunityResponse;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
 import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
@@ -41,6 +42,8 @@ class LikeUseCaseImplTest {
 	private CommunityRepository communityRepository;
 	@Mock
 	private CommentRepository commentRepository;
+	@Mock
+	private CommunityCacheService communityCacheService;
 
 	@InjectMocks
 	private LikeUseCaseImpl sut;
@@ -89,6 +92,7 @@ class LikeUseCaseImplTest {
 			assertThat(existingLike.isLiked()).isFalse();
 			assertThat(community.getLikeCount()).isZero();
 			verify(likeRepository, never()).save(any());
+			verify(communityCacheService).evictCommunityAll(communityId);
 		}
 
 		@Test
@@ -111,6 +115,7 @@ class LikeUseCaseImplTest {
 			// then
 			assertThat(existingLike.isLiked()).isTrue();
 			assertThat(community.getLikeCount()).isEqualTo(1L);
+			verify(communityCacheService).evictCommunityAll(communityId);
 		}
 
 		@Test
@@ -203,6 +208,7 @@ class LikeUseCaseImplTest {
 			// then
 			assertThat(existingLike.isLiked()).isFalse();
 			assertThat(community.getLikeCount()).isZero();
+			verify(communityCacheService).evictCommunityAll(communityId);
 		}
 	}
 

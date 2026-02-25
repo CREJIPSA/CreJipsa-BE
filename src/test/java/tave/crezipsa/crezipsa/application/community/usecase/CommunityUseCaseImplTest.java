@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import static tave.crezipsa.crezipsa.fixture.CommunityFixture.*;
 import static tave.crezipsa.crezipsa.fixture.UserFixture.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,12 +23,16 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import tave.crezipsa.crezipsa.application.community.cache.CommunityCacheService;
+import tave.crezipsa.crezipsa.application.community.dto.cache.CommunityDetailCacheDto;
+import tave.crezipsa.crezipsa.application.community.dto.cache.CommunitySummaryCacheDto;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommunityCreateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommunityUpdateRequest;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunityDetailResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunityResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunitySummaryResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.MyCommunityResponse;
+import tave.crezipsa.crezipsa.application.community.dto.response.WriterResponse;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
 import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 import tave.crezipsa.crezipsa.domain.community.domain.Like;
@@ -36,7 +41,6 @@ import tave.crezipsa.crezipsa.domain.community.repository.CommentRepository;
 import tave.crezipsa.crezipsa.domain.community.repository.CommunityRepository;
 import tave.crezipsa.crezipsa.domain.community.repository.LikeRepository;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
-import tave.crezipsa.crezipsa.domain.user.repository.UserRepository;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 
@@ -50,9 +54,7 @@ class CommunityUseCaseImplTest {
 	@Mock
 	private CommentRepository commentRepository;
 	@Mock
-	private UserRepository userRepository;
-	@Mock
-	private CommentUsecase commentUsecase;
+	private CommunityCacheService communityCacheService;
 
 	@InjectMocks
 	private CommunityUseCaseImpl sut;
@@ -85,6 +87,7 @@ class CommunityUseCaseImplTest {
 			assertThat(result.title()).isEqualTo("제목");
 			assertThat(result.field()).isEqualTo(CommunityField.RECOMMEND);
 			verify(communityRepository).save(any(Community.class));
+			verify(communityCacheService).evictCommunityLists();
 		}
 	}
 
@@ -135,6 +138,7 @@ class CommunityUseCaseImplTest {
 			// then
 			assertThat(result.title()).isEqualTo("updated title");
 			assertThat(result.content()).isEqualTo("테스트 내용입니다. 충분히 긴 내용으로 preview 테스트도 가능합니다.");
+			verify(communityCacheService).evictCommunityAll(1L);
 		}
 	}
 
@@ -181,6 +185,7 @@ class CommunityUseCaseImplTest {
 
 			// then
 			verify(communityRepository).delete(community);
+			verify(communityCacheService).evictCommunityAndComments(1L);
 		}
 	}
 
@@ -196,14 +201,15 @@ class CommunityUseCaseImplTest {
 			Long writerId = 10L;
 			Long viewerId = 20L;
 
-			Community community = createCommunity(communityId, writerId);
 			User writer = createUser(writerId);
+			WriterResponse writerResponse = WriterResponse.from(writer);
+			CommunityDetailCacheDto cached = new CommunityDetailCacheDto(
+				communityId, writerId, "테스트 제목", "테스트 내용", CommunityField.RECOMMEND,
+				List.of("img1.jpg"), writerResponse, 0L, 5L, LocalDateTime.now(), List.of()
+			);
 			Like like = Like.of(viewerId, communityId);
 
-			when(communityRepository.findById(communityId)).thenReturn(Optional.of(community));
-			when(userRepository.findById(writerId)).thenReturn(Optional.of(writer));
-			when(commentRepository.countByCommunityId(communityId)).thenReturn(5L);
-			when(commentUsecase.getComments(communityId, viewerId)).thenReturn(List.of());
+			when(communityCacheService.getCommunityDetailCache(communityId)).thenReturn(cached);
 			when(likeRepository.findById(new LikeId(viewerId, communityId))).thenReturn(Optional.of(like));
 
 			// when
@@ -221,7 +227,8 @@ class CommunityUseCaseImplTest {
 		@DisplayName("존재하지 않는 게시글이면 COMMUNITY_NOT_FOUND 예외")
 		void communityNotFound_throws() {
 			// given
-			when(communityRepository.findById(999L)).thenReturn(Optional.empty());
+			when(communityCacheService.getCommunityDetailCache(999L))
+				.thenThrow(new CommonException(ErrorCode.COMMUNITY_NOT_FOUND));
 
 			// when & then
 			assertThatThrownBy(() -> sut.getCommunity(999L, 1L))
@@ -235,10 +242,8 @@ class CommunityUseCaseImplTest {
 		void writerNotFound_throws() {
 			// given
 			Long communityId = 1L;
-			Community community = createCommunity(communityId, 999L);
-
-			when(communityRepository.findById(communityId)).thenReturn(Optional.of(community));
-			when(userRepository.findById(999L)).thenReturn(Optional.empty());
+			when(communityCacheService.getCommunityDetailCache(communityId))
+				.thenThrow(new CommonException(ErrorCode.USER_NOT_FOUND));
 
 			// when & then
 			assertThatThrownBy(() -> sut.getCommunity(communityId, 1L))
@@ -254,13 +259,14 @@ class CommunityUseCaseImplTest {
 			Long communityId = 1L;
 			Long writerId = 10L;
 
-			Community community = createCommunity(communityId, writerId);
 			User writer = createUser(writerId);
+			WriterResponse writerResponse = WriterResponse.from(writer);
+			CommunityDetailCacheDto cached = new CommunityDetailCacheDto(
+				communityId, writerId, "테스트 제목", "테스트 내용", CommunityField.RECOMMEND,
+				List.of(), writerResponse, 0L, 0L, LocalDateTime.now(), List.of()
+			);
 
-			when(communityRepository.findById(communityId)).thenReturn(Optional.of(community));
-			when(userRepository.findById(writerId)).thenReturn(Optional.of(writer));
-			when(commentRepository.countByCommunityId(communityId)).thenReturn(0L);
-			when(commentUsecase.getComments(communityId, writerId)).thenReturn(List.of());
+			when(communityCacheService.getCommunityDetailCache(communityId)).thenReturn(cached);
 			when(likeRepository.findById(any(LikeId.class))).thenReturn(Optional.empty());
 
 			// when
@@ -322,12 +328,14 @@ class CommunityUseCaseImplTest {
 	class GetCommunitiesByField {
 
 		@Test
-		@DisplayName("필드별 커뮤니티 조회 시 댓글 수 포함하여 반환")
+		@DisplayName("필드별 커뮤니티 조회 시 캐시 서비스에 위임하여 반환")
 		void returnsByFieldWithCommentCounts() {
 			// given
-			Community c1 = createCommunity(1L, 10L);
-			when(communityRepository.findByField(CommunityField.RECOMMEND)).thenReturn(List.of(c1));
-			when(commentRepository.countByCommunityIds(List.of(1L))).thenReturn(Map.of(1L, 2L));
+			CommunitySummaryCacheDto dto = new CommunitySummaryCacheDto(
+				1L, CommunityField.RECOMMEND, "테스트 제목", "테스트 내용...", 0L, 2L, LocalDateTime.now(), null
+			);
+			when(communityCacheService.getCommunitiesByFieldCache(CommunityField.RECOMMEND))
+				.thenReturn(List.of(dto));
 
 			// when
 			List<CommunitySummaryResponse> result = sut.getCommunitiesByField(CommunityField.RECOMMEND);
@@ -419,15 +427,16 @@ class CommunityUseCaseImplTest {
 	class GetAllCommunities {
 
 		@Test
-		@DisplayName("댓글 수를 배치로 로드하여 N+1 방지")
-		void batchLoadsCommentCounts() {
+		@DisplayName("캐시 서비스에 위임하고 댓글 수 포함하여 반환")
+		void delegatesToCacheService() {
 			// given
-			Community c1 = createCommunity(1L, 10L);
-			Community c2 = createCommunity(2L, 10L);
-
-			when(communityRepository.findAll()).thenReturn(List.of(c1, c2));
-			when(commentRepository.countByCommunityIds(List.of(1L, 2L)))
-				.thenReturn(Map.of(1L, 3L, 2L, 7L));
+			CommunitySummaryCacheDto dto1 = new CommunitySummaryCacheDto(
+				1L, CommunityField.RECOMMEND, "제목1", "내용1...", 0L, 3L, LocalDateTime.now(), null
+			);
+			CommunitySummaryCacheDto dto2 = new CommunitySummaryCacheDto(
+				2L, CommunityField.TIP, "제목2", "내용2...", 0L, 7L, LocalDateTime.now(), null
+			);
+			when(communityCacheService.getAllCommunitiesCache()).thenReturn(List.of(dto1, dto2));
 
 			// when
 			List<CommunitySummaryResponse> result = sut.getAllCommunities();
@@ -436,21 +445,20 @@ class CommunityUseCaseImplTest {
 			assertThat(result).hasSize(2);
 			assertThat(result.get(0).commentCount()).isEqualTo(3L);
 			assertThat(result.get(1).commentCount()).isEqualTo(7L);
-			verify(commentRepository, times(1)).countByCommunityIds(anyList());
+			verify(communityCacheService).getAllCommunitiesCache();
 		}
 
 		@Test
-		@DisplayName("빈 목록이면 배치 호출하지 않음")
-		void emptyList_noBatchCall() {
+		@DisplayName("빈 목록이면 빈 리스트 반환")
+		void emptyList_returnsEmpty() {
 			// given
-			when(communityRepository.findAll()).thenReturn(List.of());
+			when(communityCacheService.getAllCommunitiesCache()).thenReturn(List.of());
 
 			// when
 			List<CommunitySummaryResponse> result = sut.getAllCommunities();
 
 			// then
 			assertThat(result).isEmpty();
-			verify(commentRepository, never()).countByCommunityIds(anyList());
 		}
 	}
 }
