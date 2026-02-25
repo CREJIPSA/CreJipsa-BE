@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import tave.crezipsa.crezipsa.application.community.cache.CommunityCacheService;
 import tave.crezipsa.crezipsa.application.community.dto.response.MyLikedCommunityResponse;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
 import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
@@ -28,6 +29,7 @@ public class LikeUseCaseImpl  implements LikeUseCase {
 	private final LikeRepository likeRepository;
 	private final CommunityRepository communityRepository;
 	private final CommentRepository commentRepository;
+	private final CommunityCacheService communityCacheService;
 
 	@Override
 	public void like(Long userId, Long communityId) {
@@ -51,6 +53,7 @@ public class LikeUseCaseImpl  implements LikeUseCase {
 			like.like();
 			community.increaseLikeCount();
 		}
+		communityCacheService.evictCommunityAll(communityId);
 	}
 
 	@Override
@@ -68,7 +71,7 @@ public class LikeUseCaseImpl  implements LikeUseCase {
 		}
 		like.unlike();
 		community.decreaseLikeCount();
-
+		communityCacheService.evictCommunityAll(communityId);
 	}
 
 	@Override
