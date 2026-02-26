@@ -16,6 +16,7 @@ import tave.crezipsa.crezipsa.domain.community.domain.LikeId;
 import tave.crezipsa.crezipsa.domain.community.repository.CommentRepository;
 import tave.crezipsa.crezipsa.domain.community.repository.CommunityRepository;
 import tave.crezipsa.crezipsa.domain.community.repository.LikeRepository;
+import tave.crezipsa.crezipsa.global.common.TransactionUtils;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 
@@ -51,7 +52,7 @@ public class LikeUseCaseImpl  implements LikeUseCase {
 			like.like();
 			community.increaseLikeCount();
 		}
-		communityCacheService.evictCommunityAll(communityId);
+		TransactionUtils.afterCommit(() -> communityCacheService.evictCommunityAll(communityId));
 	}
 
 	@Override
@@ -69,7 +70,7 @@ public class LikeUseCaseImpl  implements LikeUseCase {
 		}
 		like.unlike();
 		community.decreaseLikeCount();
-		communityCacheService.evictCommunityAll(communityId);
+		TransactionUtils.afterCommit(() -> communityCacheService.evictCommunityAll(communityId));
 	}
 
 	@Override

@@ -26,6 +26,7 @@ import tave.crezipsa.crezipsa.domain.community.domain.Like;
 import tave.crezipsa.crezipsa.domain.community.repository.CommentRepository;
 import tave.crezipsa.crezipsa.domain.community.repository.CommunityRepository;
 import tave.crezipsa.crezipsa.domain.community.repository.LikeRepository;
+import tave.crezipsa.crezipsa.global.common.TransactionUtils;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 
@@ -54,7 +55,7 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 		);
 
 		CommunityResponse response = CommunityResponse.of(communityRepository.save(community));
-		communityCacheService.evictCommunityLists();
+		TransactionUtils.afterCommit(communityCacheService::evictCommunityLists);
 		return response;
 	}
 
@@ -67,7 +68,7 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 			throw new CommonException(ErrorCode.UNAUTHORIZED_COMMUNITY);
 		}
 		community.update(communityUpdateRequest.getTitle(), communityUpdateRequest.getContent(), communityUpdateRequest.getImageUrls());
-		communityCacheService.evictCommunityAll(communityId);
+		TransactionUtils.afterCommit(() -> communityCacheService.evictCommunityAll(communityId));
 		return CommunityResponse.of(community);
 	}
 
@@ -105,7 +106,7 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 			throw new CommonException(ErrorCode.UNAUTHORIZED_COMMUNITY);
 		}
 		communityRepository.delete(community);
-		communityCacheService.evictCommunityAndComments(communityId);
+		TransactionUtils.afterCommit(() -> communityCacheService.evictCommunityAndComments(communityId));
 	}
 
 	@Override

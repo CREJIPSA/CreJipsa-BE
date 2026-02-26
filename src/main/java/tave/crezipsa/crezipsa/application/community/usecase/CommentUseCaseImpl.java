@@ -23,6 +23,7 @@ import tave.crezipsa.crezipsa.domain.community.repository.CommunityRepository;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
 import tave.crezipsa.crezipsa.domain.user.repository.UserRepository;
 import tave.crezipsa.crezipsa.global.common.TimeUtils;
+import tave.crezipsa.crezipsa.global.common.TransactionUtils;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 
@@ -52,7 +53,7 @@ public class CommentUseCaseImpl implements CommentUsecase {
 		User writer = findUserOrThrow(userId);
 		String relativeTime = TimeUtils.convertToRelativeTime(saved.getCreatedAt());
 
-		communityCacheService.evictCommentsAndDetail(communityId);
+		TransactionUtils.afterCommit(() -> communityCacheService.evictCommentsAndDetail(communityId));
 		return commentMapper.toCommentResponse(saved, writer, true, relativeTime, List.of());
 	}
 
@@ -88,7 +89,7 @@ public class CommentUseCaseImpl implements CommentUsecase {
 			commentRepository.delete(comment);
 		}
 
-		communityCacheService.evictCommentsAndDetail(communityId);
+		TransactionUtils.afterCommit(() -> communityCacheService.evictCommentsAndDetail(communityId));
 	}
 
 	@Override
