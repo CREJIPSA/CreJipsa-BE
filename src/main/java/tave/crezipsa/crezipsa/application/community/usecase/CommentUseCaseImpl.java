@@ -1,7 +1,5 @@
 package tave.crezipsa.crezipsa.application.community.usecase;
 
-import static tave.crezipsa.crezipsa.application.community.usecase.LikeUseCaseImpl.*;
-
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -24,6 +22,7 @@ import tave.crezipsa.crezipsa.domain.community.repository.CommentRepository;
 import tave.crezipsa.crezipsa.domain.community.repository.CommunityRepository;
 import tave.crezipsa.crezipsa.domain.user.entity.User;
 import tave.crezipsa.crezipsa.domain.user.repository.UserRepository;
+import tave.crezipsa.crezipsa.global.common.TimeUtils;
 import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
 import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 
@@ -51,7 +50,7 @@ public class CommentUseCaseImpl implements CommentUsecase {
 
 		Comment saved = commentRepository.save(Comment.create(communityId, userId, request.content(), parentId));
 		User writer = findUserOrThrow(userId);
-		String relativeTime = convertToRelativeTime(saved.getCreatedAt());
+		String relativeTime = TimeUtils.convertToRelativeTime(saved.getCreatedAt());
 
 		communityCacheService.evictCommentsAndDetail(communityId);
 		return commentMapper.toCommentResponse(saved, writer, true, relativeTime, List.of());
@@ -67,7 +66,7 @@ public class CommentUseCaseImpl implements CommentUsecase {
 
 		comment.update(request.content());
 		User writer = findUserOrThrow(userId);
-		String relativeTime = convertToRelativeTime(comment.getCreatedAt());
+		String relativeTime = TimeUtils.convertToRelativeTime(comment.getCreatedAt());
 
 		communityCacheService.evictCommentsAndDetail(comment.getCommunityId());
 		return commentMapper.toCommentResponse(comment, writer, true, relativeTime, List.of());

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import tave.crezipsa.crezipsa.application.community.dto.response.CommentResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.WriterResponse;
-import tave.crezipsa.crezipsa.application.community.usecase.LikeUseCaseImpl;
+import tave.crezipsa.crezipsa.global.common.TimeUtils;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY)
 public record CommentCacheDto(
@@ -36,7 +36,7 @@ public record CommentCacheDto(
 			deleted,
 			content,
 			createdAt,
-			LikeUseCaseImpl.convertToRelativeTime(createdAt),
+			TimeUtils.convertToRelativeTime(createdAt),
 			replyResponses
 		);
 	}

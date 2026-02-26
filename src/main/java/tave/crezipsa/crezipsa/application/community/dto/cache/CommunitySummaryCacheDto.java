@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunitySummaryResponse;
-import tave.crezipsa.crezipsa.application.community.usecase.LikeUseCaseImpl;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
+import tave.crezipsa.crezipsa.global.common.TimeUtils;
 import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY)
@@ -29,7 +29,7 @@ public record CommunitySummaryCacheDto(
 			community.getCommunityId(),
 			community.getField(),
 			community.getTitle(),
-			LikeUseCaseImpl.preview(community.getContent()),
+			TimeUtils.preview(community.getContent()),
 			likeCount,
 			commentCount,
 			community.getCreatedAt(),
@@ -45,7 +45,7 @@ public record CommunitySummaryCacheDto(
 			contentPreview,
 			likeCount,
 			commentCount,
-			LikeUseCaseImpl.convertToRelativeTime(createdAt),
+			TimeUtils.convertToRelativeTime(createdAt),
 			thumbnailUrl
 		);
 	}
