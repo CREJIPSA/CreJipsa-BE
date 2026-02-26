@@ -2,11 +2,14 @@ package tave.crezipsa.crezipsa.application.community.dto.cache;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunitySummaryResponse;
 import tave.crezipsa.crezipsa.application.community.usecase.LikeUseCaseImpl;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
 import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY)
 public record CommunitySummaryCacheDto(
 	Long communityId,
 	CommunityField field,

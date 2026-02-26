@@ -3,10 +3,13 @@ package tave.crezipsa.crezipsa.application.community.dto.cache;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import tave.crezipsa.crezipsa.application.community.dto.response.CommentResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.WriterResponse;
 import tave.crezipsa.crezipsa.application.community.usecase.LikeUseCaseImpl;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY)
 public record CommentCacheDto(
 	Long commentId,
 	Long communityId,

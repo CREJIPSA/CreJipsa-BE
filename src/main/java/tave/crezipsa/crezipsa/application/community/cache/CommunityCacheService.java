@@ -1,5 +1,6 @@
 package tave.crezipsa.crezipsa.application.community.cache;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -48,7 +49,7 @@ public class CommunityCacheService {
 				c.getLikeCount(),
 				commentCounts.getOrDefault(c.getCommunityId(), 0L)
 			))
-			.toList();
+			.collect(Collectors.toList());
 	}
 
 	@Cacheable(value = "community-list-by-field", key = "#field.name()")
@@ -63,7 +64,7 @@ public class CommunityCacheService {
 				c.getLikeCount(),
 				commentCounts.getOrDefault(c.getCommunityId(), 0L)
 			))
-			.toList();
+			.collect(Collectors.toList());
 	}
 
 	@Cacheable(value = "community-detail", key = "#communityId")
@@ -121,7 +122,7 @@ public class CommunityCacheService {
 	private List<CommentCacheDto> buildCommentCacheDtos(Long communityId) {
 		List<Comment> allComments = commentRepository.findByCommunityId(communityId);
 		if (allComments.isEmpty()) {
-			return List.of();
+			return new ArrayList<>();
 		}
 
 		Set<Long> writerIds = allComments.stream()
@@ -139,7 +140,7 @@ public class CommunityCacheService {
 			.filter(c -> c.getParentId() == null)
 			.sorted(Comparator.comparing(Comment::getCreatedAt))
 			.map(root -> toCommentCacheTree(root, childrenByParentId, writerMap))
-			.toList();
+			.collect(Collectors.toList());
 	}
 
 	private CommentCacheDto toCommentCacheTree(
@@ -153,11 +154,11 @@ public class CommunityCacheService {
 		}
 
 		List<CommentCacheDto> replies = childrenByParentId
-			.getOrDefault(comment.getCommentId(), List.of())
+			.getOrDefault(comment.getCommentId(), Collections.emptyList())
 			.stream()
 			.sorted(Comparator.comparing(Comment::getCreatedAt))
 			.map(child -> toCommentCacheTree(child, childrenByParentId, writerMap))
-			.toList();
+			.collect(Collectors.toList());
 
 		return new CommentCacheDto(
 			comment.getCommentId(),
@@ -178,7 +179,7 @@ public class CommunityCacheService {
 		}
 		List<Long> communityIds = communities.stream()
 			.map(Community::getCommunityId)
-			.toList();
+			.collect(Collectors.toList());
 		return commentRepository.countByCommunityIds(communityIds);
 	}
 }
