@@ -1,4 +1,4 @@
-name: CI/CD Dev
+계획name: CI/CD Dev
 
 on:
   push:
