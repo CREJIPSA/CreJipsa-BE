@@ -1,8 +1,7 @@
 package tave.crezipsa.crezipsa.application.community.dto.response;
 
-import static tave.crezipsa.crezipsa.application.community.usecase.LikeUseCaseImpl.*;
-
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
+import tave.crezipsa.crezipsa.global.common.TimeUtils;
 import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 
 public record MyCommentResponse(
@@ -18,8 +17,8 @@ public record MyCommentResponse(
 			community.getCommunityId(),
 			community.getField(),
 			community.getTitle(),
-			preview(community.getContent()),
-			convertToRelativeTime(community.getCreatedAt())
+			TimeUtils.preview(community.getContent()),
+			TimeUtils.convertToRelativeTime(community.getCreatedAt())
 		);
 
 	}

@@ -1,11 +1,10 @@
 package tave.crezipsa.crezipsa.application.community.dto.response;
 
-import static tave.crezipsa.crezipsa.application.community.usecase.LikeUseCaseImpl.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
+import tave.crezipsa.crezipsa.global.common.TimeUtils;
 import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
 
 public record CommunityDetailResponse(
@@ -42,7 +41,7 @@ public record CommunityDetailResponse(
 			isLiked,
 			community.getLikeCount(),
 			commentCount,
-			convertToRelativeTime(community.getCreatedAt()),
+			TimeUtils.convertToRelativeTime(community.getCreatedAt()),
 			comments
 		);
 	}

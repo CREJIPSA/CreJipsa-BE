@@ -1,0 +1,43 @@
+package tave.crezipsa.crezipsa.application.community.dto.cache;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+import tave.crezipsa.crezipsa.application.community.dto.response.CommentResponse;
+import tave.crezipsa.crezipsa.application.community.dto.response.WriterResponse;
+import tave.crezipsa.crezipsa.global.common.TimeUtils;
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY)
+public record CommentCacheDto(
+	Long commentId,
+	Long communityId,
+	Long parentId,
+	Long userId,
+	WriterResponse writer,
+	boolean deleted,
+	String content,
+	LocalDateTime createdAt,
+	List<CommentCacheDto> replies
+) {
+	public CommentResponse toResponse(Long viewerId) {
+		boolean isWriter = viewerId != null && viewerId.equals(userId);
+		List<CommentResponse> replyResponses = replies.stream()
+			.map(r -> r.toResponse(viewerId))
+			.toList();
+
+		return new CommentResponse(
+			commentId,
+			communityId,
+			parentId,
+			writer,
+			isWriter,
+			deleted,
+			content,
+			createdAt,
+			TimeUtils.convertToRelativeTime(createdAt),
+			replyResponses
+		);
+	}
+}
