@@ -9,8 +9,8 @@ import tave.crezipsa.crezipsa.application.community.dto.response.CommentResponse
 import tave.crezipsa.crezipsa.application.community.dto.response.CommunityDetailResponse;
 import tave.crezipsa.crezipsa.application.community.dto.response.WriterResponse;
 import tave.crezipsa.crezipsa.domain.community.domain.Community;
-import tave.crezipsa.crezipsa.global.common.TimeUtils;
 import tave.crezipsa.crezipsa.domain.community.domain.CommunityField;
+import tave.crezipsa.crezipsa.global.common.TimeUtils;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY)
 public record CommunityDetailCacheDto(
@@ -23,14 +23,12 @@ public record CommunityDetailCacheDto(
 	WriterResponse writer,
 	long likeCount,
 	long commentCount,
-	LocalDateTime createdAt,
-	List<CommentCacheDto> comments
+	LocalDateTime createdAt
 ) {
 	public static CommunityDetailCacheDto from(
 		Community community,
 		WriterResponse writer,
-		long commentCount,
-		List<CommentCacheDto> comments
+		long commentCount
 	) {
 		return new CommunityDetailCacheDto(
 			community.getCommunityId(),
@@ -42,12 +40,11 @@ public record CommunityDetailCacheDto(
 			writer,
 			community.getLikeCount(),
 			commentCount,
-			community.getCreatedAt(),
-			comments
+			community.getCreatedAt()
 		);
 	}
 
-	public CommunityDetailResponse toResponse(boolean isWriter, boolean isLiked, List<CommentResponse> comments) {
+	public CommunityDetailResponse toResponse(boolean isWriter, boolean isLiked, long likeCount, List<CommentResponse> comments) {
 		return new CommunityDetailResponse(
 			communityId,
 			title,

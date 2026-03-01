@@ -80,13 +80,14 @@ public class CommunityUseCaseImpl implements CommunityUseCase {
 		boolean isLiked = likeRepository.findById(new LikeId(userId, communityId))
 			.map(Like::isLiked)
 			.orElse(false);
+		long livelikeCount = likeRepository.countByCommunityIdAndIsLikedTrue(communityId);
 		boolean isWriter = Objects.equals(cached.writerId(), userId);
 
-		List<CommentResponse> comments = cached.comments().stream()
+		List<CommentResponse> comments = communityCacheService.getCommentsCache(communityId).stream()
 			.map(dto -> dto.toResponse(userId))
 			.toList();
 
-		return cached.toResponse(isWriter, isLiked, comments);
+		return cached.toResponse(isWriter, isLiked, livelikeCount, comments);
 	}
 
 	@Override
