@@ -68,8 +68,9 @@ public class CommentUseCaseImpl implements CommentUsecase {
 		comment.update(request.content());
 		User writer = findUserOrThrow(userId);
 		String relativeTime = TimeUtils.convertToRelativeTime(comment.getCreatedAt());
+		Long communityId = comment.getCommunityId();
 
-		communityCacheService.evictCommentsAndDetail(comment.getCommunityId());
+		TransactionUtils.afterCommit(() -> communityCacheService.evictCommentsAndDetail(communityId));
 		return commentMapper.toCommentResponse(comment, writer, true, relativeTime, List.of());
 	}
 
