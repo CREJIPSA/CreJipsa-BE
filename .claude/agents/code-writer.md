@@ -2,7 +2,7 @@
 name: code-writer
 description: "Code writing expert. Writes new code following CreZipsa architecture, conventions, and best practices. Generates UseCase, Repository, Entity, DTO, Controller implementations with proper layer separation and error handling."
 tools: Read, Write, Execute
-model: Opus
+model: opus
 color: green
 memory: project
 ---
