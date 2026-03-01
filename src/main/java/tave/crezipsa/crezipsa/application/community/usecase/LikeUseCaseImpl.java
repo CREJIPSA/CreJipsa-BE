@@ -42,10 +42,7 @@ public class LikeUseCaseImpl  implements LikeUseCase {
 		if (like == null) {
 			likeRepository.save(Like.of(userId, communityId));
 			community.increaseLikeCount();
-			return;
-		}
-
-		if (like.isLiked()) {
+		} else if (like.isLiked()) {
 			like.unlike();
 			community.decreaseLikeCount();
 		} else {

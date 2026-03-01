@@ -15,7 +15,7 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @Configuration
@@ -27,7 +27,11 @@ public class CacheConfig {
 		ObjectMapper objectMapper = new ObjectMapper()
 			.registerModule(new JavaTimeModule())
 			.activateDefaultTyping(
-				LaissezFaireSubTypeValidator.instance,
+				BasicPolymorphicTypeValidator.builder()
+					.allowIfBaseType("tave.crezipsa.crezipsa.")
+					.allowIfBaseType("java.util.")
+					.allowIfBaseType("java.time.")
+					.build(),
 				ObjectMapper.DefaultTyping.NON_FINAL
 			);
 

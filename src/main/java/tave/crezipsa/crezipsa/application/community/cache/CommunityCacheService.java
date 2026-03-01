@@ -77,9 +77,8 @@ public class CommunityCacheService {
 			.orElseThrow(() -> new CommonException(ErrorCode.USER_NOT_FOUND));
 
 		long commentCount = commentRepository.countByCommunityId(communityId);
-		List<CommentCacheDto> comments = buildCommentCacheDtos(communityId);
 
-		return CommunityDetailCacheDto.from(community, WriterResponse.from(writerUser), commentCount, comments);
+		return CommunityDetailCacheDto.from(community, WriterResponse.from(writerUser), commentCount);
 	}
 
 	@Cacheable(value = "comment-list", key = "#communityId")

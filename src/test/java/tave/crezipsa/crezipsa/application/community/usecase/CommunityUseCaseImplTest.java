@@ -24,6 +24,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import tave.crezipsa.crezipsa.application.community.cache.CommunityCacheService;
+import tave.crezipsa.crezipsa.application.community.dto.cache.CommentCacheDto;
 import tave.crezipsa.crezipsa.application.community.dto.cache.CommunityDetailCacheDto;
 import tave.crezipsa.crezipsa.application.community.dto.cache.CommunitySummaryCacheDto;
 import tave.crezipsa.crezipsa.application.community.dto.request.CommunityCreateRequest;
@@ -205,12 +206,14 @@ class CommunityUseCaseImplTest {
 			WriterResponse writerResponse = WriterResponse.from(writer);
 			CommunityDetailCacheDto cached = new CommunityDetailCacheDto(
 				communityId, writerId, "테스트 제목", "테스트 내용", CommunityField.RECOMMEND,
-				List.of("img1.jpg"), writerResponse, 0L, 5L, LocalDateTime.now(), List.of()
+				List.of("img1.jpg"), writerResponse, 0L, 5L, LocalDateTime.now()
 			);
 			Like like = Like.of(viewerId, communityId);
 
 			when(communityCacheService.getCommunityDetailCache(communityId)).thenReturn(cached);
 			when(likeRepository.findById(new LikeId(viewerId, communityId))).thenReturn(Optional.of(like));
+			when(likeRepository.countByCommunityIdAndIsLikedTrue(communityId)).thenReturn(1L);
+			when(communityCacheService.getCommentsCache(communityId)).thenReturn(List.of());
 
 			// when
 			CommunityDetailResponse result = sut.getCommunity(communityId, viewerId);
@@ -263,11 +266,13 @@ class CommunityUseCaseImplTest {
 			WriterResponse writerResponse = WriterResponse.from(writer);
 			CommunityDetailCacheDto cached = new CommunityDetailCacheDto(
 				communityId, writerId, "테스트 제목", "테스트 내용", CommunityField.RECOMMEND,
-				List.of(), writerResponse, 0L, 0L, LocalDateTime.now(), List.of()
+				List.of(), writerResponse, 0L, 0L, LocalDateTime.now()
 			);
 
 			when(communityCacheService.getCommunityDetailCache(communityId)).thenReturn(cached);
 			when(likeRepository.findById(any(LikeId.class))).thenReturn(Optional.empty());
+			when(likeRepository.countByCommunityIdAndIsLikedTrue(communityId)).thenReturn(0L);
+			when(communityCacheService.getCommentsCache(communityId)).thenReturn(List.of());
 
 			// when
 			CommunityDetailResponse result = sut.getCommunity(communityId, writerId);
@@ -275,6 +280,68 @@ class CommunityUseCaseImplTest {
 			// then
 			assertThat(result.isLiked()).isFalse();
 			assertThat(result.isWriter()).isTrue();
+		}
+
+		@Test
+		@DisplayName("likeCount는 캐시 값이 아닌 likeRepository 실시간 조회 값을 사용한다")
+		void likeCount_usesLiveRepositoryValue_notCachedValue() {
+			// given
+			Long communityId = 1L;
+			Long writerId = 10L;
+			Long viewerId = 20L;
+
+			User writer = createUser(writerId);
+			WriterResponse writerResponse = WriterResponse.from(writer);
+			CommunityDetailCacheDto cached = new CommunityDetailCacheDto(
+				communityId, writerId, "테스트 제목", "테스트 내용", CommunityField.RECOMMEND,
+				List.of(), writerResponse, 0L, 0L, LocalDateTime.now()
+			);
+
+			when(communityCacheService.getCommunityDetailCache(communityId)).thenReturn(cached);
+			when(likeRepository.findById(new LikeId(viewerId, communityId))).thenReturn(Optional.empty());
+			when(likeRepository.countByCommunityIdAndIsLikedTrue(communityId)).thenReturn(3L);
+			when(communityCacheService.getCommentsCache(communityId)).thenReturn(List.of());
+
+			// when
+			CommunityDetailResponse result = sut.getCommunity(communityId, viewerId);
+
+			// then
+			assertThat(result.likeCount()).isEqualTo(3L);
+		}
+
+		@Test
+		@DisplayName("댓글 목록은 getCommentsCache를 통해 comment-list 캐시에서 별도 조회한다")
+		void comments_fetchedFromCommentsCacheSeparately() {
+			// given
+			Long communityId = 1L;
+			Long writerId = 10L;
+			Long viewerId = 20L;
+
+			User writer = createUser(writerId);
+			WriterResponse writerResponse = WriterResponse.from(writer);
+			CommunityDetailCacheDto cached = new CommunityDetailCacheDto(
+				communityId, writerId, "테스트 제목", "테스트 내용", CommunityField.RECOMMEND,
+				List.of(), writerResponse, 0L, 2L, LocalDateTime.now()
+			);
+
+			CommentCacheDto comment1 = new CommentCacheDto(
+				1L, communityId, null, writerId, writerResponse, false, "첫 번째 댓글", LocalDateTime.now(), List.of()
+			);
+			CommentCacheDto comment2 = new CommentCacheDto(
+				2L, communityId, null, writerId, writerResponse, false, "두 번째 댓글", LocalDateTime.now(), List.of()
+			);
+
+			when(communityCacheService.getCommunityDetailCache(communityId)).thenReturn(cached);
+			when(likeRepository.findById(new LikeId(viewerId, communityId))).thenReturn(Optional.empty());
+			when(likeRepository.countByCommunityIdAndIsLikedTrue(communityId)).thenReturn(0L);
+			when(communityCacheService.getCommentsCache(communityId)).thenReturn(List.of(comment1, comment2));
+
+			// when
+			CommunityDetailResponse result = sut.getCommunity(communityId, viewerId);
+
+			// then
+			assertThat(result.comments()).hasSize(2);
+			verify(communityCacheService).getCommentsCache(communityId);
 		}
 	}
 
