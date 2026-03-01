@@ -89,8 +89,7 @@ Long invalidUserId = 999L;
 }
 
 ### ✅ Fixture Usage with Static Import
-import static com.tave.common.fixture.UserFixture.*;
-import static com.tave.community.fixture.CommunityFixture.*;
+import static.tave.crezipsa.crezipsa.fixture.*;
 
 class CommunityUsecaseTest {
 @Test
