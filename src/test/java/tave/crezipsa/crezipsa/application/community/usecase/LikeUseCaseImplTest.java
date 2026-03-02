@@ -16,6 +16,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -235,42 +238,87 @@ class LikeUseCaseImplTest {
 	class GetMyLikedCommunities {
 
 		@Test
-		@DisplayName("latest 정렬 시 findMyLikedCommunitiesLatest 호출")
-		void latestSort() {
-			// given
+		@DisplayName("latest 정렬 시 countByCommunityIds(배치)가 호출되고 commentCount가 매핑된다")
+		void latestSort_usesBatchCommentCount() {
+			// Given
 			Community c1 = createCommunity(1L, 5L);
 			Page<Community> page = new PageImpl<>(List.of(c1), PageRequest.of(0, 10), 1);
 
 			when(likeRepository.findMyLikedCommunitiesLatest(eq(10L), isNull(), any()))
 				.thenReturn(page);
-			when(commentRepository.countByCommunityId(1L)).thenReturn(3L);
+			when(commentRepository.countByCommunityIds(List.of(1L)))
+				.thenReturn(Map.of(1L, 3L));
 
-			// when
+			// When
 			Slice<MyLikedCommunityResponse> result = sut.getMyLikedCommunities(10L, null, "latest", PageRequest.of(0, 10));
 
-			// then
+			// Then
 			assertThat(result.getContent()).hasSize(1);
 			assertThat(result.getContent().get(0).commentCount()).isEqualTo(3L);
-			verify(likeRepository).findMyLikedCommunitiesLatest(eq(10L), isNull(), any());
+			verify(commentRepository).countByCommunityIds(List.of(1L));
+			verify(commentRepository, never()).countByCommunityId(anyLong());
 		}
 
 		@Test
-		@DisplayName("popular 정렬 시 findMyLikedCommunitiesPopular 호출")
-		void popularSort() {
-			// given
+		@DisplayName("popular 정렬 시 countByCommunityIds(배치)가 호출되고 단건 메서드는 호출되지 않는다")
+		void popularSort_usesBatchCommentCount() {
+			// Given
 			Community c1 = createCommunity(1L, 5L);
 			Page<Community> page = new PageImpl<>(List.of(c1), PageRequest.of(0, 10), 1);
 
 			when(likeRepository.findMyLikedCommunitiesPopular(eq(10L), eq(CommunityField.TIP), any()))
 				.thenReturn(page);
-			when(commentRepository.countByCommunityId(1L)).thenReturn(0L);
+			when(commentRepository.countByCommunityIds(List.of(1L)))
+				.thenReturn(Map.of(1L, 0L));
 
-			// when
+			// When
 			Slice<MyLikedCommunityResponse> result = sut.getMyLikedCommunities(10L, CommunityField.TIP, "popular", PageRequest.of(0, 10));
 
-			// then
+			// Then
 			assertThat(result.getContent()).hasSize(1);
 			verify(likeRepository).findMyLikedCommunitiesPopular(eq(10L), eq(CommunityField.TIP), any());
+			verify(commentRepository).countByCommunityIds(List.of(1L));
+			verify(commentRepository, never()).countByCommunityId(anyLong());
+		}
+
+		@Test
+		@DisplayName("커뮤니티가 없을 때 countByCommunityIds가 빈 리스트로 호출된다")
+		void emptyPage_callsBatchWithEmptyList() {
+			// Given
+			Page<Community> emptyPage = new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 10), 0);
+
+			when(likeRepository.findMyLikedCommunitiesLatest(eq(10L), isNull(), any()))
+				.thenReturn(emptyPage);
+			when(commentRepository.countByCommunityIds(Collections.emptyList()))
+				.thenReturn(Collections.emptyMap());
+
+			// When
+			Slice<MyLikedCommunityResponse> result = sut.getMyLikedCommunities(10L, null, "latest", PageRequest.of(0, 10));
+
+			// Then
+			assertThat(result.getContent()).isEmpty();
+			verify(commentRepository).countByCommunityIds(Collections.emptyList());
+			verify(commentRepository, never()).countByCommunityId(anyLong());
+		}
+
+		@Test
+		@DisplayName("Map에 communityId가 없으면 commentCount가 0으로 기본값 처리된다")
+		void missingCommentCountEntry_defaultsToZero() {
+			// Given
+			Community c1 = createCommunity(1L, 5L);
+			Page<Community> page = new PageImpl<>(List.of(c1), PageRequest.of(0, 10), 1);
+
+			when(likeRepository.findMyLikedCommunitiesLatest(eq(10L), isNull(), any()))
+				.thenReturn(page);
+			when(commentRepository.countByCommunityIds(List.of(1L)))
+				.thenReturn(Collections.emptyMap());
+
+			// When
+			Slice<MyLikedCommunityResponse> result = sut.getMyLikedCommunities(10L, null, "latest", PageRequest.of(0, 10));
+
+			// Then
+			assertThat(result.getContent()).hasSize(1);
+			assertThat(result.getContent().get(0).commentCount()).isZero();
 		}
 	}
 }
