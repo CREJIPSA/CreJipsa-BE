@@ -1,5 +1,8 @@
 package tave.crezipsa.crezipsa.application.community.usecase;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -83,9 +86,12 @@ public class LikeUseCaseImpl  implements LikeUseCase {
 				? likeRepository.findMyLikedCommunitiesPopular(userId, field, pageable)
 				: likeRepository.findMyLikedCommunitiesLatest(userId, field, pageable);
 
+		List<Long> communityIds = page.getContent().stream()
+			.map(Community::getCommunityId).toList();
+		Map<Long, Long> commentCounts = commentRepository.countByCommunityIds(communityIds);
+
 		return page.map(community -> {
-			long commentCount =
-				commentRepository.countByCommunityId(community.getCommunityId());
+			long commentCount = commentCounts.getOrDefault(community.getCommunityId(), 0L);
 
 			return MyLikedCommunityResponse.of(
 				community,
