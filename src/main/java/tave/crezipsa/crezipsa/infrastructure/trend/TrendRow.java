@@ -1,16 +1,12 @@
 package tave.crezipsa.crezipsa.infrastructure.trend;
 
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import tave.crezipsa.crezipsa.domain.user.enums.Platform;
-
 public record TrendRow(
-        Long id,
-        int rank,
-        String keyword,
-        String platform,
-        String category,
-        String trendDirection
+		Long id,
+		int rank,
+		String keyword,
+		String platform,
+		String category,
+		String trendDirection
 ) {
     public TrendRow(long id, String keyword, String category) {
         this(id, 0, keyword, null, category,null);

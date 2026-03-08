@@ -3,8 +3,8 @@ package tave.crezipsa.crezipsa.application.trend.usecase;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tave.crezipsa.crezipsa.application.trend.dto.request.TrendSaveRequest;
 import tave.crezipsa.crezipsa.application.trend.dto.response.*;
-import tave.crezipsa.crezipsa.application.trend.dto.response.request.TrendRequest;
 import tave.crezipsa.crezipsa.application.trend.port.TrendQueryPort;
 import tave.crezipsa.crezipsa.application.user.port.UserHistoryPort;
 import tave.crezipsa.crezipsa.application.user.port.UserInterestPort;
@@ -24,12 +24,11 @@ public class TrendUsecaseImpl implements TrendUsecase {
     private final UserInterestPort userInterestPort;
     private final UserHistoryPort userHistoryPort;
 
-    @Override
-    public List<TrendResponse> getTopTrends(String platform, String category) {
-
-        if(platform.isEmpty() ||platform.isBlank()){
-            throw new CommonException(ErrorCode.USER_PLATFORM_NOT_SET);
-        }
+	@Override
+	public List<TrendResponse> getTopTrends(String platform, String category) {
+		if (platform == null || platform.isBlank()) {
+			throw new CommonException(ErrorCode.USER_PLATFORM_NOT_SET);
+		}
 
         List<TrendRow> trendRowList = trendQueryPort.findTopKeywordsByPlatformAndCategory(platform, category);
         return trendRowList.stream()
@@ -37,18 +36,16 @@ public class TrendUsecaseImpl implements TrendUsecase {
                 .toList();
     }
 
-    @Override
-    public TrendDetailResponse getTrendDetail(long trendId) {
+	@Override
+	public TrendDetailResponse getTrendDetail(long trendId) {
+		TrendDetailWithUrls trendDetailWithUrls = trendQueryPort.findSelectedKeywordDetailByTrendId(trendId);
+		return TrendDetailResponse.from(trendDetailWithUrls);
+	}
 
-        TrendDetailWithUrls trendDetailWithUrls = trendQueryPort.findSelectedKeywordDetailBytrendId(trendId);
-        return TrendDetailResponse.from(trendDetailWithUrls);
-    }
-
-    @Override
-    public void saveTrend(long userId, TrendRequest request) {
-
-        trendQueryPort.saveTrend(userId, request.from(request));
-    }
+	@Override
+	public void saveTrend(long userId, TrendSaveRequest request) {
+		trendQueryPort.saveTrend(userId, request.toCommand());
+	}
 
     @Override
     public TrendSearchResponse searchTrend(long userId, String keyword) {
