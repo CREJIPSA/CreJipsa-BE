@@ -55,7 +55,8 @@ public class TrendController {
 
 	@GetMapping("/recommendations/by-platform")
 	public GlobalResponseDto<List<TrendResponse>> recommendationsByPlatform(@AuthenticationPrincipal User user){
-		return GlobalResponseDto.success(trendUsecase.getTopTrends(user.getMainPlatform().toString(), null));
+		String platform = user.getMainPlatform() == null ? null : user.getMainPlatform().toString();
+		return GlobalResponseDto.success(trendUsecase.getTopTrends(platform, null));
 	}
 
 	@GetMapping("/recommendations/by-interests")
