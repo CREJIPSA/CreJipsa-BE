@@ -58,7 +58,7 @@ public enum ErrorCode implements BaseErrorCode {
 
 	// 검색 관련
 	SEARCH_KEYWORD_REQUIRED(400, "SE40001", "검색어는 필수입니다."),
-	SEARCH_KEYWORD_TOO_LONG(400, "SE40002", "검색어는 최대 30자까지 입니다.."),
+	SEARCH_KEYWORD_TOO_LONG(400, "SE40002", "검색어는 최대 20자까지 입니다.."),
 
 	// 트렌드 관련
 	TREND_NOT_FOUND(404, "T40401", "해당 트렌드를 찾을 수 없습니다."),
