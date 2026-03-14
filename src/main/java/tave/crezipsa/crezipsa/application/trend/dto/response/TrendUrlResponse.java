@@ -1,18 +1,17 @@
 package tave.crezipsa.crezipsa.application.trend.dto.response;
 
-import tave.crezipsa.crezipsa.infrastructure.trend.TrendDetailRow;
-import tave.crezipsa.crezipsa.infrastructure.trend.TrendUrlRow;
+import tave.crezipsa.crezipsa.application.trend.model.TrendUrl;
 
 public record TrendUrlResponse(
-        String title,
-        String url,
-        int viewCount
+		String title,
+		String url,
+		int viewCount
 ) {
-    public static TrendUrlResponse  from(TrendUrlRow row) {
-        return new TrendUrlResponse(
-                row.title(),
-                row.url(),
-                row.viewCount()
-        );
-    }
+	public static TrendUrlResponse from(TrendUrl row) {
+		return new TrendUrlResponse(
+				row.title(),
+				row.url(),
+				row.viewCount()
+		);
+	}
 }

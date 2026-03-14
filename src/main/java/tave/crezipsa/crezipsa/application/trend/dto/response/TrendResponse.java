@@ -1,7 +1,7 @@
 package tave.crezipsa.crezipsa.application.trend.dto.response;
 
+import tave.crezipsa.crezipsa.application.trend.model.TrendItem;
 import tave.crezipsa.crezipsa.domain.user.enums.Platform;
-import tave.crezipsa.crezipsa.infrastructure.trend.TrendRow;
 
 public record TrendResponse(
         Long id,
@@ -11,7 +11,7 @@ public record TrendResponse(
         String category,
         String trendDirection
 ) {
-    public static TrendResponse from(TrendRow row) {
+    public static TrendResponse from(TrendItem row) {
         Platform platform = row.platform() == null ? null : Platform.valueOf(row.platform());
 
         return new TrendResponse(

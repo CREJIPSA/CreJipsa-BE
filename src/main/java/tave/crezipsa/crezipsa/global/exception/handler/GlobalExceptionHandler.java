@@ -6,6 +6,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -39,8 +40,17 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<GlobalResponseDto<Void>> handleValidationExceptions(MethodArgumentNotValidException ex) {
 		String errorMessage = ex.getBindingResult().getFieldErrors().stream()
-			.map(err -> err.getDefaultMessage())
-			.collect(Collectors.joining(", "));
+				.map(err -> err.getDefaultMessage())
+				.collect(Collectors.joining(", "));
+		return ResponseEntity.badRequest().body(GlobalResponseDto.error(errorMessage));
+	}
+
+	//  @ModelAttribute 검증 실패
+	@ExceptionHandler(BindException.class)
+	public ResponseEntity<GlobalResponseDto<Void>> handleBindException(BindException ex) {
+		String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+				.map(err -> err.getDefaultMessage())
+				.collect(Collectors.joining(", "));
 		return ResponseEntity.badRequest().body(GlobalResponseDto.error(errorMessage));
 	}
 

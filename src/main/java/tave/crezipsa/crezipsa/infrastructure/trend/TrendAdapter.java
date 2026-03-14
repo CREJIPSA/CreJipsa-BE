@@ -1,15 +1,21 @@
 package tave.crezipsa.crezipsa.infrastructure.trend;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.PlatformTransactionManager;
+import tave.crezipsa.crezipsa.application.trend.model.TrendDetail;
+import tave.crezipsa.crezipsa.application.trend.model.TrendDetailResult;
+import tave.crezipsa.crezipsa.application.trend.model.TrendItem;
+import tave.crezipsa.crezipsa.application.trend.model.TrendSearchResult;
+import tave.crezipsa.crezipsa.application.trend.model.TrendUrl;
 import tave.crezipsa.crezipsa.application.trend.port.TrendQueryPort;
 import tave.crezipsa.crezipsa.domain.trend.entity.KeywordStoraged;
 import tave.crezipsa.crezipsa.domain.trend.entity.command.TrendCommand;
-import tave.crezipsa.crezipsa.domain.user.enums.Platform;
+import tave.crezipsa.crezipsa.global.exception.code.ErrorCode;
+import tave.crezipsa.crezipsa.global.exception.model.CommonException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,66 +24,67 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TrendAdapter implements TrendQueryPort {
 
-    private final @Qualifier("analyticsJdbc") NamedParameterJdbcTemplate analyticsJdbc;
-    private final @Qualifier("mainJdbc") NamedParameterJdbcTemplate mainJdbc;
+	private final @Qualifier("analyticsJdbc") NamedParameterJdbcTemplate analyticsJdbc;
+	private final @Qualifier("mainJdbc") NamedParameterJdbcTemplate mainJdbc;
 
-    @Override
-    public List<TrendRow> findTopKeywordsByPlatformAndCategory(String platform, String category) {
+	@Override
+	public List<TrendItem> findTopKeywordsByPlatformAndCategory(String platform, String category) {
 
-        String sql;
-        List<TrendRow> rows;
+		String sql;
+		List<TrendItem> rows;
 
-        if (category != null && !category.isBlank()) {
+		if (category != null && !category.isBlank()) {
 
-            sql = """
+			sql = """
                 SELECT id, category_rank, keyword, platform, category_name
                 FROM analytics_keyword_virality
                 WHERE platform = :platform AND category_name = :category
                 ORDER BY category_rank ASC LIMIT :limit
             """;
 
-            MapSqlParameterSource params = new MapSqlParameterSource()
-                    .addValue("platform", platform)
-                    .addValue("limit",10)
-                    .addValue("category", category);
+			MapSqlParameterSource params = new MapSqlParameterSource()
+					.addValue("platform", platform)
+					.addValue("limit",10)
+					.addValue("category", category);
 
-            rows = analyticsJdbc.query(sql, params, (rs, rowNum) -> new TrendRow(
-                    rs.getLong("id"),
-                    rs.getInt("category_rank"),
-                    rs.getString("keyword"),
-                    rs.getString("platform"),
-                    rs.getString("category_name")
-            ));
-        }
-        else {
-            sql = """
+			rows = analyticsJdbc.query(sql, params, (rs, rowNum) -> new TrendItem(
+					rs.getLong("id"),
+					rs.getInt("category_rank"),
+					rs.getString("keyword"),
+					rs.getString("platform"),
+					rs.getString("category_name"),
+					null
+			));
+		}
+		else {
+			sql = """
                 SELECT id, overall_rank, keyword, platform, category_name, trend_direction
                 FROM analytics_keyword_virality
                 WHERE platform = :platform 
                 ORDER BY overall_rank ASC LIMIT :limit
             """;
 
-            MapSqlParameterSource params = new MapSqlParameterSource()
-                    .addValue("platform", platform)
-                    .addValue("limit", 10);
+			MapSqlParameterSource params = new MapSqlParameterSource()
+					.addValue("platform", platform)
+					.addValue("limit", 10);
 
-            rows = analyticsJdbc.query(sql, params, (rs, rowNum) -> new TrendRow(
-                    rs.getLong("id"),
-                    rs.getInt("overall_rank"),
-                    rs.getString("keyword"),
-                    rs.getString("platform"),
-                    rs.getString("category_name"),
-                    rs.getString("trend_direction")
-            ));
-        }
+			rows = analyticsJdbc.query(sql, params, (rs, rowNum) -> new TrendItem(
+					rs.getLong("id"),
+					rs.getInt("overall_rank"),
+					rs.getString("keyword"),
+					rs.getString("platform"),
+					rs.getString("category_name"),
+					rs.getString("trend_direction")
+			));
+		}
 
-        return rows;
-    }
+		return rows;
+	}
 
-    @Override
-    public List<TrendRow> findTopKeywordsByCategory(List<String> categories) {
+	@Override
+	public List<TrendItem> findTopKeywordsByCategory(List<String> categories) {
 
-        String sql = """
+		String sql = """
         SELECT id, keyword,category_name
         FROM analytics_keyword_virality
         WHERE category_name = :category
@@ -85,113 +92,126 @@ public class TrendAdapter implements TrendQueryPort {
         LIMIT :limit
     """;
 
-        List<TrendRow> result = new ArrayList<>();
+		List<TrendItem> result = new ArrayList<>();
 
-        for (String category : categories) {
-            MapSqlParameterSource params = new MapSqlParameterSource()
-                    .addValue("category", category)
-                    .addValue("limit", 10);
+		for (String category : categories) {
+			MapSqlParameterSource params = new MapSqlParameterSource()
+					.addValue("category", category)
+					.addValue("limit", 10);
 
-            List<TrendRow> rows = analyticsJdbc.query(sql, params, (rs, rowNum) -> new TrendRow(
-                    rs.getLong("id"),
-                    rs.getString("keyword"),
-                    rs.getString("category_name")
-            ));
+			List<TrendItem> rows = analyticsJdbc.query(sql, params, (rs, rowNum) -> new TrendItem(
+					rs.getLong("id"),
+					0,
+					rs.getString("keyword"),
+					null,
+					rs.getString("category_name"),
+					null
+			));
 
-            result.addAll(rows);
-        }
+			result.addAll(rows);
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    @Override
-    public TrendDetailWithUrls findSelectedKeywordDetailBytrendId(long trendId) {
+	@Override
+	public TrendDetailResult findSelectedKeywordDetailByTrendId(long trendId) {
 
-        String keywordSql = """
+		String keywordSql = """
             SELECT id, overall_rank, category_rank, keyword, platform, category_name, virality_score
             FROM analytics_keyword_virality
             WHERE id = :id
         """;
 
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("id", trendId)
-                .addValue("limit",10);
+		MapSqlParameterSource params = new MapSqlParameterSource()
+				.addValue("id", trendId)
+				.addValue("limit",10);
 
-        TrendDetailRow detailRow = analyticsJdbc.queryForObject(keywordSql, params,
-                (rs, rowNum) -> new TrendDetailRow(
-                        rs.getLong("id"),
-                        rs.getString("platform"),
-                        rs.getString("category_name"),
-                        rs.getInt("overall_rank"),
-                        rs.getInt("category_rank"),
-                        rs.getString("keyword"),
-                        rs.getInt("virality_score")
-                )
-        );
+		TrendDetail detail;
+		try {
+			detail = analyticsJdbc.queryForObject(keywordSql, params,
+					(rs, rowNum) -> new TrendDetail(
+							rs.getLong("id"),
+							rs.getString("platform"),
+							rs.getString("category_name"),
+							rs.getInt("overall_rank"),
+							rs.getInt("category_rank"),
+							rs.getString("keyword"),
+							rs.getDouble("virality_score")
+					)
+			);
+		}
+		catch (EmptyResultDataAccessException e) {
+			throw new CommonException(ErrorCode.TREND_NOT_FOUND);
+		}
 
-        params.addValue("keyword", "%" + detailRow.keyword() + "%");
+		params.addValue("keyword", "%" + detail.keyword() + "%");
 
-        String urlSql = """
+		String urlSql = """
             SELECT video_url, title, view_count
             FROM URLTABLE
             WHERE title LIKE :keyword
             ORDER BY created_at DESC
             LIMIT :limit
         """;
-        // 검색 where 쿼리 후보: REPLACE(title, ' ', '') LIKE CONCAT('%', REPLACE(:keyword, ' ', ''), '%')
+		// 검색 where 쿼리 후보: REPLACE(title, ' ', '') LIKE CONCAT('%', REPLACE(:keyword, ' ', ''), '%')
 
-        List<TrendUrlRow> urlRows = analyticsJdbc.query(urlSql, params, (rs, rowNum) -> new TrendUrlRow(
-                rs.getString(1),
-                rs.getString(2),
-                rs.getInt(3)
-        ));
+		List<TrendUrl> urls = analyticsJdbc.query(urlSql, params, (rs, rowNum) -> new TrendUrl(
+				rs.getString(1),
+				rs.getString(2),
+				rs.getInt(3)
+		));
 
-        return new TrendDetailWithUrls(detailRow, urlRows);
-    }
+		return new TrendDetailResult(detail, urls);
+	}
 
-    @Override
-    public void saveTrend(long userId, TrendCommand trendCommand) {
+	@Override
+	public void saveTrend(long userId, TrendCommand trendCommand) {
 
-        String Sql = """
-           INSERT INTO keyword_storaged (user_id, keyword_id_from_analytics, keyword, category)
-                       VALUES (:userId, :keywordIdFromAnalytics, :keyword, :category)    
-        """;
+		String sql = """
+            INSERT INTO keyword_storaged (user_id, keyword_id_from_analytics, keyword, category)
+                        VALUES (:userId, :keywordIdFromAnalytics, :keyword, :category)    
+         """;
 
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("userId", userId)
-                .addValue("keywordIdFromAnalytics",trendCommand.keywordId())
-                .addValue("keyword",trendCommand.keyword())
-                .addValue("category",trendCommand.category());
+		MapSqlParameterSource params = new MapSqlParameterSource()
+				.addValue("userId", userId)
+				.addValue("keywordIdFromAnalytics",trendCommand.keywordId())
+				.addValue("keyword",trendCommand.keyword())
+				.addValue("category",trendCommand.category());
 
-        mainJdbc.update(Sql, params);
-    }
+		mainJdbc.update(sql, params);
+	}
 
-    @Override
-    public List<KeywordStoraged> findStoredKeywordsByUserId(long userId) {
+	@Override
+	public List<KeywordStoraged> findStoredKeywordsByUserId(long userId) {
 
-        String sql = """
+		String sql = """
         SELECT keyword_storage_id, keyword, category,created_at
         FROM keyword_storaged
         WHERE user_id = :userId
         ORDER BY created_at DESC
     """;
 
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("userId", userId);
+		MapSqlParameterSource params = new MapSqlParameterSource()
+				.addValue("userId", userId);
 
-        return mainJdbc.query(sql, params, (rs, rowNum) -> KeywordStoraged.builder()
-                .keywordStoragedId(rs.getLong("keyword_storage_id"))
-                .keyword(rs.getString("keyword"))
-                .category(rs.getString("category"))
-                .createdAt(rs.getTimestamp("created_at").toLocalDateTime().toLocalDate())
-                .build()
-        );
-    }
+		return mainJdbc.query(sql, params, (rs, rowNum) -> KeywordStoraged.builder()
+				.keywordStoragedId(rs.getLong("keyword_storage_id"))
+				.keyword(rs.getString("keyword"))
+				.category(rs.getString("category"))
+				.createdAt(rs.getTimestamp("created_at").toLocalDateTime().toLocalDate())
+				.build()
+		);
+	}
 
-    @Override
-    public TrendWithUrls findKeywordByKeyword(String keyword) {
+	@Override
+	public TrendSearchResult findKeywordByKeyword(String keyword) {
+		String normalized = keyword == null ? "" : keyword.trim();
+		if (normalized.isBlank()) {
+			throw new CommonException(ErrorCode.SEARCH_KEYWORD_REQUIRED);
+		}
 
-        String keywordSql = """
+		String keywordSql = """
            WITH filtered AS (
                             SELECT keyword_id, keyword, category_id
                             FROM raw_keywords
@@ -216,7 +236,7 @@ public class TrendAdapter implements TrendQueryPort {
                         
         """;
 
-        String urlSql = """
+		String urlSql = """
             SELECT video_url, title, view_count
             FROM URLTABLE
             WHERE title LIKE :keyword
@@ -224,22 +244,27 @@ public class TrendAdapter implements TrendQueryPort {
             LIMIT :limit
         """;
 
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("keyword", "%" + keyword.trim() + "%")
-                .addValue("limit",50);
+		MapSqlParameterSource params = new MapSqlParameterSource()
+				.addValue("keyword", "%" + normalized + "%")
+				.addValue("limit",50);
 
-        List<TrendRow> trends = analyticsJdbc.query(keywordSql, params, (rs, rowNum) -> new TrendRow(
-                rs.getLong("keyword_id"),
-                rs.getString("keyword"),
-                rs.getString("category_id")));
+		List<TrendItem> trends = analyticsJdbc.query(keywordSql, params, (rs, rowNum) -> new TrendItem(
+				rs.getLong("keyword_id"),
+				0,
+				rs.getString("keyword"),
+				null,
+				rs.getString("category_id"),
+				null
+		));
 
-        List<TrendUrlRow> urls = analyticsJdbc.query(urlSql, params, (rs, rowNum)  -> new TrendUrlRow(
-                rs.getString("video_url"),
-                rs.getString("title"),
-                rs.getInt("view_count")));
+		List<TrendUrl> urls = analyticsJdbc.query(urlSql, params, (rs, rowNum)  -> new TrendUrl(
+				rs.getString("video_url"),
+				rs.getString("title"),
+				rs.getInt("view_count")
+		));
 
-        return new TrendWithUrls(trends, urls);
+		return new TrendSearchResult(trends, urls);
 
-    }
+	}
 
 }

@@ -1,9 +1,8 @@
 package tave.crezipsa.crezipsa.application.trend.dto.response;
 
+import tave.crezipsa.crezipsa.application.trend.model.TrendDetail;
+import tave.crezipsa.crezipsa.application.trend.model.TrendDetailResult;
 import tave.crezipsa.crezipsa.domain.user.enums.Platform;
-import tave.crezipsa.crezipsa.infrastructure.trend.TrendDetailRow;
-import tave.crezipsa.crezipsa.infrastructure.trend.TrendDetailWithUrls;
-import tave.crezipsa.crezipsa.infrastructure.trend.TrendUrlRow;
 
 import java.util.List;
 
@@ -18,24 +17,20 @@ public record TrendDetailResponse(
         List<TrendUrlResponse> urls
 
 ) {
-    public static TrendDetailResponse from(TrendDetailWithUrls trendDetailWithUrls) {
-
-        List<TrendUrlResponse> urls = List.of();
-
-        if (trendDetailWithUrls.urls() != null) {
-            urls = trendDetailWithUrls.urls().stream()
-                    .map(TrendUrlResponse::from)
-                    .toList();
-        }
+    public static TrendDetailResponse from(TrendDetailResult trendDetailWithUrls) {
+        TrendDetail detail = trendDetailWithUrls.detail();
+        List<TrendUrlResponse> urls = trendDetailWithUrls.urls() == null
+                ? List.of()
+                : trendDetailWithUrls.urls().stream().map(TrendUrlResponse::from).toList();
 
         return new TrendDetailResponse(
-                trendDetailWithUrls.detailRow().id(),
-                Platform.valueOf(trendDetailWithUrls.detailRow().platform()),
-                trendDetailWithUrls.detailRow().category(),
-                trendDetailWithUrls.detailRow().overall_rank(),
-                trendDetailWithUrls.detailRow().category_rank(),
-                trendDetailWithUrls.detailRow().keyword(),
-                trendDetailWithUrls.detailRow().viralityScore(),
+                detail.id(),
+                Platform.valueOf(detail.platform()),
+                detail.category(),
+                detail.overallRank(),
+                detail.categoryRank(),
+                detail.keyword(),
+                detail.viralityScore(),
                 urls
         );
     }
